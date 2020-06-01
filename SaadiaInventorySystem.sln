@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaadiaInventorySystem", "SaadiaInventorySystem\SaadiaInventorySystem.csproj", "{C2C2AC4A-055E-4CF8-9F76-E7E21C062B06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaadiaInventorySystem.Client", "SaadiaInventorySystem.Client\SaadiaInventorySystem.Client.csproj", "{924EF1F6-3695-4F99-8D67-28C3A9BF72A6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C2C2AC4A-055E-4CF8-9F76-E7E21C062B06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2C2AC4A-055E-4CF8-9F76-E7E21C062B06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2C2AC4A-055E-4CF8-9F76-E7E21C062B06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2C2AC4A-055E-4CF8-9F76-E7E21C062B06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{924EF1F6-3695-4F99-8D67-28C3A9BF72A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{924EF1F6-3695-4F99-8D67-28C3A9BF72A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{924EF1F6-3695-4F99-8D67-28C3A9BF72A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{924EF1F6-3695-4F99-8D67-28C3A9BF72A6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {60D6830E-F6CD-4054-9FCB-5E8750FF64F8}
+	EndGlobalSection
+EndGlobal
