@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SaadiaInventorySystem.Data;
+using SaadiaInventorySystem.Service;
 
 namespace SaadiaInventorySystem
 {
@@ -19,6 +22,9 @@ namespace SaadiaInventorySystem
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddMvc();
+            services.AddTransient(typeof(UserService));
+            services.AddSingleton(typeof(AppDbContext));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,7 +48,7 @@ namespace SaadiaInventorySystem
                 {
                     endpoints.MapControllerRoute(
                         name: "default",
-                        pattern: "{controller=WeatherForecast}/{action=Get}");
+                        pattern: "api/{controller=Login}/{action=Get}");
                 });
             });
         }

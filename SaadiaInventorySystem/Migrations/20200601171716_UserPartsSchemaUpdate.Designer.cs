@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SaadiaInventorySystem.Data;
 
 namespace SaadiaInventorySystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200601171716_UserPartsSchemaUpdate")]
+    partial class UserPartsSchemaUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,24 +52,6 @@ namespace SaadiaInventorySystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Customers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ComapnyName = "QTS",
-                            EmailAddress = "zobad.mahmood@gmail.com",
-                            FirstName = "Zobad",
-                            LastName = "Mahmood"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ComapnyName = "Saadia",
-                            EmailAddress = "hamza@gmail.com",
-                            FirstName = "Hamza",
-                            LastName = "Sheikh"
-                        });
                 });
 
             modelBuilder.Entity("SaadiaInventorySystem.Model.Inventory", b =>
@@ -238,18 +222,6 @@ namespace SaadiaInventorySystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "User"
-                        });
                 });
 
             modelBuilder.Entity("SaadiaInventorySystem.Model.User", b =>
@@ -258,7 +230,7 @@ namespace SaadiaInventorySystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("CustomerId")
+                    b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateCreated")
@@ -273,7 +245,7 @@ namespace SaadiaInventorySystem.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<int>("RoleId")
+                    b.Property<int?>("RoleId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserName")
@@ -286,30 +258,6 @@ namespace SaadiaInventorySystem.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CustomerId = 1,
-                            DateCreated = new DateTime(2020, 6, 2, 13, 41, 23, 764, DateTimeKind.Local).AddTicks(5765),
-                            DateUpdate = new DateTime(2020, 6, 2, 13, 41, 23, 765, DateTimeKind.Local).AddTicks(7242),
-                            IsActive = 1,
-                            Password = "1234",
-                            RoleId = 1,
-                            UserName = "zobad"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CustomerId = 2,
-                            DateCreated = new DateTime(2020, 6, 2, 13, 41, 23, 765, DateTimeKind.Local).AddTicks(7785),
-                            DateUpdate = new DateTime(2020, 6, 2, 13, 41, 23, 765, DateTimeKind.Local).AddTicks(7804),
-                            IsActive = 1,
-                            Password = "1234",
-                            RoleId = 2,
-                            UserName = "hamza"
-                        });
                 });
 
             modelBuilder.Entity("SaadiaInventorySystem.Model.Inventory", b =>
@@ -366,15 +314,11 @@ namespace SaadiaInventorySystem.Migrations
                 {
                     b.HasOne("SaadiaInventorySystem.Model.Customer", "Customer")
                         .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerId");
 
                     b.HasOne("SaadiaInventorySystem.Model.Role", "Role")
                         .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RoleId");
                 });
 #pragma warning restore 612, 618
         }
