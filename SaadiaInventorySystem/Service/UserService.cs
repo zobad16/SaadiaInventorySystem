@@ -15,19 +15,49 @@ namespace SaadiaInventorySystem.Service
             _userDao = dao;
 
         }
-        public async Task CreateUser(User data)
+        public async Task<bool> CreateUser(User data)
         {
             try
             {
-                await _userDao.Users.AddAsync(data);
-                await _userDao.SaveChangesAsync();
+                bool isexists = _userDao.Users.Any(x => x.UserName == data.UserName);
+
+                if (!isexists) 
+                {
+                    await _userDao.Users.AddAsync(data);
+                   return await _userDao.SaveChangesAsync() > 0;
+                }
+                return false;               
+                
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw;
+                throw ex;
             }
                 
+        }
+
+        public async Task UpdateUser(User _user)
+        {
+
+            try
+            {
+                User user = (User)_userDao.Users
+                            .Where(user => user.Id.Equals(_user.Id)).FirstOrDefault();
+                user.FirstName = _user.FirstName;
+                user.LastName = _user.LastName;
+                user.EmailAddress = _user.EmailAddress;
+                user.PhoneNumber = _user.PhoneNumber;
+                user.DateUpdate = DateTime.Now;
+                
+                await _userDao.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
         }
         public User GetUserByUserName(string username)
         {
@@ -37,10 +67,10 @@ namespace SaadiaInventorySystem.Service
                     .Where(user => user.UserName.Equals(username));
                 return user;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw;
+                throw ex;
             }
         }
         public List<User> GetUsers()
@@ -51,27 +81,44 @@ namespace SaadiaInventorySystem.Service
                     
                 return user;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw;
+                throw ex;
             }
         }
-        public void UpdateUser(User _user)
+        public async Task<bool> DeleteUser(string id)
         {
             
             try
             {
                 User user = (User)_userDao.Users
-                            .Where(user => user.UserName.Equals(_user.Id));
-                user = _user;
-                _userDao.SaveChangesAsync();
+                            .Where(user => user.UserName.Equals(id));
+                user.IsActive = 0;
+                return await _userDao.SaveChangesAsync() > 0;
                 
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-
+                throw ex;
+            }
+        }
+        public async Task<bool> AdminDeleteUser(string id)
+        {
+            
+            try
+            {
+                User user = (User)_userDao.Users
+                            .Where(user => user.UserName.Equals(id));
+                _userDao.Remove<User>(user);
+                return await _userDao.SaveChangesAsync() > 0;
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
             }
         }
 
@@ -79,18 +126,21 @@ namespace SaadiaInventorySystem.Service
         {
             try
             {
-                var user = _userDao.Users
-                            .Where(_user => _user.UserName == username && _user.Password == password);
-                if(user.Count() > 0)
+                User user = _userDao.Users
+                            .Where(_user => _user.UserName == username && _user.Password == password).FirstOrDefault();
+                
+                if(user!= null)
                 {
                     return true;
                 }
+               
                 return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 //Log
-                return false;
+                Console.WriteLine(ex.Message);
+                throw ex;
             }
 
         }

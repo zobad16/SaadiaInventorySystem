@@ -1,4 +1,6 @@
-﻿namespace SaadiaInventorySystem.Model
+﻿using System;
+
+namespace SaadiaInventorySystem.Model
 {
     public class Inventory
     {
@@ -10,5 +12,8 @@
         public string Location { get; set; }
         public string Rem { get; set; }
         public OldPart OldPart { get; set; }
+        public DateTime DateUpdate { get; internal set; }
+        public DateTime DateCreated { get; internal set; }
+        public int IsActive { get; internal set; }
     }
 }

@@ -8,7 +8,7 @@ using SaadiaInventorySystem.Service;
 
 namespace SaadiaInventorySystem.Controllers
 {
-    public class UserController : Controller
+    public class UserController : ControllerBase
     {
         private readonly UserService _userService;
         
@@ -16,12 +16,25 @@ namespace SaadiaInventorySystem.Controllers
         {
             _userService = service;
         }
-        [HttpPost("CreateUser")]
+        [HttpPost("signup")]
         public async void CreateUser([FromBody]User user)
         {
             await _userService.CreateUser(user);
         
         }
+        [HttpPost("update")]
+        public async void UpdateUser([FromBody] User user)
+        {
+            await _userService.UpdateUser(user);
+
+        }
+        [HttpPost("delete")]
+        public async void DeleteUser([FromBody] User user)
+        {
+            await _userService.CreateUser(user);
+
+        }
         
+
     }
 }

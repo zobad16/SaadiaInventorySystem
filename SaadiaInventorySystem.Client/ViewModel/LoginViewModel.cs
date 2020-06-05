@@ -1,4 +1,5 @@
-﻿using SaadiaInventorySystem.Client.Util;
+﻿using SaadiaInventorySystem.Client.Backend;
+using SaadiaInventorySystem.Client.Util;
 using System;
 using System.Windows;
 
@@ -40,11 +41,13 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         #endregion
 
-        private void Login(IClosable window)
+        private async void Login(IClosable window)
         {
             try
             {
                 bool login = true;
+                RestClient client = new RestClient();
+                await client.CallLoginService(new Model.User() { UserName = this.UserName, Password = this.Password });
                 if (login == true)
                 {
                     if (window != null)

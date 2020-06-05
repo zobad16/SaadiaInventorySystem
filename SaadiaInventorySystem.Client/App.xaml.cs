@@ -1,5 +1,6 @@
 ﻿using SaadiaInventorySystem.Client.View;
 using SaadiaInventorySystem.Client.ViewModel;
+using System.Configuration;
 using System.Windows;
 
 namespace SaadiaInventorySystem.Client
@@ -11,6 +12,8 @@ namespace SaadiaInventorySystem.Client
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            AppProperties.Url = ConfigurationManager.AppSettings["server"];
+
             var app = new MainWindow();
             var login = new LoginView();
             //FileBrowseView app = new FileBrowseView();

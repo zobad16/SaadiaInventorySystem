@@ -1,15 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using SaadiaInventorySystem.Model;
 using SaadiaInventorySystem.Service;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http.Results;
 
 namespace SaadiaInventorySystem.Controllers
 {
     
     
     [Route("api/[controller]")]
-    public class LoginController : Controller
+    public class LoginController : ControllerBase
     {
         private readonly UserService _userService;
         public LoginController(UserService service)
@@ -17,31 +23,31 @@ namespace SaadiaInventorySystem.Controllers
             _userService = service;
             //Logging
         }
-        [HttpPost("signin")]
-        public IActionResult Login([FromBody] Login data)
+        [HttpPost]
+        public ActionResult<string> Login([FromBody] Login data)
         {
             try
             {
                 if (_userService.ValidateUser(data.UserName, data.Password))
                 {
-                    return Ok();
+                    return Ok($"User:{data.UserName} sucessdully loggedin");
                 }
-                else 
+                else
                 {
-                    return Conflict($"Invalid User credentials");
+                    return NotFound();
                 }
             }
-
-            catch
+            catch (Exception e)
             {
-                return Conflict($"User{data.UserName} not found");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = e.ToString()});
             }
+            
         }
 
         [HttpPost("forget")]
         public IActionResult ForgetPassword(User data)
         {
-            return View();
+            return Ok();
         }
 
         [HttpPost("signup")]
@@ -52,15 +58,18 @@ namespace SaadiaInventorySystem.Controllers
                 if (data.UserName != null)
                 {
                     //If Success
-                    return Ok(data);
+                    var resourceUrl = Path.Combine(Request.Path.ToString(), Uri.EscapeUriString(data.UserName));
+                    return Created(resourceUrl, data);
                 }
-
+                else 
+                {
+                    return Conflict("Error: User already Exists");
+                }
             }
             catch (Exception e)
             {
-                return Conflict($"{e.Message }");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = e.ToString() });
             }
-            return View();
         }
 
         [HttpGet]

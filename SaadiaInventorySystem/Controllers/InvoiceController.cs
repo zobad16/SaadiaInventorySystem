@@ -2,7 +2,7 @@
 
 namespace SaadiaInventorySystem.Controllers
 {
-    public class OrdersController : Controller
+    public class InvoiceController : Controller
     {
         public IActionResult Index()
         {
