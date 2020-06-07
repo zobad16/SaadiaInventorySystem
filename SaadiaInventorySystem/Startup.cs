@@ -23,6 +23,7 @@ namespace SaadiaInventorySystem
         {
             services.AddControllers();
             services.AddMvc();
+            services.AddTransient(typeof(LoginService));
             services.AddTransient(typeof(UserService));
             services.AddTransient(typeof(CustomerService));
             services.AddTransient(typeof(InventoryService));

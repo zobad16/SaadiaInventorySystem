@@ -39,19 +39,37 @@ namespace SaadiaInventorySystem.Migrations
                 table: "Users",
                 nullable: true);
 
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DateCreated",
+                table: "Inventories",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DateUpdate",
+                table: "Inventories",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+
+            migrationBuilder.AddColumn<int>(
+                name: "IsActive",
+                table: "Inventories",
+                nullable: false,
+                defaultValue: 0);
+
             migrationBuilder.UpdateData(
                 table: "Users",
                 keyColumn: "Id",
                 keyValue: 1,
-                columns: new[] { "DateCreated", "DateUpdate" },
-                values: new object[] { new DateTime(2020, 6, 5, 20, 16, 58, 699, DateTimeKind.Local).AddTicks(4886), new DateTime(2020, 6, 5, 20, 16, 58, 700, DateTimeKind.Local).AddTicks(4230) });
+                columns: new[] { "DateCreated", "DateUpdate", "FirstName", "LastName" },
+                values: new object[] { new DateTime(2020, 6, 7, 16, 20, 36, 138, DateTimeKind.Local).AddTicks(4453), new DateTime(2020, 6, 7, 16, 20, 36, 139, DateTimeKind.Local).AddTicks(5768), "Zobad", "Mahmood" });
 
             migrationBuilder.UpdateData(
                 table: "Users",
                 keyColumn: "Id",
                 keyValue: 2,
-                columns: new[] { "DateCreated", "DateUpdate" },
-                values: new object[] { new DateTime(2020, 6, 5, 20, 16, 58, 700, DateTimeKind.Local).AddTicks(4819), new DateTime(2020, 6, 5, 20, 16, 58, 700, DateTimeKind.Local).AddTicks(4838) });
+                columns: new[] { "DateCreated", "DateUpdate", "FirstName", "LastName" },
+                values: new object[] { new DateTime(2020, 6, 7, 16, 20, 36, 139, DateTimeKind.Local).AddTicks(6313), new DateTime(2020, 6, 7, 16, 20, 36, 139, DateTimeKind.Local).AddTicks(6334), "Hamza", "Sheikh" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -71,6 +89,18 @@ namespace SaadiaInventorySystem.Migrations
             migrationBuilder.DropColumn(
                 name: "PhoneNumber",
                 table: "Users");
+
+            migrationBuilder.DropColumn(
+                name: "DateCreated",
+                table: "Inventories");
+
+            migrationBuilder.DropColumn(
+                name: "DateUpdate",
+                table: "Inventories");
+
+            migrationBuilder.DropColumn(
+                name: "IsActive",
+                table: "Inventories");
 
             migrationBuilder.AddColumn<int>(
                 name: "CustomerId",

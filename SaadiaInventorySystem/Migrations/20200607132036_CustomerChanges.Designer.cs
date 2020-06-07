@@ -9,7 +9,7 @@ using SaadiaInventorySystem.Data;
 namespace SaadiaInventorySystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20200605171659_CustomerChanges")]
+    [Migration("20200607132036_CustomerChanges")]
     partial class CustomerChanges
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -81,8 +81,17 @@ namespace SaadiaInventorySystem.Migrations
                     b.Property<int>("AvailableQty")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DateUpdate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("Description")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("IsActive")
+                        .HasColumnType("int");
 
                     b.Property<string>("Location")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -300,9 +309,11 @@ namespace SaadiaInventorySystem.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2020, 6, 5, 20, 16, 58, 699, DateTimeKind.Local).AddTicks(4886),
-                            DateUpdate = new DateTime(2020, 6, 5, 20, 16, 58, 700, DateTimeKind.Local).AddTicks(4230),
+                            DateCreated = new DateTime(2020, 6, 7, 16, 20, 36, 138, DateTimeKind.Local).AddTicks(4453),
+                            DateUpdate = new DateTime(2020, 6, 7, 16, 20, 36, 139, DateTimeKind.Local).AddTicks(5768),
+                            FirstName = "Zobad",
                             IsActive = 1,
+                            LastName = "Mahmood",
                             Password = "1234",
                             RoleId = 1,
                             UserName = "zobad"
@@ -310,9 +321,11 @@ namespace SaadiaInventorySystem.Migrations
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2020, 6, 5, 20, 16, 58, 700, DateTimeKind.Local).AddTicks(4819),
-                            DateUpdate = new DateTime(2020, 6, 5, 20, 16, 58, 700, DateTimeKind.Local).AddTicks(4838),
+                            DateCreated = new DateTime(2020, 6, 7, 16, 20, 36, 139, DateTimeKind.Local).AddTicks(6313),
+                            DateUpdate = new DateTime(2020, 6, 7, 16, 20, 36, 139, DateTimeKind.Local).AddTicks(6334),
+                            FirstName = "Hamza",
                             IsActive = 1,
+                            LastName = "Sheikh",
                             Password = "1234",
                             RoleId = 2,
                             UserName = "hamza"

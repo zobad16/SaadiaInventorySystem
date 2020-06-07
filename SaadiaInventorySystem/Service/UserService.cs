@@ -37,20 +37,25 @@ namespace SaadiaInventorySystem.Service
                 
         }
 
-        public async Task UpdateUser(User _user)
+        public async Task<bool> UpdateUser(User _user)
         {
 
             try
             {
+                bool saved = false;
                 User user = (User)_userDao.Users
                             .Where(user => user.Id.Equals(_user.Id)).FirstOrDefault();
-                user.FirstName = _user.FirstName;
-                user.LastName = _user.LastName;
-                user.EmailAddress = _user.EmailAddress;
-                user.PhoneNumber = _user.PhoneNumber;
-                user.DateUpdate = DateTime.Now;
-                
-                await _userDao.SaveChangesAsync();
+                if (user != null)
+                {
+                    if (! string.IsNullOrEmpty(_user.FirstName)) user.FirstName = _user.FirstName;
+                    if (!string.IsNullOrEmpty(_user.LastName)) user.LastName = _user.LastName;
+                    if (!string.IsNullOrEmpty(_user.EmailAddress)) user.EmailAddress = _user.EmailAddress;
+                    if (!string.IsNullOrEmpty(_user.PhoneNumber )) user.PhoneNumber = _user.PhoneNumber;
+                    user.DateUpdate = DateTime.Now;
+                    
+                    saved = await _userDao.SaveChangesAsync() > 0;
+                }
+                return saved;
 
             }
             catch (Exception ex)
@@ -64,7 +69,21 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 User user =(User) _userDao.Users
-                    .Where(user => user.UserName.Equals(username));
+                    .Where(x => x.UserName.Equals(username)).FirstOrDefault();
+                return user;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+        }
+        public User GetUserByUserId(int id)
+        {
+            try
+            {
+                User user =(User) _userDao.Users
+                    .Where(user => user.Id.Equals(id));
                 return user;
             }
             catch (Exception ex)

@@ -25,7 +25,5 @@ namespace SaadiaInventorySystem.Model
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdate { get; set; }
         
-        public Role Role { get; set; }
-        
     }
 }

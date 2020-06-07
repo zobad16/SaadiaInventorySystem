@@ -17,10 +17,10 @@ namespace SaadiaInventorySystem.Controllers
     [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
-        private readonly UserService _userService;
-        public LoginController(UserService service)
+        private readonly LoginService _loginService;
+        public LoginController(LoginService service)
         {
-            _userService = service;
+            _loginService = service;
             //Logging
         }
         [HttpPost]
@@ -28,7 +28,7 @@ namespace SaadiaInventorySystem.Controllers
         {
             try
             {
-                if (_userService.ValidateUser(data.UserName, data.Password))
+                if (_loginService.ValidateUser(data.UserName, data.Password))
                 {
                     return Ok($"User:{data.UserName} sucessdully loggedin");
                 }
