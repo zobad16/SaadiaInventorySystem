@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SaadiaInventorySystem.Client.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,26 @@ using System.Threading.Tasks;
 
 namespace SaadiaInventorySystem.Client.Model
 {
-   public class Inventory
+    public class Inventory : BaseViewModel
     {
+        private int id;
+        private string partName;
+        private string description;
+        private int availableQty;
+        private decimal price;
+        private string location;
+        private string rem;
+        private OldPart oldPart;
+        private int isActive;
+
+        public int Id { get => id; set { id = value; RaisePropertyChanged(); }}
+        public string PartName { get => partName; set { partName = value; RaisePropertyChanged(); }}
+        public string Description { get => description; set { description = value; RaisePropertyChanged(); }}
+        public int AvailableQty { get => availableQty; set { availableQty = value; RaisePropertyChanged(); } }
+        public decimal Price { get => price; set { price = value; RaisePropertyChanged(); } }
+        public string Location { get => location; set { location = value; RaisePropertyChanged(); } }
+        public string Rem { get => rem; set { rem = value; RaisePropertyChanged(); }}
+        public OldPart OldPart { get => oldPart; set {oldPart = value; RaisePropertyChanged(); }}
+        public int IsActive { get => isActive; set { isActive = value; RaisePropertyChanged(); } }
     }
 }

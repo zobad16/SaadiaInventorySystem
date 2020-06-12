@@ -46,11 +46,24 @@ namespace SaadiaInventorySystem.Controllers
         }
 
         [HttpPost("delete")]
-        public async Task<IActionResult> DeleteUser([FromBody] string user)
+        public async Task<IActionResult> DeleteUser([FromBody] string id)
         {
-            if (await _userService.DeleteUser(user))
+            if (await _userService.DeleteUser(id))
             {
-                return Ok($"User {user} deleted successfully");
+                return Ok($"Delete success");
+            }
+            else
+            {
+                return BadRequest("User Delete failed");
+            }
+
+        }
+        [HttpPost("admindelete")]
+        public async Task<IActionResult> AdminDeleteUser([FromBody] string id)
+        {
+            if (await _userService.AdminDeleteUser(id))
+            {
+                return Ok($"User {id} deleted successfully");
             }
             else
             {
@@ -59,7 +72,7 @@ namespace SaadiaInventorySystem.Controllers
 
         }
 
-        /*[HttpGet("{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
             try
@@ -77,9 +90,9 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest(ex.Message);
             }           
 
-        }*/
+        }
         
-        [HttpGet("{user}")]
+        /*[HttpGet("{user}")]
         public async Task<ActionResult<User>> GetUser(string user)
         {
             try
@@ -97,7 +110,7 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest(ex.Message);
             }           
 
-        }
+        }*/
 
         [HttpGet("users")]
         public async Task<ActionResult<List<User>>> GetUsers()

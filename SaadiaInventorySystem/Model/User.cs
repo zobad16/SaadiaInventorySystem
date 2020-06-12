@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SaadiaInventorySystem.Model
 {
@@ -20,7 +17,7 @@ namespace SaadiaInventorySystem.Model
         public string EmailAddress { get; set; }
 
         public int IsActive { get; set; }
-        public int RoleId { get; set; }
+        public Role Role { get; set; }
 
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdate { get; set; }

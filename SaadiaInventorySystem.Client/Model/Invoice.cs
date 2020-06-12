@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SaadiaInventorySystem.Client.Util;
 
 namespace SaadiaInventorySystem.Client.Model
 {
-    public class Invoice
+    public class Invoice : BaseViewModel
     {
-        public int Id { get; set; }
-        public int CustomerId { get; set; }
-        public Customer Customer { get; set; }
+        private int id;
+        private int customerId;
+        private Customer customer;
+        private Order order;
 
-        public int ItemInventoryId { get; set; }
-        public List<Inventory> ItemInventory { get; set; }
+        public int Id { get => id; set { id = value; RaisePropertyChanged(); } }
+        public int CustomerId { get => customerId; set { customerId = value; RaisePropertyChanged(); } }
+        public Customer Customer { get => customer; set { customer = value; RaisePropertyChanged(); }}
+        public Order Order { get => order; set { order = value; RaisePropertyChanged(); } }
+    
 
-        public DateTime DateCreated { get; set; }
-        public DateTime DateUpdated { get; set; }
 
     }
 }
