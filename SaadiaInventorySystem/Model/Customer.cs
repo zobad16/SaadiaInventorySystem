@@ -1,4 +1,6 @@
-﻿namespace SaadiaInventorySystem.Model
+﻿using System;
+
+namespace SaadiaInventorySystem.Model
 {
     public class Customer
     {
@@ -11,5 +13,8 @@
         public string PhoneNumber { get; set; }
         public string EmailAddress { get; set; }
         public string Postcode { get; set; }
+
+        public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
     }
 }

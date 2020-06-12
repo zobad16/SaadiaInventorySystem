@@ -69,6 +69,7 @@
     <Compile Include="Model\Customer.cs" />
     <Compile Include="Model\Inventory.cs" />
     <Compile Include="Model\Invoice.cs" />
+    <Compile Include="Model\InvoiceItem.cs" />
     <Compile Include="Model\Quotation.cs" />
     <Compile Include="Model\User.cs" />
     <Compile Include="Util\AppProperties.cs" />

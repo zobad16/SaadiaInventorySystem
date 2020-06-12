@@ -9,16 +9,94 @@ namespace SaadiaInventorySystem.Service
 {
     public class InvoiceService
     {
-        private readonly AppDbContext db;
+        private readonly AppDbContext dao;
         public InvoiceService(AppDbContext _db)
         {
-            db = _db;
+            dao = _db;
         }
-        public bool Add(Invoice data) { return false; }
-        public bool Update(Invoice data) { return false; }
-        public bool Delete(string id) { return false; }
-        public bool AdminDelete(string id) { return false; }
-        public bool Get(string id) { return false; }
-        public Invoice GetAll() { return new Invoice(); }
+        public async Task<bool> AddAsync(Invoice data) 
+        {
+            try
+            {
+                bool isexists = dao.Invoices.Any(x => x.Id == data.Id);
+
+                if (!isexists)
+                {
+                    data.Order.DateCreated = DateTime.Now;
+                    data.Order.DateUpdated = DateTime.Now;
+                    await dao.Invoices.AddAsync(data);
+                    return await dao.SaveChangesAsync() > 0;
+                }
+                return false;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+        }
+        public async Task<bool> UpdateAsync(Invoice data) 
+        {
+            try
+            {
+                Invoice invoice = (Invoice)dao.Invoices
+                            .Where(invoice => invoice.Id.Equals(data.Id)).FirstOrDefault();
+                invoice.Order = data.Order;
+                invoice.Order.DateUpdated = DateTime.Now;
+                return await dao.SaveChangesAsync() > 0;
+
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<bool> DeleteAsync(string id)
+        {
+            try
+            {
+                Invoice invoice = (Invoice)dao.Invoices
+                            .Where(invoice => invoice.Id.Equals(id)).FirstOrDefault();
+                dao.Remove<Invoice>(invoice);
+                return await dao.SaveChangesAsync() > 0;
+
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+        }
+        public Invoice Get(string id)
+        {
+            try
+            {
+                Invoice invoice = (Invoice)dao.Invoices
+                            .Where(invoice => invoice.Id.Equals(id)).FirstOrDefault();
+                return invoice;
+
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+        }
+        public List<Invoice> GetAll() 
+        {
+            try
+            {
+                
+                return dao.Invoices.ToList();
+
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+        }
     }
 }

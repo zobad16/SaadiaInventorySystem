@@ -112,7 +112,7 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 User user = (User)_userDao.Users
-                            .Where(user => user.UserName.Equals(id));
+                            .Where(user => user.Id.Equals(id));
                 user.IsActive = 0;
                 return await _userDao.SaveChangesAsync() > 0;
                 

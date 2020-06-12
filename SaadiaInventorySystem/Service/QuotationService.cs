@@ -9,16 +9,76 @@ namespace SaadiaInventorySystem.Service
 {
     public class QuotationService
     {
-        private AppDbContext _userDao;
+        private AppDbContext dao;
         public QuotationService(AppDbContext db)
         {
-            _userDao = db;
+            dao = db;
         }
 
-        public bool Add(Quotation data) { return false; }
-        public bool Update(Quotation data) { return false; }
-        public bool Delete(Quotation data) { return false; }
-        public bool Get(Quotation data) { return false; }
-        public Quotation GetAll() { return new Quotation(); }
+        public async Task<bool> AddAsync(Quotation data) 
+        {
+            try
+            {
+                bool exists = dao.Quotations.Any(q => q.Id.Equals(data.Id));
+                if (!exists) 
+                {
+                    data.DateCreated = DateTime.Now;
+                    data.DateUpdated = DateTime.Now;
+                    await dao.Quotations.AddAsync(data);
+                    return await dao.SaveChangesAsync() > 0;
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            return false; 
+        }
+        public async Task<bool> UpdateAsync(Quotation data)
+        {
+            try 
+            {
+                Quotation quote = dao.Quotations.
+                    Where(q => q.Id.Equals(data.Id)).FirstOrDefault();
+                quote.DateUpdated = DateTime.Now;
+                quote.Orders = data.Orders;
+                quote.CustomerId = data.CustomerId;
+                quote.Customer = data.Customer;
+                
+                return await dao.SaveChangesAsync() > 0;
+            }
+            catch (Exception ex){ throw ex; }
+            
+        }
+        public async Task<bool> DeleteAsync(string id) 
+        {
+            try 
+            {
+                Quotation quote = dao.Quotations.
+                    Where(q => q.Id.Equals(id)).FirstOrDefault();
+                dao.Quotations.Remove(quote);
+                return await dao.SaveChangesAsync() > 0;
+            }
+            catch (Exception ex){ throw ex; }
+            
+        }
+        public Quotation Get(string id) 
+        {
+            try
+            {
+                var quotation = dao.Quotations.
+                    Where((quote)=> quote.Id.Equals(id)
+                    ).FirstOrDefault();
+                return quotation;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public List<Quotation> GetAll() 
+        {
+            return dao.Quotations.ToList<Quotation>(); 
+        }
     }
 }

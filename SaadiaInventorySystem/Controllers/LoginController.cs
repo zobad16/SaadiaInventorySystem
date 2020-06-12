@@ -1,19 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using SaadiaInventorySystem.Model;
 using SaadiaInventorySystem.Service;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http.Results;
 
 namespace SaadiaInventorySystem.Controllers
 {
-    
-    
+
+
     [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {

@@ -56,9 +56,8 @@ namespace SaadiaInventorySystem.Service
             catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
-
+                throw new Exception(ex.Message);
             }
-            return false; 
         }
         public async Task<bool> DeleteAsync(string id) 
         {
@@ -73,9 +72,8 @@ namespace SaadiaInventorySystem.Service
             catch (System.Exception ex)
             {
                 Console.WriteLine(ex.Message);
-
+                throw ex;
             }
-            return false;
         }
         public async Task<bool> AdminDeleteAsync(string id) 
         {

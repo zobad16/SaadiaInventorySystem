@@ -6,8 +6,8 @@ namespace SaadiaInventorySystem.Model
     public class Order
     {
         public int Id { get; set; }
-        public Customer Customer { get; set; }
+        public List<OrderItem> OrderItems { get; set; }
         public DateTime DateCreated { get; set; }
-        public ICollection<OrderItem> OrderItems { get; set; }
+        public DateTime DateUpdated { get; set; }
     }
 }
