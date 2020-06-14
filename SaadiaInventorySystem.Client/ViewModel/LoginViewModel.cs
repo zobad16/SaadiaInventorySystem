@@ -1,4 +1,5 @@
 ﻿using SaadiaInventorySystem.Client.Backend;
+using SaadiaInventorySystem.Client.Services;
 using SaadiaInventorySystem.Client.Util;
 using System;
 using System.Windows;
@@ -12,12 +13,14 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         private string _userName;
         private string _password;
-
+        private readonly LoginService service;
+       
         public LoginViewModel(MainViewModel vm)
         {
             _mainVM = vm;
             UserName = "zobad16";
             Password = "12345";
+            service = new LoginService();
         }
         #region Properties / Commands
         public RelayCommand<IClosable> LoginCommand
@@ -46,8 +49,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             try
             {
                 bool login = true;
-                RestClient client = new RestClient();
-                await client.CallLoginService(new Model.User() { UserName = this.UserName, Password = this.Password });
+                await service.CallLoginService(new Model.User() { UserName = this.UserName, Password = this.Password });
                 if (login == true)
                 {
                     if (window != null)
