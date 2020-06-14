@@ -5,6 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200614202809_Initial_Migration.cs" />
+    <Compile Remove="Migrations\20200614202809_Initial_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20200614203346_Initial_Migration.cs" />
+    <Compile Remove="Migrations\20200614203346_Initial_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20200614205054_Initial_Migration.cs" />
+    <Compile Remove="Migrations\20200614205054_Initial_Migration.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="View\" />
   </ItemGroup>
 

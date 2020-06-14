@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SaadiaInventorySystem.Model
 {
@@ -8,6 +10,7 @@ namespace SaadiaInventorySystem.Model
         {
             IsActive = 1;
         }
+        
         public int Id { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
@@ -17,6 +20,9 @@ namespace SaadiaInventorySystem.Model
         public string EmailAddress { get; set; }
 
         public int IsActive { get; set; }
+
+        [Required]
+        public int RoleFk { get; set; }
         public Role Role { get; set; }
 
         public DateTime DateCreated { get; set; }

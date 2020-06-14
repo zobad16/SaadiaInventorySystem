@@ -73,7 +73,7 @@ namespace SaadiaInventorySystem.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public ActionResult<User> GetUser(int id)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace SaadiaInventorySystem.Controllers
         }*/
 
         [HttpGet("users")]
-        public async Task<ActionResult<List<User>>> GetUsers()
+        public ActionResult<List<User>> GetUsers()
         {
             try
             {

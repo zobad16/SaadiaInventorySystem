@@ -33,6 +33,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             Name = "Inventory";
             FilePath = "";
             service = new InventoryService();
+            //GetAll();
         }
 
         public ICommand AddCommand

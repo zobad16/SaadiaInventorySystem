@@ -9,8 +9,8 @@ using SaadiaInventorySystem.Data;
 namespace SaadiaInventorySystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20200602104124_SeedData")]
-    partial class SeedData
+    [Migration("20200614212015_Initial_Migration")]
+    partial class Initial_Migration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -30,6 +30,12 @@ namespace SaadiaInventorySystem.Migrations
 
                     b.Property<string>("ComapnyName")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("EmailAddress")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
@@ -58,6 +64,8 @@ namespace SaadiaInventorySystem.Migrations
                         {
                             Id = 1,
                             ComapnyName = "QTS",
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EmailAddress = "zobad.mahmood@gmail.com",
                             FirstName = "Zobad",
                             LastName = "Mahmood"
@@ -66,6 +74,8 @@ namespace SaadiaInventorySystem.Migrations
                         {
                             Id = 2,
                             ComapnyName = "Saadia",
+                            DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EmailAddress = "hamza@gmail.com",
                             FirstName = "Hamza",
                             LastName = "Sheikh"
@@ -81,29 +91,80 @@ namespace SaadiaInventorySystem.Migrations
                     b.Property<int>("AvailableQty")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DateUpdate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("Description")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("IsActive")
+                        .HasColumnType("int");
 
                     b.Property<string>("Location")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<int?>("OldPartId")
+                    b.Property<int?>("OldPartFK")
                         .HasColumnType("int");
 
-                    b.Property<string>("PartName")
+                    b.Property<string>("PartNumber")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("Rem")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(5, 2)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("OldPartId");
+                    b.HasIndex("OldPartFK")
+                        .IsUnique();
 
                     b.ToTable("Inventories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AvailableQty = 5,
+                            DateCreated = new DateTime(2020, 6, 15, 0, 20, 15, 268, DateTimeKind.Local).AddTicks(504),
+                            DateUpdate = new DateTime(2020, 6, 15, 0, 20, 15, 268, DateTimeKind.Local).AddTicks(920),
+                            Description = "OIL FILTER",
+                            IsActive = 1,
+                            Location = "1A1",
+                            PartNumber = "15613-EV015",
+                            Rem = "GN",
+                            UnitPrice = 0.0m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AvailableQty = 3,
+                            DateCreated = new DateTime(2020, 6, 15, 0, 20, 15, 268, DateTimeKind.Local).AddTicks(1817),
+                            DateUpdate = new DateTime(2020, 6, 15, 0, 20, 15, 268, DateTimeKind.Local).AddTicks(1828),
+                            Description = "FUEL FILTER",
+                            IsActive = 1,
+                            Location = "1A1",
+                            PartNumber = "23304-EV052",
+                            Rem = "GN",
+                            UnitPrice = 0.0m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AvailableQty = 2,
+                            DateCreated = new DateTime(2020, 6, 15, 0, 20, 15, 268, DateTimeKind.Local).AddTicks(1845),
+                            DateUpdate = new DateTime(2020, 6, 15, 0, 20, 15, 268, DateTimeKind.Local).AddTicks(1847),
+                            Description = "FUEL FILTER",
+                            IsActive = 1,
+                            Location = "1A1",
+                            PartNumber = "23304-78091",
+                            Rem = "GN",
+                            UnitPrice = 0.0m
+                        });
                 });
 
             modelBuilder.Entity("SaadiaInventorySystem.Model.Invoice", b =>
@@ -112,14 +173,39 @@ namespace SaadiaInventorySystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("CustomerId")
+                        .IsUnique();
 
                     b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("SaadiaInventorySystem.Model.InvoiceItem", b =>
+                {
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InventoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Qty")
+                        .HasColumnType("int");
+
+                    b.HasKey("InvoiceId", "InventoryId");
+
+                    b.HasIndex("InventoryId");
+
+                    b.ToTable("InvoiceItems");
                 });
 
             modelBuilder.Entity("SaadiaInventorySystem.Model.OldPart", b =>
@@ -142,119 +228,7 @@ namespace SaadiaInventorySystem.Migrations
                     b.ToTable("OldParts");
                 });
 
-            modelBuilder.Entity("SaadiaInventorySystem.Model.Order", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("Orders");
-                });
-
-            modelBuilder.Entity("SaadiaInventorySystem.Model.OrderItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PartId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Qty")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("PartId");
-
-                    b.ToTable("OrderItems");
-                });
-
             modelBuilder.Entity("SaadiaInventorySystem.Model.Quotation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("Quotations");
-                });
-
-            modelBuilder.Entity("SaadiaInventorySystem.Model.QuotationItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PartId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Qty")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("QuotationId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PartId");
-
-                    b.HasIndex("QuotationId");
-
-                    b.ToTable("QuotationItems");
-                });
-
-            modelBuilder.Entity("SaadiaInventorySystem.Model.Role", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "User"
-                        });
-                });
-
-            modelBuilder.Entity("SaadiaInventorySystem.Model.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -266,16 +240,92 @@ namespace SaadiaInventorySystem.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId")
+                        .IsUnique();
+
+                    b.ToTable("Quotations");
+                });
+
+            modelBuilder.Entity("SaadiaInventorySystem.Model.QuotationItem", b =>
+                {
+                    b.Property<int>("QuotationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InventoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Qty")
+                        .HasColumnType("int");
+
+                    b.HasKey("QuotationId", "InventoryId");
+
+                    b.HasIndex("InventoryId");
+
+                    b.ToTable("QuotationItems");
+                });
+
+            modelBuilder.Entity("SaadiaInventorySystem.Model.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("RoleName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            RoleName = "Admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            RoleName = "User"
+                        });
+                });
+
+            modelBuilder.Entity("SaadiaInventorySystem.Model.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<DateTime>("DateUpdate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<string>("EmailAddress")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int>("IsActive")
                         .HasColumnType("int");
 
+                    b.Property<string>("LastName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
                     b.Property<string>("Password")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<int>("RoleId")
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("RoleFk")
                         .HasColumnType("int");
 
                     b.Property<string>("UserName")
@@ -283,9 +333,8 @@ namespace SaadiaInventorySystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("RoleId");
+                    b.HasIndex("RoleFk")
+                        .IsUnique();
 
                     b.ToTable("Users");
 
@@ -293,23 +342,25 @@ namespace SaadiaInventorySystem.Migrations
                         new
                         {
                             Id = 1,
-                            CustomerId = 1,
-                            DateCreated = new DateTime(2020, 6, 2, 13, 41, 23, 764, DateTimeKind.Local).AddTicks(5765),
-                            DateUpdate = new DateTime(2020, 6, 2, 13, 41, 23, 765, DateTimeKind.Local).AddTicks(7242),
+                            DateCreated = new DateTime(2020, 6, 15, 0, 20, 15, 266, DateTimeKind.Local).AddTicks(447),
+                            DateUpdate = new DateTime(2020, 6, 15, 0, 20, 15, 267, DateTimeKind.Local).AddTicks(291),
+                            FirstName = "Zobad",
                             IsActive = 1,
+                            LastName = "Mahmood",
                             Password = "1234",
-                            RoleId = 1,
+                            RoleFk = 1,
                             UserName = "zobad"
                         },
                         new
                         {
                             Id = 2,
-                            CustomerId = 2,
-                            DateCreated = new DateTime(2020, 6, 2, 13, 41, 23, 765, DateTimeKind.Local).AddTicks(7785),
-                            DateUpdate = new DateTime(2020, 6, 2, 13, 41, 23, 765, DateTimeKind.Local).AddTicks(7804),
+                            DateCreated = new DateTime(2020, 6, 15, 0, 20, 15, 267, DateTimeKind.Local).AddTicks(876),
+                            DateUpdate = new DateTime(2020, 6, 15, 0, 20, 15, 267, DateTimeKind.Local).AddTicks(896),
+                            FirstName = "Hamza",
                             IsActive = 1,
+                            LastName = "Sheikh",
                             Password = "1234",
-                            RoleId = 2,
+                            RoleFk = 2,
                             UserName = "hamza"
                         });
                 });
@@ -317,64 +368,59 @@ namespace SaadiaInventorySystem.Migrations
             modelBuilder.Entity("SaadiaInventorySystem.Model.Inventory", b =>
                 {
                     b.HasOne("SaadiaInventorySystem.Model.OldPart", "OldPart")
-                        .WithMany()
-                        .HasForeignKey("OldPartId");
+                        .WithOne()
+                        .HasForeignKey("SaadiaInventorySystem.Model.Inventory", "OldPartFK");
                 });
 
             modelBuilder.Entity("SaadiaInventorySystem.Model.Invoice", b =>
                 {
-                    b.HasOne("SaadiaInventorySystem.Model.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId");
-                });
-
-            modelBuilder.Entity("SaadiaInventorySystem.Model.Order", b =>
-                {
                     b.HasOne("SaadiaInventorySystem.Model.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId");
+                        .WithOne()
+                        .HasForeignKey("SaadiaInventorySystem.Model.Invoice", "CustomerId")
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("SaadiaInventorySystem.Model.OrderItem", b =>
+            modelBuilder.Entity("SaadiaInventorySystem.Model.InvoiceItem", b =>
                 {
-                    b.HasOne("SaadiaInventorySystem.Model.Order", "Order")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("OrderId");
-
-                    b.HasOne("SaadiaInventorySystem.Model.Inventory", "Part")
+                    b.HasOne("SaadiaInventorySystem.Model.Inventory", "Inventory")
                         .WithMany()
-                        .HasForeignKey("PartId");
+                        .HasForeignKey("InventoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SaadiaInventorySystem.Model.Invoice", "Invoice")
+                        .WithMany("Item")
+                        .HasForeignKey("InvoiceId")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SaadiaInventorySystem.Model.Quotation", b =>
                 {
                     b.HasOne("SaadiaInventorySystem.Model.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId");
+                        .WithOne()
+                        .HasForeignKey("SaadiaInventorySystem.Model.Quotation", "CustomerId")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SaadiaInventorySystem.Model.QuotationItem", b =>
                 {
-                    b.HasOne("SaadiaInventorySystem.Model.Inventory", "Part")
+                    b.HasOne("SaadiaInventorySystem.Model.Inventory", "Inventory")
                         .WithMany()
-                        .HasForeignKey("PartId");
+                        .HasForeignKey("InventoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SaadiaInventorySystem.Model.Quotation", "Quotation")
-                        .WithMany()
-                        .HasForeignKey("QuotationId");
+                        .WithMany("Items")
+                        .HasForeignKey("QuotationId")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SaadiaInventorySystem.Model.User", b =>
                 {
-                    b.HasOne("SaadiaInventorySystem.Model.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("SaadiaInventorySystem.Model.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
+                        .WithOne()
+                        .HasForeignKey("SaadiaInventorySystem.Model.User", "RoleFk")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

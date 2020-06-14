@@ -18,7 +18,7 @@ namespace SaadiaInventorySystem.Service
         {
             try
             {
-                bool isexists = dao.Inventories.Any(x => x.PartName == data.PartName);
+                bool isexists = dao.Inventories.Any(x => x.PartNumber == data.PartNumber);
 
                 if (!isexists)
                 {
@@ -46,8 +46,8 @@ namespace SaadiaInventorySystem.Service
                 part.Description = data.Description;
                 part.Location = data.Location;
                 part.OldPart = data.OldPart;
-                part.PartName = data.PartName;
-                part.Price = data.Price;
+                part.PartNumber = data.PartNumber;
+                part.UnitPrice = data.UnitPrice;
                 part.Rem = data.Rem;
                 part.DateUpdate = DateTime.Now;
                 return await dao.SaveChangesAsync() > 0;

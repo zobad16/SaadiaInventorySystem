@@ -41,7 +41,7 @@ namespace SaadiaInventorySystem.Service
                 Quotation quote = dao.Quotations.
                     Where(q => q.Id.Equals(data.Id)).FirstOrDefault();
                 quote.DateUpdated = DateTime.Now;
-                quote.Orders = data.Orders;
+                quote.Items = data.Items;
                 quote.CustomerId = data.CustomerId;
                 quote.Customer = data.Customer;
                 

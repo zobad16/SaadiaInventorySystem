@@ -1,4 +1,7 @@
-﻿namespace SaadiaInventorySystem.Model
+﻿using System;
+using System.Collections.Generic;
+
+namespace SaadiaInventorySystem.Model
 {
     public class Invoice
     {
@@ -6,6 +9,8 @@
 
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
-        public Order Order { get; set; }
+        public ICollection<InvoiceItem> Item { get; set; }
+        public DateTime DateCreated { get; internal set; }
+        public DateTime DateUpdated { get; internal set; }
     }
 }

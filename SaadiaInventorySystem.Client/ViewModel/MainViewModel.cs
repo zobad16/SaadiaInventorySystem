@@ -132,6 +132,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
             CurrentPageViewModel = PageViewModels
                 .FirstOrDefault(vm => vm == viewModel);
+            
         }
         private void OnLogout(IClosable window)
         {

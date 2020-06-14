@@ -9,7 +9,7 @@ namespace SaadiaInventorySystem.Model
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
 
-        public List<Order> Orders { get; set; }
+        public ICollection<QuotationItem> Items { get; set; }
 
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }

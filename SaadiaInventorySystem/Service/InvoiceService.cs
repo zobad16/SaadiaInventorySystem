@@ -22,8 +22,8 @@ namespace SaadiaInventorySystem.Service
 
                 if (!isexists)
                 {
-                    data.Order.DateCreated = DateTime.Now;
-                    data.Order.DateUpdated = DateTime.Now;
+                    data.DateCreated = DateTime.Now;
+                    data.DateUpdated = DateTime.Now;
                     await dao.Invoices.AddAsync(data);
                     return await dao.SaveChangesAsync() > 0;
                 }
@@ -42,8 +42,8 @@ namespace SaadiaInventorySystem.Service
             {
                 Invoice invoice = (Invoice)dao.Invoices
                             .Where(invoice => invoice.Id.Equals(data.Id)).FirstOrDefault();
-                invoice.Order = data.Order;
-                invoice.Order.DateUpdated = DateTime.Now;
+                invoice.Item = data.Item;
+                invoice.DateUpdated = DateTime.Now;
                 return await dao.SaveChangesAsync() > 0;
 
             }
