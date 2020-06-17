@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,6 +24,7 @@ namespace SaadiaInventorySystem
             services.AddMvc();
             services.AddTransient(typeof(LoginService));
             services.AddTransient(typeof(UserService));
+            services.AddTransient(typeof(RoleService));
             services.AddTransient(typeof(CustomerService));
             services.AddTransient(typeof(InventoryService));
             services.AddTransient(typeof(QuotationService));
@@ -58,5 +58,6 @@ namespace SaadiaInventorySystem
                 });
             });
         }
+        
     }
 }

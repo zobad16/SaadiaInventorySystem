@@ -11,7 +11,6 @@ using SaadiaInventorySystem.Service;
 namespace SaadiaInventorySystem.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     public class CustomersController : ControllerBase
     {
         private readonly CustomerService _customerService;

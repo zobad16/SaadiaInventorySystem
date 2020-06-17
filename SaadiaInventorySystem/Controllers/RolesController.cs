@@ -1,51 +1,59 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using SaadiaInventorySystem.Model;
 using SaadiaInventorySystem.Service;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace SaadiaInventorySystem.Controllers
 {
     [Route("api/[controller]")]
-    public class InventoryController : ControllerBase
+    public class RolesController : ControllerBase
     {
-        private readonly InventoryService _inventoryService;
-        public InventoryController(InventoryService service)
+        private readonly RoleService _roleService;
+        public RolesController(RoleService service)
         {
-            _inventoryService = service;
+            _roleService = service;
         }
-        [HttpGet("inventory")]
-        public ActionResult<List<Inventory>> GetAll()
+
+        // GET: api/<RolesController>/roles
+        [HttpGet("roles")]
+        public ActionResult<List<Role>> Get()
         {
             try
             {
-                var invoices = _inventoryService.GetAll();
-                if (invoices != null)
+                var roles = _roleService.GetAll();
+                if (roles != null)
                 {
-                    return Ok(invoices);
+                    return Ok(roles);
                 }
                 else
-                    return Conflict("No Invoices Found");
+                    return Conflict("No Roles Found");
             }
             catch (Exception ex)
             {
                 //Log error
                 return BadRequest(ex);
             }
+            
         }
+
+        // GET api/<RolesController>/5
         [HttpGet("{id}")]
-        public ActionResult<Inventory> Get(string id)
+        public ActionResult<Role> Get(string id)
         {
             try
             {
-                Inventory inventory = _inventoryService.Get(id);
-                if (inventory != null)
+                var role = _roleService.Get(id);
+                if (role != null)
                 {
-                    return (Ok(inventory));
+                    return (Ok(role));
                 }
                 else
-                    return Conflict("Inventory not Found");
+                    return Conflict("Role not Found");
 
             }
             catch (Exception ex)
@@ -54,19 +62,21 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest(ex);
             }
         }
+
+        // POST api/<RolesController>
         [HttpPost("add")]
-        public async Task<IActionResult> AddInventoryAsync([FromBody] Inventory inventory)
+        public async Task<IActionResult> PostAdd([FromBody] Role value)
         {
             try
             {
-                bool success = await _inventoryService.AddAsync(inventory);
+                bool success = await _roleService.AddAsync(value);
                 if (success)
                 {
-                    return Ok("Inventory part created successfully");
+                    return Ok("Role created successfully");
                 }
                 else
                 {
-                    return Conflict("Duplicate Inventory part");
+                    return Conflict("Duplicate Role");
                 }
             }
             catch (Exception ex)
@@ -76,11 +86,11 @@ namespace SaadiaInventorySystem.Controllers
             }
         }
         [HttpPost("update")]
-        public async Task<IActionResult> UpdateInventoryAsync([FromBody] Inventory inventory)
+        public async Task<IActionResult> PostUpdate([FromBody] Role value)
         {
             try
             {
-                bool success = await _inventoryService.UpdateAsync(inventory);
+                bool success = await _roleService.UpdateAsync(value);
                 if (success)
                 {
                     return Ok("Inventory part updated successfully");
@@ -97,18 +107,18 @@ namespace SaadiaInventorySystem.Controllers
             }
         }
         [HttpPost("delete")]
-        public async Task<IActionResult> DeleteInvoiceAsync([FromBody] string id)
+        public async Task<IActionResult> PostDelete([FromBody] string id)
         {
             try
             {
-                bool success = await _inventoryService.DeleteAsync(id);
+                bool success = await _roleService.DeleteAsync(id);
                 if (success)
                 {
-                    return Ok("Inventory deleted successfully");
+                    return Ok("Role deleted successfully");
                 }
                 else
                 {
-                    return Conflict("Inventory part not found");
+                    return Conflict("Role not found");
                 }
             }
             catch (Exception ex)
@@ -117,5 +127,7 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest();
             }
         }
+
+        
     }
 }

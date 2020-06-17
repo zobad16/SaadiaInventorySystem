@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace SaadiaInventorySystem.Service
 {
@@ -19,20 +20,32 @@ namespace SaadiaInventorySystem.Service
         {
             try
             {
-                bool isexists = _userDao.Users.Any(x => x.UserName == data.UserName);
-
-                if (!isexists) 
+                var user = new User()
                 {
-                    await _userDao.Users.AddAsync(data);
-                   return await _userDao.SaveChangesAsync() > 0;
-                }
-                return false;               
+                    UserName = data.UserName,
+                    FirstName =data.FirstName, 
+                    LastName=data.LastName, 
+                    Password = data.Password, 
+                    RoleFk = data.RoleFk,
+                    DateCreated = DateTime.Now,
+                    DateUpdate = DateTime.Now,
+                    IsActive = 1,
+                    EmailAddress =data.EmailAddress,
+                    PhoneNumber =data.PhoneNumber,
+                    //Role = data.Role
+                    
+                };
+                    _userDao.Users.Add(user);
+                    var res = await _userDao.SaveChangesAsync();
+                    return res > 0;
                 
+                
+                                
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw ex;
+                return false;
             }
                 
         }
@@ -96,7 +109,25 @@ namespace SaadiaInventorySystem.Service
         {
             try
             {
-                List<User> user = _userDao.Users.ToList();
+                List<User> user = _userDao.Users.AsNoTracking()
+                    .Include(r => r.Role)                
+                    .Where(i=> i.IsActive == 1).ToList();
+                    
+                return user;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+        }
+        public List<User> AdminGetUsers()
+        {
+            try
+            {
+                List<User> user = _userDao.Users
+                    .Include(r => r.Role)                
+                    .ToList();
                     
                 return user;
             }
@@ -146,7 +177,7 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 User user = _userDao.Users
-                            .Where(_user => _user.UserName == username && _user.Password == password).FirstOrDefault();
+                            .Where(_user => _user.UserName == username && _user.Password == password && _user.IsActive ==1).FirstOrDefault();
                 
                 if(user!= null)
                 {

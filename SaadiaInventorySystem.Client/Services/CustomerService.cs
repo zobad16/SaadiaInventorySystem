@@ -18,7 +18,7 @@ namespace SaadiaInventorySystem.Client.Services
             {
                 var _customer = JsonConvert.SerializeObject(customer);
 
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/customer/add", customer);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/customers/add", customer);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -33,7 +33,7 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.GetAsync($"api/customer/{id}");
+                HttpResponseMessage response = await client.GetAsync($"api/customers/{id}");
                 Customer data;
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -49,7 +49,7 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.GetAsync("api/customer/customers");
+                HttpResponseMessage response = await client.GetAsync("api/customers/customers");
                 List<Customer> data = new List<Customer>();
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -67,7 +67,7 @@ namespace SaadiaInventorySystem.Client.Services
             {
                 var _customer = JsonConvert.SerializeObject(customer);
 
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/customer/update", _customer);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/customers/update", _customer);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -82,7 +82,7 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/customer/delete", id);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/customers/delete", id);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -97,7 +97,7 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/customer/admindelete", id);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/customers/admindelete", id);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)

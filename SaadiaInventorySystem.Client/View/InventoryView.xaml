@@ -18,7 +18,7 @@
                     Margin="0,0,5,0"/>
                 <local:ButtonControlsView/>
             </StackPanel>
-            <DataGrid ItemsSource="{Binding ExchangesList}" SelectedItem="{Binding SelectedExchange}"    
+            <DataGrid ItemsSource="{Binding Inventories}" SelectedItem="{Binding SelectedInventory}"    
                   AutoGenerateColumns="False" 
                   Grid.Row="0"  IsReadOnly="True"
                   ColumnWidth="*"
@@ -26,7 +26,7 @@
                   >
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID"
-                                    Binding="{Binding ID}" />
+                                    Binding="{Binding Id}" />
                     <DataGridTextColumn Header="Part Number"
                                     Binding="{Binding PartNumber}" />
                     <DataGridTextColumn Header="Description"
@@ -34,13 +34,13 @@
                     <DataGridTextColumn Header="Location"
                                     Binding="{Binding Location}" />
                     <DataGridTextColumn Header="Unit Price"
-                                    Binding="{Binding UnitPrice}" />
+                                    Binding="{Binding Price}" />
                     <DataGridTextColumn Header="Unit Quantity"
-                                    Binding="{Binding UnitQuantitiy}" />
+                                    Binding="{Binding AvailableQty}" />
                     <DataGridTextColumn Header="REM"
                                     Binding="{Binding Rem}" />
                     <DataGridTextColumn Header="Old Part Number"
-                                    Binding="{Binding OldPartNumber}" />
+                                    Binding="{Binding OldPart.PartNumber}" />
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>

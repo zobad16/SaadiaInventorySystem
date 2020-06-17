@@ -11,6 +11,8 @@
     <Compile Remove="Migrations\20200614203346_Initial_Migration.Designer.cs" />
     <Compile Remove="Migrations\20200614205054_Initial_Migration.cs" />
     <Compile Remove="Migrations\20200614205054_Initial_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20200617081701_rolechanges.cs" />
+    <Compile Remove="Migrations\20200617081701_rolechanges.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +30,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.5" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.1.1" />
   </ItemGroup>

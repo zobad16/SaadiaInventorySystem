@@ -14,8 +14,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private RelayCommand<IClosable> _logoutCommand;
         private ICommand _exitCommand;
         
-        private BaseViewModel _currentPageViewModel;
-        private List<BaseViewModel> _pageViewModels;
+        private IViewModel _currentPageViewModel;
+        private List<IViewModel> _pageViewModels;
         
         private Visibility _windowActive;
         private string _filePath;
@@ -28,6 +28,9 @@ namespace SaadiaInventorySystem.Client.ViewModel
             PageViewModels.Add(new QuotationViewModel());
             PageViewModels.Add(new InvoiceViewModel());
             PageViewModels.Add(new InventoryViewModel());           
+            PageViewModels.Add(new CustomerViewModel());           
+            PageViewModels.Add(new UserViewModel());           
+            PageViewModels.Add(new RoleViewModel());           
             // Set starting page
             CurrentPageViewModel = PageViewModels[0];
             _windowActive = Visibility.Collapsed;
@@ -39,6 +42,9 @@ namespace SaadiaInventorySystem.Client.ViewModel
             PageViewModels.Add(new QuotationViewModel());
             PageViewModels.Add(new InvoiceViewModel());
             PageViewModels.Add(new InventoryViewModel());
+            PageViewModels.Add(new CustomerViewModel());
+            PageViewModels.Add(new UserViewModel());
+            PageViewModels.Add(new RoleViewModel());
             Active = _windowActive;
             // Set starting page
             CurrentPageViewModel = PageViewModels[0];
@@ -53,8 +59,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 if (_changePageCommand == null)
                 {
                     _changePageCommand = new RelayCommand(
-                        p => ChangeViewModel((BaseViewModel)p),
-                        p => p is BaseViewModel);
+                        p => ChangeViewModel((IViewModel)p),
+                        p => p is IViewModel);
                 }
 
                 return _changePageCommand;
@@ -87,20 +93,20 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
         }
 
-        public List<BaseViewModel> PageViewModels
+        public List<IViewModel> PageViewModels
         {
             get
             {
                 if (_pageViewModels == null)
                 {
-                    _pageViewModels = new List<BaseViewModel>();
+                    _pageViewModels = new List<IViewModel>();
                 }
 
                 return _pageViewModels;
             }
         }
 
-        public BaseViewModel CurrentPageViewModel
+        public IViewModel CurrentPageViewModel
         {
             get
             {
@@ -125,14 +131,15 @@ namespace SaadiaInventorySystem.Client.ViewModel
         #endregion
         #region Methods
 
-        private void ChangeViewModel(BaseViewModel viewModel)
+        private void ChangeViewModel(IViewModel viewModel)
         {
             if (!PageViewModels.Contains(viewModel))
                 PageViewModels.Add(viewModel);
 
             CurrentPageViewModel = PageViewModels
                 .FirstOrDefault(vm => vm == viewModel);
-            
+
+            CurrentPageViewModel.GetAll();           
         }
         private void OnLogout(IClosable window)
         {

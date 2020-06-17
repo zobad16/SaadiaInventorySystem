@@ -66,7 +66,30 @@ namespace SaadiaInventorySystem.Service
                 throw ex;
             }
         }
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(string id) 
+        {
+            try
+            {
+                bool saved = false;
+                Customer _customer = (Customer)_dao.Customers
+                            .Where(customer => customer.Id.Equals(id)).FirstOrDefault();
+                if (_customer != null)
+                {
+                    _customer.IsActive = 0;
+                    _customer.DateUpdated = DateTime.Now;
+
+                    saved = await _dao.SaveChangesAsync() > 0;
+                }
+                return saved;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+        }
+        public async Task<bool> AdminDeleteAsync(string id)
         {
             try
             {
@@ -101,7 +124,7 @@ namespace SaadiaInventorySystem.Service
         {
             try
             {
-                List<Customer> _customer = _dao.Customers.ToList();
+                List<Customer> _customer = _dao.Customers.Where(i => i.IsActive == 1).ToList();
 
                 return _customer;
             }

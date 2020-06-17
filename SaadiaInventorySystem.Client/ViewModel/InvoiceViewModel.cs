@@ -10,7 +10,7 @@ using System.Windows;
 
 namespace SaadiaInventorySystem.Client.ViewModel
 {
-    public class InvoiceViewModel : BaseViewModel
+    public class InvoiceViewModel : BaseViewModel,IViewModel
     {
         private string _name;
         private ObservableCollection<Invoice> _invoices;
@@ -33,35 +33,24 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         #endregion
         #region Business Logic
-        private async Task<bool> Create()
+        public async Task GetAll()
         {
             try
             {
-                return await service.CallAddService(NewInvoice);
+                Invoices= new ObservableCollection<Invoice>( await service.CallGetAllService());
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error inserting invoice");
+                MessageBox.Show($"Error fetching invoices{ex.Message}");
                 throw ex;
             }
         }
-        private async Task<List<Invoice>> GetAll()
+
+        public async Task Get()
         {
             try
             {
-                return await service.CallGetAllService();                
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error fetching invoices");
-                throw ex;
-            }
-        }
-        private async Task<Invoice> Get()
-        {
-            try
-            {
-                return await service.CallGetService(SelectedInvoice.Id.ToString());
+                SelectedInvoice =  await service.CallGetService(SelectedInvoice.Id.ToString());
             }
             catch (Exception ex)
             {
@@ -69,7 +58,21 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 throw ex;
             }
         }
-        private async Task<bool> Update()
+
+        public async Task<bool> AddAsync()
+        {
+            try
+            {
+                return await service.CallAddService(NewInvoice);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error inserting invoice{ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateAsync()
         {
             try
             {
@@ -86,11 +89,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error fetching invoice");
-                throw ex;
+                MessageBox.Show($"Error fetching invoice{ex.Message}");
+                return false;
             }
         }
-        private async Task<bool> Delete()
+
+        public async Task<bool> DeleteAsync()
         {
             try
             {
@@ -99,7 +103,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                     MessageBox.Show("Invoice Deleted Successfully");
                     return true;
                 }
-                else 
+                else
                 {
                     MessageBox.Show("Error Deleting Invoice");
                     return false;
@@ -107,8 +111,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error fetching invoice");
-                throw ex;
+                MessageBox.Show($"Error fetching invoice{ex.Message}");
+                return false;
             }
         }
 

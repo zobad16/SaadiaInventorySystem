@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace SaadiaInventorySystem.Client.ViewModel
 {
-    public class QuotationViewModel : BaseViewModel
+    public class QuotationViewModel : BaseViewModel, IViewModel
     {
         private string _name;
         private readonly QuotationService service;
@@ -29,54 +29,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
             service = new QuotationService();
         }
         #region Business Logic
-
-        private async Task<bool> Create()
-        {
-            try
-            {
-                if (await service.CallAddService(NewQuotation))
-                {
-                    MessageBox.Show("New Quotation Added Successfully");
-                    return true;
-                }
-                else
-                {
-                    MessageBox.Show("Error adding new Quotation");
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An unexpected error occured: {ex.Message}");
-                throw ex;
-            }
-        }
-
-        private async void GetAll()
-        {
-            try
-            {
-                Quotations = new ObservableCollection<Quotation>(await service.CallGetAllService());
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error fetching Quotation");
-                throw ex;
-            }
-        }
-        private async void Get()
-        {
-            try
-            {
-                await service.CallGetService(SelectedQuotation.Id.ToString());
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An unexpected error occured: {ex.Message}");
-                throw ex;
-            }
-        }
-        private async Task<bool> Update()
+        
+        public async Task<bool> UpdateAsync()
         {
             try
             {
@@ -94,10 +48,10 @@ namespace SaadiaInventorySystem.Client.ViewModel
             catch (Exception ex)
             {
                 MessageBox.Show($"An unexpected error occured: {ex.Message}");
-                throw ex;
+                return false;
             }
         }
-        private async Task<bool> Delete()
+        public async Task<bool> DeleteAsync()
         {
             try
             {
@@ -118,6 +72,54 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 throw ex;
             }
         }
+
+        public async Task GetAll()
+        {
+            try
+            {
+                Quotations = new ObservableCollection<Quotation>(await service.CallGetAllService());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error fetching Quotation: {ex.Message}");
+                
+            }
+        }
+
+        public async Task Get()
+        {
+            try
+            {
+                await service.CallGetService(SelectedQuotation.Id.ToString());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An unexpected error occured: {ex.Message}");
+            }
+        }
+
+        public async Task<bool> AddAsync()
+        {
+            try
+            {
+                if (await service.CallAddService(NewQuotation))
+                {
+                    MessageBox.Show("New Quotation Added Successfully");
+                    return true;
+                }
+                else
+                {
+                    MessageBox.Show("Error adding new Quotation");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An unexpected error occured: {ex.Message}");
+                return false;
+            }
+        }
+
         #endregion
     }
 }

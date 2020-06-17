@@ -19,12 +19,12 @@
                         Width="60"
                         Height="20"
                         Margin="0,0,5,0"
-                        Command="{Binding AddCommand}"/>
+                        Command="{Binding AddWindowCommand}"/>
             <Button Content="Edit" 
                         Width="60"
                         Height="20"
                         Margin="0,0,5,0"
-                        Command="{Binding Edit}"/>
+                        Command="{Binding EditWindowCommand}"/>
             <Button Content="View" 
                         Width="60"
                         Height="20"

@@ -1,8 +1,9 @@
 ﻿using SaadiaInventorySystem.Client.Util;
+using System.Threading.Tasks;
 
 namespace SaadiaInventorySystem.Client.ViewModel
 {
-    public class HomeViewModel : BaseViewModel
+    public class HomeViewModel : BaseViewModel, IViewModel
     {
         private string _name;
 
@@ -10,6 +11,31 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public HomeViewModel()
         {
             Name = "Home";
+        }
+
+        public Task GetAll()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task Get()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<bool> AddAsync()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<bool> UpdateAsync()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<bool> DeleteAsync()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -12,6 +12,6 @@ namespace SaadiaInventorySystem.Client.Util
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(caller));
             }
-        }
+        }       
     }
 }

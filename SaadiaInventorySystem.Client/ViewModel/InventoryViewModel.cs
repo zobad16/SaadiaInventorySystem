@@ -11,7 +11,7 @@ using System.Windows.Input;
 
 namespace SaadiaInventorySystem.Client.ViewModel
 {
-    public class InventoryViewModel : BaseViewModel
+    public class InventoryViewModel : BaseViewModel, IViewModel
     {
         private ICommand _addCommand;
         private string _name;
@@ -65,7 +65,33 @@ namespace SaadiaInventorySystem.Client.ViewModel
         }
         #region Business Logic
 
-        private async Task<bool> Create()
+        public async Task GetAll()
+        {
+            try
+            {
+                Inventories = new ObservableCollection<Inventory>(await service.CallGetAllService());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error fetching Inventories. An unexpected error occured: {ex.Message}");
+                //throw ex;
+            }
+        }
+
+        public async Task Get()
+        {
+            try
+            {
+                await service.CallGetService(SelectedInventory.Id.ToString());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An unexpected error occured: {ex.Message}");
+                //throw ex;
+            }
+        }
+
+        public async Task<bool> AddAsync()
         {
             try
             {
@@ -83,35 +109,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
             catch (Exception ex)
             {
                 MessageBox.Show($"An unexpected error occured: {ex.Message}");
-                throw ex;
+                return false;
             }
         }
 
-        private async void GetAll()
-        {
-            try
-            {
-                Inventories = new ObservableCollection<Inventory>(await service.CallGetAllService());
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error fetching Inventories");
-                throw ex;
-            }
-        }
-        private async void Get()
-        {
-            try
-            {
-                await service.CallGetService(SelectedInventory.Id.ToString());
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An unexpected error occured: {ex.Message}");
-                throw ex;
-            }
-        }
-        private async Task<bool> Update()
+        public async Task<bool> UpdateAsync()
         {
             try
             {
@@ -129,10 +131,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
             catch (Exception ex)
             {
                 MessageBox.Show($"An unexpected error occured: {ex.Message}");
-                throw ex;
-            }
+                return false;
+            };
         }
-        private async Task<bool> Delete()
+
+        public async Task<bool> DeleteAsync()
         {
             try
             {
@@ -150,9 +153,10 @@ namespace SaadiaInventorySystem.Client.ViewModel
             catch (Exception ex)
             {
                 MessageBox.Show($"An unexpected error occured: {ex.Message}");
-                throw ex;
+                return false;
             }
         }
+
         #endregion
     }
 }

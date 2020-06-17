@@ -1,4 +1,6 @@
-﻿using SaadiaInventorySystem.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using SaadiaInventorySystem.Data;
 using SaadiaInventorySystem.Model;
 using System;
 using System.Collections.Generic;
@@ -19,11 +21,14 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 bool isexists = dao.Inventories.Any(x => x.PartNumber == data.PartNumber);
-
+                bool oldpartExists = dao.OldParts.Any(x => x.Id == data.OldPartFK);
                 if (!isexists)
                 {
                     data.DateCreated = DateTime.Now;
                     data.DateUpdate = DateTime.Now;
+                    
+                    if (!oldpartExists) { await dao.OldParts.AddAsync(data.OldPart); }
+                    
                     await dao.Inventories.AddAsync(data);
                     return await dao.SaveChangesAsync() > 0;
                 }
@@ -45,6 +50,7 @@ namespace SaadiaInventorySystem.Service
                 part.AvailableQty = data.AvailableQty;
                 part.Description = data.Description;
                 part.Location = data.Location;
+                part.OldPartFK = data.OldPartFK;
                 part.OldPart = data.OldPart;
                 part.PartNumber = data.PartNumber;
                 part.UnitPrice = data.UnitPrice;
@@ -95,13 +101,28 @@ namespace SaadiaInventorySystem.Service
         }
         public Inventory Get(string id) {
             return  (Inventory)dao.Inventories
+                            .Include(i => i.OldPart)
                             .Where(part => part.Id.Equals(id)).FirstOrDefault();
         }
         public List<Inventory> GetAll() 
         {
-            
-            var inventories = dao.Inventories.ToList<Inventory>();
-            return inventories;
+
+            /*var query = from photo in context.Set<PersonPhoto>()
+                        join person in context.Set<Person>()
+                            on photo.PersonPhotoId equals person.PhotoId
+                        select new { person, photo };*/
+            var inventory = dao.Inventories.Include(inventory => inventory.OldPart).Where(i=> i.IsActive == 1).ToList();
+            return inventory;
+        }
+        public List<Inventory> AdminGetAll() 
+        {
+
+            /*var query = from photo in context.Set<PersonPhoto>()
+                        join person in context.Set<Person>()
+                            on photo.PersonPhotoId equals person.PhotoId
+                        select new { person, photo };*/
+            var inventory = dao.Inventories.Include(inventory => inventory.OldPart).ToList();
+            return inventory;
         }
     }
 }

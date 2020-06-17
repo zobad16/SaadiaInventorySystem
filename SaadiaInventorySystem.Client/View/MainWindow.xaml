@@ -26,6 +26,15 @@
         <DataTemplate DataType="{x:Type vm:InvoiceViewModel}">
             <view:InvoiceView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CustomerViewModel}">
+            <view:CustomerView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:UserViewModel}">
+            <view:UserView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:RoleViewModel}">
+            <view:RoleView />
+        </DataTemplate>
         
         
     </Window.Resources>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SaadiaInventorySystem.Model;
 using System;
 using System.Collections.Generic;
@@ -18,9 +19,18 @@ namespace SaadiaInventorySystem.Data
         public DbSet<Quotation> Quotations { get; set; }
         public DbSet<QuotationItem> QuotationItems { get; set; }
         
+        public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder
+                .AddFilter((category, level) =>
+                    category == DbLoggerCategory.Database.Command.Name
+                    && level == LogLevel.Information)
+                .AddConsole();
+        });
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.UseLoggerFactory(MyLoggerFactory);
             optionsBuilder.UseMySql("server=localhost;database=saadiatrading;user=root;password=Gtlfx125;TreatTinyAsBoolean=true");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder) 
@@ -87,15 +97,15 @@ namespace SaadiaInventorySystem.Data
             modelBuilder.Entity<Invoice>()
                 .HasMany<InvoiceItem>(qt => qt.Item)
                 .WithOne(c => c.Invoice)
-                .HasForeignKey(fk=> fk.InvoiceId);            
-          
+                .HasForeignKey(fk=> fk.InvoiceId);
 
 
             modelBuilder.Entity<User>()
-                .HasOne<Role>(r => r.Role)
-                .WithOne()
-                .HasForeignKey<User>(r => r.RoleFk)
-                ;//.OnDelete(DeleteBehavior.;
+                .HasOne<Role>(a => a.Role)
+                .WithMany()
+                .HasForeignKey(b => b.RoleFk)
+                ;
+                //.OnDelete(DeleteBehavior.;
             
             SeedDataRole(modelBuilder);
             SeedDataCustomer(modelBuilder);
@@ -103,119 +113,14 @@ namespace SaadiaInventorySystem.Data
             SeedDataInventory(modelBuilder);
             //Seed Master data.
 
-            //Role Data
-            /*modelBuilder.Entity<Role>().HasData(new List<Role>
-            {
-                new Role() {RoleName = "Admin", Id = 1},
-                new Role() {RoleName = "User", Id = 2}
-            });*/
-            /* modelBuilder.Entity<Customer>().HasData(new List<Customer>
-            {
-                new Customer()
-                {
-                    Id = 1,
-                    FirstName = "Zobad",
-                    LastName = "Mahmood",
-                    EmailAddress = "zobad.mahmood@gmail.com",
-                    ComapnyName = "QTS"
-                },
-                new Customer()
-                {
-                    Id= 2 ,
-                    FirstName = "Hamza",
-                    LastName="Sheikh",
-                    EmailAddress="hamza@gmail.com",
-                    ComapnyName="Saadia"
-                }
-
-            });
-           */
-
-            /*modelBuilder.Entity<User>().HasData(new List<User>
-            {
-                new User()
-                {
-                    Id = 1,
-                    UserName = "zobad" ,
-                    Password = "1234",
-                    FirstName = "Zobad",
-                    LastName = "Mahmood",
-                    DateCreated = DateTime.Now,
-                    IsActive = 1,
-                    RoleFk = 1,
-                    //Role = new Role(){Id = 1, RoleName ="Admin" },
-                    DateUpdate = DateTime.Now
-                },
-                new User()
-                {
-                    Id = 2,
-                    UserName = "hamza" ,
-                    Password = "1234",
-                    FirstName = "Hamza",
-                    LastName = "Sheikh",
-                    DateCreated = DateTime.Now,
-                    IsActive = 1,
-                    RoleFk = 2,
-                    DateUpdate = DateTime.Now
-                }
-                
-            });*/
-
-            /*modelBuilder.Entity<Inventory>().HasData(new List<Inventory>
-            {
-                new Inventory()
-                {
-                    Id = 1,
-                    PartNumber = "15613-EV015",
-                    Description = "OIL FILTER",
-                    Location = "1A1",
-                    UnitPrice = 0.0M,
-                    AvailableQty = 5,
-                    Rem = "GN" ,
-                    OldPart = null,
-                    IsActive = 1,
-                    DateCreated = DateTime.Now,
-                    DateUpdate = DateTime.Now
-                },
-                new Inventory()
-                {
-                    Id = 2,
-                    PartNumber = "23304-EV052",
-                    Description = "FUEL FILTER",
-                    Location = "1A1",
-                    UnitPrice = 0.0M,
-                    AvailableQty = 3,
-                    Rem = "GN" ,
-                    OldPartFK = null,
-                    IsActive = 1,
-                    DateCreated = DateTime.Now,
-                    DateUpdate = DateTime.Now
-                },
-                new Inventory()
-                {
-                    Id = 3,
-                    PartNumber = "23304-78091",
-                    Description = "FUEL FILTER",
-                    Location = "1A1",
-                    UnitPrice = 0.0M,
-                    AvailableQty = 2,
-                    Rem = "GN" ,
-                    OldPartFK = null,
-                    IsActive = 1,
-                    DateCreated = DateTime.Now,
-                    DateUpdate = DateTime.Now
-                },
-
-            });*/
-
         }
 
         public void SeedDataRole(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Role>().HasData(new List<Role>
             {
-                new Role() {RoleName = "Admin", Id = 1},
-                new Role() {RoleName = "User", Id = 2}
+                new Role() {RoleName = "Admin", Id = 1, IsActive =1 },
+                new Role() {RoleName = "User", Id = 2,IsActive =1}
             });
         }
         public void SeedDataUser(ModelBuilder modelBuilder)
@@ -260,7 +165,8 @@ namespace SaadiaInventorySystem.Data
                     FirstName = "Zobad",
                     LastName = "Mahmood",
                     EmailAddress = "zobad.mahmood@gmail.com",
-                    ComapnyName = "QTS"
+                    ComapnyName = "QTS",
+                    IsActive = 1
                 },
                 new Customer()
                 {
@@ -268,13 +174,19 @@ namespace SaadiaInventorySystem.Data
                     FirstName = "Hamza",
                     LastName="Sheikh",
                     EmailAddress="hamza@gmail.com",
-                    ComapnyName="Saadia"
+                    ComapnyName="Saadia",
+                    IsActive = 1
                 }
 
             });
         }
         public void SeedDataInventory(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<OldPart>().HasData(new List<OldPart>
+            {
+                new OldPart{ Id =1, PartNumber="9828-52115"}
+
+            });
             modelBuilder.Entity<Inventory>().HasData(new List<Inventory>
             {
                 new Inventory()
@@ -315,6 +227,118 @@ namespace SaadiaInventorySystem.Data
                     AvailableQty = 2,
                     Rem = "GN" ,
                     OldPartFK = null,
+                    IsActive = 1,
+                    DateCreated = DateTime.Now,
+                    DateUpdate = DateTime.Now
+                },
+                new Inventory()
+                {
+                    Id = 4,
+                    PartNumber = "S1560-71480",
+                    Description = "OIL FILTER",
+                    Location = "1A1",
+                    UnitPrice = 0.0M,
+                    AvailableQty = 1,
+                    Rem = "GN" ,
+                    OldPartFK = null,
+                    IsActive = 1,
+                    DateCreated = DateTime.Now,
+                    DateUpdate = DateTime.Now
+                },
+                new Inventory()
+                {
+                    Id = 5,
+                    PartNumber = "23304-78110",
+                    Description = "FUEL FILTER",
+                    Location = "1A1",
+                    UnitPrice = 0.0M,
+                    AvailableQty = 2,
+                    Rem = "GN" ,
+                    OldPartFK = null,
+                    IsActive = 1,
+                    DateCreated = DateTime.Now,
+                    DateUpdate = DateTime.Now
+                },
+                new Inventory()
+                {
+                    Id = 6,
+                    PartNumber = "15607-2250",
+                    Description = "OIL FILTER",
+                    Location = "1A1",
+                    UnitPrice = 0.0M,
+                    AvailableQty = 11,
+                    Rem = "NG AZUMI" ,
+                    OldPartFK = null,
+                    IsActive = 1,
+                    DateCreated = DateTime.Now,
+                    DateUpdate = DateTime.Now
+                },
+                new Inventory()
+                {
+                    Id = 7,
+                    PartNumber = "15607-2210",
+                    Description = "OIL FILTER",
+                    Location = "1A1",
+                    UnitPrice = 0.0M,
+                    AvailableQty = 6,
+                    Rem = "NG MARINA" ,
+                    OldPartFK = null,
+                    IsActive = 1,
+                    DateCreated = DateTime.Now,
+                    DateUpdate = DateTime.Now
+                },
+                new Inventory()
+                {
+                    Id = 8,
+                    PartNumber = "SZ319-40002",
+                    Description = "OIL SEAL",
+                    Location = "1B1",
+                    UnitPrice = 0.0M,
+                    AvailableQty = 10,
+                    Rem = "GN HINO" ,
+                    OldPartFK = null,
+                    IsActive = 1,
+                    DateCreated = DateTime.Now,
+                    DateUpdate = DateTime.Now
+                },
+                new Inventory()
+                {
+                    Id = 9,
+                    PartNumber = "SZ311-48002",
+                    Description = "OIL SEAL",
+                    Location = "1B1",
+                    UnitPrice = 0.0M,
+                    AvailableQty = 4,
+                    Rem = "GN" ,
+                    OldPartFK = null,
+                    IsActive = 1,
+                    DateCreated = DateTime.Now,
+                    DateUpdate = DateTime.Now
+                },
+                new Inventory()
+                {
+                    Id = 10,
+                    PartNumber = "SZ311-3700",
+                    Description = "OIL SEAL",
+                    Location = "1B1",
+                    UnitPrice = 0.0M,
+                    AvailableQty = 2,
+                    Rem = "GN" ,
+                    OldPartFK = null,
+                    IsActive = 1,
+                    DateCreated = DateTime.Now,
+                    DateUpdate = DateTime.Now
+                },
+                new Inventory()
+                {
+                    Id = 11,
+                    PartNumber = "SZ311-52004",
+                    Description = "OIL SEAL",
+                    Location = "1B1",
+                    UnitPrice = 0.0M,
+                    AvailableQty = 2,
+                    Rem = "GN" ,
+                    OldPartFK = 1,
                     IsActive = 1,
                     DateCreated = DateTime.Now,
                     DateUpdate = DateTime.Now

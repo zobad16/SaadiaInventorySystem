@@ -1,25 +1,21 @@
 ﻿using Newtonsoft.Json;
 using SaadiaInventorySystem.Client.Backend;
 using SaadiaInventorySystem.Client.Model;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SaadiaInventorySystem.Client.Services
 {
-    public class UserService:RestClient
+    public class RoleService :RestClient
     {
-        
-        public async Task<bool> CallAddService(User user)
+        public async Task<bool> CallAddService(Role role)
         {
             using (var client = GetClient())
             {
-                //var _user = JsonConvert.SerializeObject(user);
+                var _role = JsonConvert.SerializeObject(role);
 
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/user/signup", user);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/roles/create", _role);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -30,46 +26,46 @@ namespace SaadiaInventorySystem.Client.Services
 
             }
         }
-        
-        public async Task<User> CallGetService(string id)
+
+        public async Task<Role> CallGetService(string id)
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.GetAsync($"api/user/{id}");
-                User data;
+                HttpResponseMessage response = await client.GetAsync($"api/roles/{id}");
+                Role data;
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
                 {
-                    Task<User> responseData = result.ReadAsAsync<User>();
+                    Task<Role> responseData = result.ReadAsAsync<Role>();
                     data = responseData.Result;
                     return data;
                 }
                 return null;
             }
         }
-        public async Task<List<User>> CallGetAllService()
+        public async Task<List<Role>> CallGetAllService()
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.GetAsync("api/user/users");
-                List<User> data = new List<User>();
+                HttpResponseMessage response = await client.GetAsync("api/roles/roles");
+                List<Role> data = new List<Role>();
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
                 {
-                    Task<List<User>> responseData = result.ReadAsAsync<List<User>>();
+                    Task<List<Role>> responseData = result.ReadAsAsync<List<Role>>();
                     data = responseData.Result;
                     return data;
                 }
                 return data;
             }
         }
-        public async Task<bool> CallUpdateService(User user)
+        public async Task<bool> CallUpdateService(Role role)
         {
             using (var client = GetClient())
             {
-                var _user = JsonConvert.SerializeObject(user);
+                var _user = JsonConvert.SerializeObject(role);
 
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/user/update", user);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/roles/update", role);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -84,7 +80,7 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/user/delete", id);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/roles/delete", id);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -99,7 +95,7 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/user/admindelete", id);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/roles/admindelete", id);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -110,7 +106,6 @@ namespace SaadiaInventorySystem.Client.Services
 
             }
         }
-
 
     }
 }

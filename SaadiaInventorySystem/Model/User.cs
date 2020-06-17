@@ -21,8 +21,9 @@ namespace SaadiaInventorySystem.Model
 
         public int IsActive { get; set; }
 
-        [Required]
-        public int RoleFk { get; set; }
+        [ForeignKey("RoleFk")]
+        public int? RoleFk { get; set; }
+        
         public Role Role { get; set; }
 
         public DateTime DateCreated { get; set; }

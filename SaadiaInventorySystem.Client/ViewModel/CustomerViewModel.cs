@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace SaadiaInventorySystem.Client.ViewModel
 {
-    public class CustomerViewModel : BaseViewModel
+    public class CustomerViewModel : BaseViewModel, IViewModel
     {
         private readonly CustomerService service;
         private string name;
@@ -22,7 +22,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public string Name { get => name; set => name = value;}
         public Customer NewCustomer { get => newCustomer; set { newCustomer = value; RaisePropertyChanged(); } }
 
-        public CustomerViewModel(Customer _customer)
+        public CustomerViewModel()
         {
             Name = "Customer";
             service = new CustomerService();
@@ -31,7 +31,32 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         #region Business Logic
 
-        private async Task<bool> Create()
+        public async Task GetAll()
+        {
+            try
+            {
+                Customers = new ObservableCollection<Customer>(await service.CallGetAllService());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error fetching Customer:{ex.Message}");
+            }
+        }
+
+        public async Task Get()
+        {
+            try
+            {
+                await service.CallGetService(SelectedCustomer.Id.ToString());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An unexpected error occured: {ex.Message}");
+                throw ex;
+            }
+        }
+
+        public async Task<bool> AddAsync()
         {
             try
             {
@@ -49,35 +74,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
             catch (Exception ex)
             {
                 MessageBox.Show($"An unexpected error occured: {ex.Message}");
-                throw ex;
+                return false;
             }
         }
 
-        private async void GetAll()
-        {
-            try
-            {
-                Customers = new ObservableCollection<Customer>(await service.CallGetAllService());
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error fetching Customer");
-                throw ex;
-            }
-        }
-        private async void Get()
-        {
-            try
-            {
-                await service.CallGetService(SelectedCustomer.Id.ToString());
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An unexpected error occured: {ex.Message}");
-                throw ex;
-            }
-        }
-        private async Task<bool> Update()
+        public async Task<bool> UpdateAsync()
         {
             try
             {
@@ -88,17 +89,18 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 }
                 else
                 {
-                    MessageBox.Show("Error updating Quotation");
+                    MessageBox.Show("Error updating Customer");
                     return false;
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"An unexpected error occured: {ex.Message}");
-                throw ex;
+                return false;
             }
         }
-        private async Task<bool> Delete()
+
+        public async Task<bool> DeleteAsync()
         {
             try
             {
@@ -116,7 +118,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             catch (Exception ex)
             {
                 MessageBox.Show($"An unexpected error occured: {ex.Message}");
-                throw ex;
+                return false;
             }
         }
         #endregion

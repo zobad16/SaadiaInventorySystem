@@ -13,6 +13,7 @@ namespace SaadiaInventorySystem.Client.Model
         private string emailAddress;
         private int isActive;
         private Role role;
+        private int roleId;
 
         public int Id { get => id; set { id = value; RaisePropertyChanged(); } }
         public string UserName { get => userName; set { userName = value; RaisePropertyChanged(); } }
@@ -24,5 +25,6 @@ namespace SaadiaInventorySystem.Client.Model
 
         public int IsActive { get => isActive; set { isActive = value; RaisePropertyChanged();} }
         public Role Role { get => role; set { role = value; RaisePropertyChanged(); } }
+        public int RoleId { get => roleId; set { roleId = value; RaisePropertyChanged(); } }
     }
 }

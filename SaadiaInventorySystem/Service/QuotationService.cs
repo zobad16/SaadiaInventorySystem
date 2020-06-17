@@ -50,7 +50,20 @@ namespace SaadiaInventorySystem.Service
             catch (Exception ex){ throw ex; }
             
         }
-        public async Task<bool> DeleteAsync(string id) 
+        public async Task<bool> DeleteAsync(string id)
+        {
+            try 
+            {
+                Quotation quote = dao.Quotations.
+                    Where(q => q.Id.Equals(id)).FirstOrDefault();
+                quote.IsActive = 0;
+                return await dao.SaveChangesAsync() > 0;
+            }
+            catch (Exception ex){ throw ex; }
+            
+        }
+        
+        public async Task<bool> AdminDeleteAsync(string id) 
         {
             try 
             {
@@ -77,6 +90,10 @@ namespace SaadiaInventorySystem.Service
             }
         }
         public List<Quotation> GetAll() 
+        {
+            return dao.Quotations.Where(i => i.IsActive == 1).ToList<Quotation>(); 
+        }
+        public List<Quotation> AdminGetAll() 
         {
             return dao.Quotations.ToList<Quotation>(); 
         }

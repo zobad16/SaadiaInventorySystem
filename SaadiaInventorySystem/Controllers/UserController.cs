@@ -21,6 +21,11 @@ namespace SaadiaInventorySystem.Controllers
         [HttpPost("signup")]
         public async Task<IActionResult> CreateUser([FromBody] User user)
         {
+            if (user == null) { return BadRequest(); }
+            else 
+            {
+                user.RoleFk = user.Role.Id;
+            }
             if (await _userService.CreateUser(user))
             {
                 return Ok($"Sucess User: {user.UserName} created!");

@@ -12,5 +12,6 @@ namespace SaadiaInventorySystem.Model
         public ICollection<InvoiceItem> Item { get; set; }
         public DateTime DateCreated { get; internal set; }
         public DateTime DateUpdated { get; internal set; }
+        public int IsActive { get; internal set; }
     }
 }

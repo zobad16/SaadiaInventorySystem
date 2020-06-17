@@ -16,5 +16,6 @@ namespace SaadiaInventorySystem
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+        
     }
 }

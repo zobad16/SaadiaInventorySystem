@@ -88,6 +88,18 @@ namespace SaadiaInventorySystem.Service
         {
             try
             {
+                return dao.Invoices.Where(i => i.IsActive == 1).ToList();
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+        }
+        public List<Invoice> AdminGetAll() 
+        {
+            try
+            {
                 
                 return dao.Invoices.ToList();
 
