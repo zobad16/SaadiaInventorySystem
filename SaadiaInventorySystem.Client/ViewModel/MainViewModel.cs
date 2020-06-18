@@ -24,13 +24,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public MainViewModel()
         {
             FilePath = "";
-            PageViewModels.Add(new HomeViewModel());
+            PageViewModels.Add(new UserViewModel());
+            PageViewModels.Add(new RoleViewModel());
+            PageViewModels.Add(new CustomerViewModel());
             PageViewModels.Add(new QuotationViewModel());
             PageViewModels.Add(new InvoiceViewModel());
             PageViewModels.Add(new InventoryViewModel());           
-            PageViewModels.Add(new CustomerViewModel());           
-            PageViewModels.Add(new UserViewModel());           
-            PageViewModels.Add(new RoleViewModel());           
             // Set starting page
             CurrentPageViewModel = PageViewModels[0];
             _windowActive = Visibility.Collapsed;
@@ -38,13 +37,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public MainViewModel(Visibility active)
         {
             FilePath = "";
-            PageViewModels.Add(new HomeViewModel());
-            PageViewModels.Add(new QuotationViewModel());
-            PageViewModels.Add(new InvoiceViewModel());
-            PageViewModels.Add(new InventoryViewModel());
             PageViewModels.Add(new CustomerViewModel());
             PageViewModels.Add(new UserViewModel());
             PageViewModels.Add(new RoleViewModel());
+            PageViewModels.Add(new QuotationViewModel());
+            PageViewModels.Add(new InvoiceViewModel());
+            PageViewModels.Add(new InventoryViewModel());
             Active = _windowActive;
             // Set starting page
             CurrentPageViewModel = PageViewModels[0];
@@ -130,7 +128,34 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         #endregion
         #region Methods
+        public void LoaderViews()
+        { 
+            string type = "admin";
+            if (type == "admin")
+            {
+                FilePath = "";
+                PageViewModels.Add(new CustomerViewModel());
+                PageViewModels.Add(new UserViewModel());
+                PageViewModels.Add(new RoleViewModel());
+                PageViewModels.Add(new QuotationViewModel());
+                PageViewModels.Add(new InvoiceViewModel());
+                PageViewModels.Add(new InventoryViewModel());
+                // Set starting page
+                CurrentPageViewModel = PageViewModels[0];
+            }
+            else
+            {
+                FilePath = "";
+                PageViewModels.Add(new CustomerViewModel());
+                PageViewModels.Add(new UserViewModel());
+                PageViewModels.Add(new QuotationViewModel());
+                PageViewModels.Add(new InvoiceViewModel());
+                PageViewModels.Add(new InventoryViewModel());
+                // Set starting page
+                CurrentPageViewModel = PageViewModels[0];
+            }
 
+        }
         private void ChangeViewModel(IViewModel viewModel)
         {
             if (!PageViewModels.Contains(viewModel))

@@ -165,7 +165,7 @@ namespace SaadiaInventorySystem.Data
                     FirstName = "Zobad",
                     LastName = "Mahmood",
                     EmailAddress = "zobad.mahmood@gmail.com",
-                    ComapnyName = "QTS",
+                    CompanyName = "QTS",
                     IsActive = 1
                 },
                 new Customer()
@@ -174,7 +174,7 @@ namespace SaadiaInventorySystem.Data
                     FirstName = "Hamza",
                     LastName="Sheikh",
                     EmailAddress="hamza@gmail.com",
-                    ComapnyName="Saadia",
+                    CompanyName="Saadia",
                     IsActive = 1
                 }
 

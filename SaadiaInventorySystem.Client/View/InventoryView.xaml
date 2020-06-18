@@ -34,7 +34,7 @@
                     <DataGridTextColumn Header="Location"
                                     Binding="{Binding Location}" />
                     <DataGridTextColumn Header="Unit Price"
-                                    Binding="{Binding Price}" />
+                                    Binding="{Binding UnitPrice}" />
                     <DataGridTextColumn Header="Unit Quantity"
                                     Binding="{Binding AvailableQty}" />
                     <DataGridTextColumn Header="REM"

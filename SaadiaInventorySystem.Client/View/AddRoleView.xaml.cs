@@ -5,11 +5,11 @@ using System.Windows;
 namespace SaadiaInventorySystem.Client.View
 {
     /// <summary>
-    /// Interaction logic for AddEditCustomerView.xaml
+    /// Interaction logic for AddRoleView.xaml
     /// </summary>
-    public partial class AddEditCustomerView : Window, IClosable
+    public partial class AddRoleView : Window, IClosable
     {
-        public AddEditCustomerView(CustomerViewModel vm)
+        public AddRoleView(RoleViewModel vm)
         {
             InitializeComponent();
             DataContext = vm;

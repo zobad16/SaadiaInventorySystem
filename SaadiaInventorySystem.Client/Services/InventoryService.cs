@@ -16,9 +16,9 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                var _inventory = JsonConvert.SerializeObject(inventory);
-
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/inventory/add", _inventory);
+                //var _inventory = JsonConvert.SerializeObject(inventory);
+                
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/inventory/add", inventory);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -66,9 +66,7 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                var _inventory = JsonConvert.SerializeObject(inventory);
-
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/inventory/update", _inventory);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/inventory/update", inventory);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)

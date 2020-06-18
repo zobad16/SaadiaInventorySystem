@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using SaadiaInventorySystem.Data;
 using SaadiaInventorySystem.Model;
 using System;
@@ -9,28 +8,26 @@ using System.Threading.Tasks;
 
 namespace SaadiaInventorySystem.Service
 {
-    public class InventoryService
+    public class OldPartService
     {
-        private readonly AppDbContext dao;
-        public InventoryService(AppDbContext _db)
+        public OldPartService(AppDbContext db)
         {
-            dao = _db;
+            context = db;
         }
-        public async Task<bool> AddAsync(Inventory data) 
+        private readonly AppDbContext context;
+        
+        public async Task<bool> AddAsync(OldPart data)
         {
             try
             {
-                bool isexists = dao.Inventories.Any(x => x.PartNumber == data.PartNumber);
-                bool oldpartExists = dao.OldParts.Any(x => x.Id == data.OldPartFK) || data.OldPart ==null;
+                bool isexists = context.Inventories.Any(x => x.PartNumber == data.PartNumber);
                 if (!isexists)
                 {
                     data.DateCreated = DateTime.Now;
                     data.DateUpdate = DateTime.Now;
-                    data.IsActive = 1;
-                    if (!oldpartExists) { await dao.OldParts.AddAsync(data.OldPart); }
-                    
-                    await dao.Inventories.AddAsync(data);
-                    return await dao.SaveChangesAsync() > 0;
+                                    
+                    await context.OldParts.AddAsync(data);
+                    return await context.SaveChangesAsync() > 0;
                 }
                 return false;
 
@@ -41,23 +38,18 @@ namespace SaadiaInventorySystem.Service
                 throw ex;
             }
         }
-        public async Task<bool> UpdateAsync(Inventory data) 
+        public async Task<bool> UpdateAsync(OldPart data)
         {
             try
             {
-                Inventory part = (Inventory)dao.Inventories
+                OldPart part = (OldPart)context.OldParts
                             .Where(part => part.Id.Equals(data.Id)).FirstOrDefault();
-                part.AvailableQty = data.AvailableQty;
                 part.Description = data.Description;
                 part.Location = data.Location;
-                part.OldPartFK = data.OldPartFK;
-                part.OldPart = data.OldPart;
                 part.PartNumber = data.PartNumber;
-                part.UnitPrice = data.UnitPrice;
                 part.Rem = data.Rem;
-                part.IsActive = 1;
                 part.DateUpdate = DateTime.Now;
-                return await dao.SaveChangesAsync() > 0;
+                return await context.SaveChangesAsync() > 0;
 
             }
             catch (System.Exception ex)
@@ -66,14 +58,14 @@ namespace SaadiaInventorySystem.Service
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<bool> DeleteAsync(string id) 
+        public async Task<bool> DeleteAsync(string id)
         {
             try
             {
-                Inventory part = (Inventory)dao.Inventories
+                OldPart part = (OldPart)context.OldParts
                             .Where(part => part.Id.Equals(id)).FirstOrDefault();
                 part.IsActive = 0;
-                return await dao.SaveChangesAsync() > 0;
+                return await context.SaveChangesAsync() > 0;
 
             }
             catch (System.Exception ex)
@@ -82,14 +74,14 @@ namespace SaadiaInventorySystem.Service
                 throw ex;
             }
         }
-        public async Task<bool> AdminDeleteAsync(string id) 
+        public async Task<bool> AdminDeleteAsync(string id)
         {
             try
             {
-                Inventory part = (Inventory)dao.Inventories
+                OldPart part = (OldPart)context.OldParts
                             .Where(part => part.Id.Equals(id)).FirstOrDefault();
-                dao.Remove<Inventory>(part);
-                await dao.SaveChangesAsync();
+                context.Remove<OldPart>(part);
+                await context.SaveChangesAsync();
                 return true;
 
             }
@@ -100,30 +92,30 @@ namespace SaadiaInventorySystem.Service
             }
             return false;
         }
-        public Inventory Get(string id) {
-            return  (Inventory)dao.Inventories
-                            .Include(i => i.OldPart)
+        public OldPart Get(string id)
+        {
+            return (OldPart)context.OldParts
                             .Where(part => part.Id.Equals(id)).FirstOrDefault();
         }
-        public List<Inventory> GetAll() 
+        public List<OldPart> GetAll()
         {
 
             /*var query = from photo in context.Set<PersonPhoto>()
                         join person in context.Set<Person>()
                             on photo.PersonPhotoId equals person.PhotoId
                         select new { person, photo };*/
-            var inventory = dao.Inventories.Include(inventory => inventory.OldPart).Where(i=> i.IsActive == 1).ToList();
-            return inventory;
+            var oldPart = context.OldParts.Where(i => i.IsActive == 1).ToList();
+            return oldPart;
         }
-        public List<Inventory> AdminGetAll() 
+        public List<OldPart> AdminGetAll()
         {
 
             /*var query = from photo in context.Set<PersonPhoto>()
                         join person in context.Set<Person>()
                             on photo.PersonPhotoId equals person.PhotoId
                         select new { person, photo };*/
-            var inventory = dao.Inventories.Include(inventory => inventory.OldPart).ToList();
-            return inventory;
+            var oldPart = context.OldParts.ToList();
+            return oldPart;
         }
     }
 }

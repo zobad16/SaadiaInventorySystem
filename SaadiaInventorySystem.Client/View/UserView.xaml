@@ -11,6 +11,18 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,10">
                 <local:ButtonControlsView/>
+                <Button Content="Change Password"
+                        Width="100"
+                        Height="20"
+                        Margin="5,0,5,0"
+                        Command="{Binding OpenForgetPasswordWindowCommand}"
+                        />
+            <Button Content="Disable User"
+                        Width="100"
+                        Height="20"
+                        Margin="0,0,5,0"
+                        Command="{Binding DisableCommand}"
+                        />
             </StackPanel>
             <DataGrid ItemsSource="{Binding Users}" SelectedItem="{Binding SelectedUser}"    
                   AutoGenerateColumns="False" 

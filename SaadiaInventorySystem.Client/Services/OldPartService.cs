@@ -1,25 +1,18 @@
-﻿using Newtonsoft.Json;
-using SaadiaInventorySystem.Client.Backend;
+﻿using SaadiaInventorySystem.Client.Backend;
 using SaadiaInventorySystem.Client.Model;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SaadiaInventorySystem.Client.Services
 {
-    public class UserService:RestClient
+    public class OldPartService: RestClient
     {
-        
-        public async Task<bool> CallAddService(User user)
+        public async Task<bool> CallAddService(OldPart op)
         {
             using (var client = GetClient())
             {
-                //var _user = JsonConvert.SerializeObject(user);
-
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/user/signup", user);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/oldparts/add", op);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -30,59 +23,44 @@ namespace SaadiaInventorySystem.Client.Services
 
             }
         }
-        
-        public async Task<User> CallGetService(string id)
+        public async Task<OldPart> CallGetService(string id)
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.GetAsync($"api/user/{id}");
-                User data;
+                HttpResponseMessage response = await client.GetAsync($"api/oldparts/{id}");
+                OldPart data;
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
                 {
-                    Task<User> responseData = result.ReadAsAsync<User>();
+                    Task<OldPart> responseData = result.ReadAsAsync<OldPart>();
                     data = responseData.Result;
                     return data;
                 }
                 return null;
             }
         }
-        public async Task<List<User>> CallGetAllService()
+        public async Task<List<OldPart>> CallGetAllService()
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.GetAsync("api/user/users");
-                List<User> data = new List<User>();
+                HttpResponseMessage response = await client.GetAsync("api/oldParts/oldparts");
+                List<OldPart> data = new List<OldPart>();
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
                 {
-                    Task<List<User>> responseData = result.ReadAsAsync<List<User>>();
+                    Task<List<OldPart>> responseData = result.ReadAsAsync<List<OldPart>>();
                     data = responseData.Result;
                     return data;
                 }
                 return data;
             }
         }
-        public async Task<bool> CallUpdateService(User user)
+        public async Task<bool> CallUpdateService(OldPart op)
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/user/updateprofile", user);
-
-                HttpContent result = response.Content;
-                if (response.IsSuccessStatusCode)
-                {
-                    return true;
-                }
-                else return false;
-
-            }
-        }
-        public async Task<bool> CallUpdatePasswordService(User user)
-        {
-            using (var client = GetClient())
-            {
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/user/update", user);
+                
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/oldparts/update", op);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -97,7 +75,7 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/user/delete", id);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/oldparts/delete", id);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -112,7 +90,7 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/user/admindelete", id);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/oldparts/admindelete", id);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -123,7 +101,5 @@ namespace SaadiaInventorySystem.Client.Services
 
             }
         }
-
-
     }
 }

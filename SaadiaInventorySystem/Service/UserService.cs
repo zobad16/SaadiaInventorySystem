@@ -20,6 +20,8 @@ namespace SaadiaInventorySystem.Service
         {
             try
             {
+                bool exists = _userDao.Users.Any(p => p.UserName == data.UserName);
+                if (exists) { return false; }
                 var user = new User()
                 {
                     UserName = data.UserName,
@@ -38,8 +40,6 @@ namespace SaadiaInventorySystem.Service
                     _userDao.Users.Add(user);
                     var res = await _userDao.SaveChangesAsync();
                     return res > 0;
-                
-                
                                 
             }
             catch (Exception ex)
@@ -64,6 +64,31 @@ namespace SaadiaInventorySystem.Service
                     if (!string.IsNullOrEmpty(_user.LastName)) user.LastName = _user.LastName;
                     if (!string.IsNullOrEmpty(_user.EmailAddress)) user.EmailAddress = _user.EmailAddress;
                     if (!string.IsNullOrEmpty(_user.PhoneNumber )) user.PhoneNumber = _user.PhoneNumber;
+                    if(!string.IsNullOrEmpty(_user.Role.Id.ToString()))user.RoleFk = _user.Role.Id;
+                    user.DateUpdate = DateTime.Now;
+                    
+                    saved = await _userDao.SaveChangesAsync() > 0;
+                }
+                return saved;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+        }
+        public async Task<bool> UpdateUserPassword(User _user)
+        {
+
+            try
+            {
+                bool saved = false;
+                User user = (User)_userDao.Users
+                            .Where(user => user.Id.Equals(_user.Id)).FirstOrDefault();
+                if (user != null)
+                {
+                    if(!string.IsNullOrEmpty(_user.Password))user.Password= _user.Password;
                     user.DateUpdate = DateTime.Now;
                     
                     saved = await _userDao.SaveChangesAsync() > 0;
@@ -142,8 +167,9 @@ namespace SaadiaInventorySystem.Service
             
             try
             {
-                User user = (User)_userDao.Users
-                            .Where(user => user.Id.Equals(id));
+                int _id = int.Parse(id);
+                User user = (User)_userDao.Users.Find(_id);
+                            //.Where(user => user.Id.Equals(id)).FirstOrDefault();
                 user.IsActive = 0;
                 return await _userDao.SaveChangesAsync() > 0;
                 

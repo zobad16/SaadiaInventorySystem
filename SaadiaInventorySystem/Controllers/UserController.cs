@@ -36,10 +36,23 @@ namespace SaadiaInventorySystem.Controllers
             }
         }
 
+        [HttpPost("updateprofile")]
+        public async Task<IActionResult> UpdateUserProfile([FromBody] User user)
+        {
+            if (await _userService.UpdateUser(user))
+            {
+                return Ok($"Sucess User: {user.UserName} updated!");
+
+            }
+            else
+            {
+                return Conflict("Error: User not found");
+            }
+        }
         [HttpPost("update")]
         public async Task<IActionResult> UpdateUser([FromBody] User user)
         {
-            if (await _userService.UpdateUser(user))
+            if (await _userService.UpdateUserPassword(user))
             {
                 return Ok($"Sucess User: {user.UserName} updated!");
 

@@ -27,7 +27,7 @@
                     <DataGridTextColumn Header="Last Name"
                                     Binding="{Binding LastName}" />
                     <DataGridTextColumn Header="ComapnyName"
-                                    Binding="{Binding ComapnyName}" />
+                                    Binding="{Binding CompanyName}" />
                     <DataGridTextColumn Header="Address"
                                     Binding="{Binding Address}" />
                     <DataGridTextColumn Header="TRN"

@@ -1,4 +1,5 @@
-﻿using SaadiaInventorySystem.Data;
+﻿using Pomelo.EntityFrameworkCore.MySql.Internal;
+using SaadiaInventorySystem.Data;
 using SaadiaInventorySystem.Model;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace SaadiaInventorySystem.Service
                 {
                     data.DateCreated = DateTime.Now;
                     data.DateUpdated = DateTime.Now;
+                    data.IsActive = 1;
                     await _dao.Customers.AddAsync(data);
                     return await _dao.SaveChangesAsync() > 0;
                 }
@@ -35,7 +37,7 @@ namespace SaadiaInventorySystem.Service
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                throw ex;
+                return false;
             }
         }
         public async Task<bool> UpdateAsync(Customer data) 
@@ -47,12 +49,14 @@ namespace SaadiaInventorySystem.Service
                             .Where(customer => customer.Id.Equals(customer.Id)).FirstOrDefault();
                 if (_customer != null)
                 {
-                    if (!string.IsNullOrEmpty(_customer.FirstName)) _customer.FirstName = _customer.FirstName;
-                    if (!string.IsNullOrEmpty(_customer.LastName)) _customer.LastName = _customer.LastName;
-                    if (!string.IsNullOrEmpty(_customer.EmailAddress)) _customer.EmailAddress = _customer.EmailAddress;
-                    if (!string.IsNullOrEmpty(_customer.PhoneNumber)) _customer.PhoneNumber = _customer.PhoneNumber;
-                    if (!string.IsNullOrEmpty(_customer.Postcode)) _customer.Postcode = data.Postcode;
-                    if (!string.IsNullOrEmpty(_customer.Trn)) _customer.Trn = data.Trn;
+                    _customer.IsActive = 1;
+                    _customer.FirstName = data.FirstName;
+                    _customer.LastName = data.LastName;
+                    _customer.Address = data.Address;
+                    _customer.EmailAddress = data.EmailAddress;
+                    _customer.PhoneNumber = data.PhoneNumber;
+                    _customer.Postcode = data.Postcode;
+                    _customer.Trn = data.Trn;
                     _customer.DateUpdated = DateTime.Now;
 
                     saved = await _dao.SaveChangesAsync() > 0;

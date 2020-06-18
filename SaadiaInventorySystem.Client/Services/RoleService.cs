@@ -13,9 +13,9 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                var _role = JsonConvert.SerializeObject(role);
+                //var _role = JsonConvert.SerializeObject(role);
 
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/roles/create", _role);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/roles/add", role);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)

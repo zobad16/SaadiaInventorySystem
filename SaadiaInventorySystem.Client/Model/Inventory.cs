@@ -28,7 +28,7 @@ namespace SaadiaInventorySystem.Client.Model
         public string PartNumber { get => partNumber; set { partNumber = value; RaisePropertyChanged(); }}
         public string Description { get => description; set { description = value; RaisePropertyChanged(); }}
         public int AvailableQty { get => availableQty; set { availableQty = value; RaisePropertyChanged(); } }
-        public decimal Price { get => price; set { price = value; RaisePropertyChanged(); } }
+        public decimal UnitPrice { get => price; set { price = value; RaisePropertyChanged(); } }
         public string Location { get => location; set { location = value; RaisePropertyChanged(); } }
         public string Rem { get => rem; set { rem = value; RaisePropertyChanged(); }}
         public OldPart  OldPart { get => oldPart; set {oldPart = value; RaisePropertyChanged(); }}

@@ -65,9 +65,9 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                var _customer = JsonConvert.SerializeObject(customer);
+                //var _customer = JsonConvert.SerializeObject(customer);
 
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/customers/update", _customer);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/customers/update", customer);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)

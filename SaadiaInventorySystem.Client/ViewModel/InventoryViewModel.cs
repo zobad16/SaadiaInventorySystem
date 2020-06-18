@@ -13,43 +13,135 @@ namespace SaadiaInventorySystem.Client.ViewModel
 {
     public class InventoryViewModel : BaseViewModel, IViewModel
     {
+        public InventoryViewModel()
+        {
+            Name = "Inventory";
+            FilePath = "";
+            service = new InventoryService();
+            SaveCommand = new RelayCommand<IClosable>(p => Save(p), p => true);
+            CancelCommand = new RelayCommand<IClosable>(p => Cancel(p), p => true);
+            CancelCloseCommand = new RelayCommand<IClosable>(p => CancelClose(p), p => true);
+            AddWindowCommand = new RelayCommand(p => OpenAddWindow(), a => true);
+            EditWindowCommand = new RelayCommand(p => OpenEditWindow(), (a )=> SelectedInventory !=null );
+            NewInventory = new Inventory() { IsActive = 1};
+            IsEdit = false;
+        }
+
+        
+
         private ICommand _addCommand;
         private string _name;
         private string _filePath;
         private ObservableCollection<Inventory> _inventories;
         private Inventory _selectedInventory;
         private Inventory _newInventory;
+        private ObservableCollection<OldPart> _oldParts;
         private readonly InventoryService service;
-
+        private ICommand _addWindowCommand;
+        private ICommand _editWindowCommand;
+        private RelayCommand<IClosable> _saveCommand;
+        private RelayCommand<IClosable> _cancelCommand;
+        private RelayCommand<IClosable> _cancelCloseCommand;
+        private bool isEdit;
 
         public string Name { get => _name; set { _name = value; RaisePropertyChanged(); } }
         public string FilePath { get => _filePath; set { _filePath = value; RaisePropertyChanged(); } }
         public ObservableCollection<Inventory> Inventories { get => _inventories; set { _inventories = value; RaisePropertyChanged(); } }
         public Inventory SelectedInventory { get => _selectedInventory; set { _selectedInventory = value; RaisePropertyChanged(); } }
         public Inventory NewInventory { get => _newInventory; set { _newInventory = value; RaisePropertyChanged(); } }
+        public ObservableCollection<OldPart> OldParts { get => _oldParts; set { _oldParts = value; RaisePropertyChanged(); } }
 
-        public InventoryViewModel()
+        #region Commands
+        public ICommand AddWindowCommand { get => _addWindowCommand; set { _addWindowCommand = value; RaisePropertyChanged(); } }
+        public ICommand EditWindowCommand { get => _editWindowCommand; set { _editWindowCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand<IClosable> SaveCommand { get => _saveCommand; set { _saveCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand<IClosable> CancelCommand { get => _cancelCommand; set { _cancelCommand = value; RaisePropertyChanged(); } }
+
+        public bool IsEdit { get => isEdit; set => isEdit = value; }
+        public RelayCommand<IClosable> CancelCloseCommand { get => _cancelCloseCommand; set { _cancelCloseCommand = value; RaisePropertyChanged(); } }
+        private async void CancelClose(IClosable p)
         {
-            Name = "Inventory";
-            FilePath = "";
-            service = new InventoryService();
-            //GetAll();
+            //p.Close();
+            await GetAll();
         }
-
-        public ICommand AddCommand
+        private async void Save(IClosable p)
         {
-            get
+            if (IsEdit)
             {
-                if (_addCommand == null)
+                if (await service.CallUpdateService(NewInventory))
                 {
-                    _addCommand = new RelayCommand(
-                        p => Add(),
-                        p => CanAdd());
+                    MessageBox.Show("Success Inventory updated");
+                    p.Close();
+                    await GetAll();
+                    NewInventory = null;
+                }
+                else
+                {
+                    MessageBox.Show("Inventory update Failed");
+                }
+            }
+            else
+            {
+                if (await service.CallAddService(NewInventory))
+                {
+                    MessageBox.Show("Success Inventory added");
+                    p.Close();
+                    await GetAll();
+                    NewInventory = null;
+                }
+                else 
+                {
+                    MessageBox.Show("Inventory Insert Failed");
                 }
 
-                return _addCommand;
             }
+            
+
         }
+
+        private async void Cancel(IClosable p)
+        {
+            p.Close();
+            await GetAll();
+        }
+        #endregion
+        #region Open Windows
+        private async void OpenAddWindow()
+        {
+            IsEdit = false;
+            OldPartService _service = new OldPartService();
+            OldParts = new ObservableCollection<OldPart>(await _service.CallGetAllService());
+            
+            AddInventoryView window = new AddInventoryView(this);
+            //window.ShowDialog();
+            window.Activate();
+            window.ShowDialog();
+        }
+        private void OpenEditWindow()
+        {
+            IsEdit = true;
+            NewInventory = SelectedInventory;
+            var addwindow = new AddInventoryView(this);
+            addwindow.ShowDialog();
+            addwindow.Activate();
+        }
+
+        #endregion
+
+        //public ICommand AddCommand
+        //{
+        //    get
+        //    {
+        //        if (_addCommand == null)
+        //        {
+        //            _addCommand = new RelayCommand(
+        //                p => Add(),
+        //                p => CanAdd());
+        //        }
+
+        //        return _addCommand;
+        //    }
+        //}
 
         public bool CanAdd()
         {
@@ -57,12 +149,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
         }
 
         
-        public void Add()
+        /*public void Add()
         {
             AddInventoryView addInventory = new AddInventoryView();
             addInventory.ShowDialog();
             //Open Add Inventory Window
-        }
+        }*/
         #region Business Logic
 
         public async Task GetAll()

@@ -26,7 +26,7 @@ namespace SaadiaInventorySystem.Service
                 {
                     data.DateCreated = DateTime.Now;
                     data.DateUpdate = DateTime.Now;
-                    
+                    data.IsActive = 1;
                     await dao.Roles.AddAsync(data);
                     return await dao.SaveChangesAsync() > 0;
                 }

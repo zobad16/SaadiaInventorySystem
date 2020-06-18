@@ -27,6 +27,7 @@ namespace SaadiaInventorySystem
             services.AddTransient(typeof(RoleService));
             services.AddTransient(typeof(CustomerService));
             services.AddTransient(typeof(InventoryService));
+            services.AddTransient(typeof(OldPartService));
             services.AddTransient(typeof(QuotationService));
             services.AddTransient(typeof(InvoiceService));
 
