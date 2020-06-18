@@ -107,6 +107,7 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 User user =(User) _userDao.Users
+                    .Include(r => r.Role)
                     .Where(x => x.UserName.Equals(username)).FirstOrDefault();
                 return user;
             }
@@ -121,6 +122,7 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 User user =(User) _userDao.Users
+                    .Include(r=> r.Role)
                     .Where(user => user.Id.Equals(id));
                 return user;
             }

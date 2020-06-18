@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SaadiaInventorySystem.Model;
 using SaadiaInventorySystem.Service;
+using SaadiaInventorySystem.Session;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,19 +15,30 @@ namespace SaadiaInventorySystem.Controllers
     public class LoginController : ControllerBase
     {
         private readonly LoginService _loginService;
-        public LoginController(LoginService service)
+        private readonly UserService _userService;
+        public LoginController(LoginService service, UserService service2)
         {
             _loginService = service;
+            _userService = service2;
             //Logging
         }
         [HttpPost]
         public ActionResult<string> Login([FromBody] Login data)
         {
+            
             try
             {
                 if (_loginService.ValidateUser(data.UserName, data.Password))
                 {
-                    return Ok($"User:{data.UserName} sucessdully loggedin");
+                    string token = Guid.NewGuid().ToString();
+                    //create session..
+                    SessionData sessionData = new SessionData();
+                    sessionData.Token = token;
+                    sessionData.User = _userService.GetUserByUserName(data.UserName);
+
+                    SessionManager.GetInstance().CreateSession(token, sessionData);
+                    
+                    return Ok(token);
                 }
                 else
                 {

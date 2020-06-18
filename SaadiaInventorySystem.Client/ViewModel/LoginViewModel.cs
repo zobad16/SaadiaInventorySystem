@@ -1,7 +1,10 @@
-﻿using SaadiaInventorySystem.Client.Backend;
+﻿using Newtonsoft.Json;
+using SaadiaInventorySystem.Client.Backend;
+using SaadiaInventorySystem.Client.Model;
 using SaadiaInventorySystem.Client.Services;
 using SaadiaInventorySystem.Client.Util;
 using System;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace SaadiaInventorySystem.Client.ViewModel
@@ -14,6 +17,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private string _userName;
         private string _password;
         private readonly LoginService service;
+        private readonly UserService userservice;
        
         public LoginViewModel(MainViewModel vm)
         {
@@ -21,6 +25,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             UserName = "zobad16";
             Password = "12345";
             service = new LoginService();
+            userservice = new UserService();
         }
         #region Properties / Commands
         public RelayCommand<IClosable> LoginCommand
@@ -49,9 +54,18 @@ namespace SaadiaInventorySystem.Client.ViewModel
             try
             {
                 bool login = true;
-                await service.CallLoginService(new Model.User() { UserName = this.UserName, Password = this.Password });
+                string token = await service.CallLoginService(new Model.User() { UserName = this.UserName, Password = this.Password });
                 if (login == true)
                 {
+                    token = JsonConvert.DeserializeObject<string>(token);
+                    //Initialize Client
+                    User user = await userservice.CallGetServiceByUserName(this.UserName);
+                    if(user!= null)
+                    {
+                        AppProperties.UserName = user.UserName;
+                        AppProperties.RoleName = user.Role.RoleName;
+                        AppProperties.SecutiyTokenValue = token;
+                    }
                     if (window != null)
                     {
                         MainVM.Active = Visibility.Visible;

@@ -47,6 +47,22 @@ namespace SaadiaInventorySystem.Client.Services
                 return null;
             }
         }
+        public async Task<User> CallGetServiceByUserName(string user)
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.GetAsync($"api/user/username/{user}");
+                User data;
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    Task<User> responseData = result.ReadAsAsync<User>();
+                    data = responseData.Result;
+                    return data;
+                }
+                return null;
+            }
+        }
         public async Task<List<User>> CallGetAllService()
         {
             using (var client = GetClient())

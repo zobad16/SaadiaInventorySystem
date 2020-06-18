@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SaadiaInventorySystem.Model;
 using SaadiaInventorySystem.Service;
+using SaadiaInventorySystem.Session;
+using SaadiaInventorySystem.Util;
 
 namespace SaadiaInventorySystem.Controllers
 {
@@ -110,7 +113,7 @@ namespace SaadiaInventorySystem.Controllers
 
         }
         
-        /*[HttpGet("{user}")]
+        [HttpGet("username/{user}")]
         public async Task<ActionResult<User>> GetUser(string user)
         {
             try
@@ -128,20 +131,25 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest(ex.Message);
             }           
 
-        }*/
+        }
 
         [HttpGet("users")]
         public ActionResult<List<User>> GetUsers()
         {
             try
             {
-                var _user = _userService.GetUsers();
-                if (_user != null)
+                if (IsCurentUserInAdminRole()) 
                 {
-                    return (Ok(_user));
+                    var _user = _userService.GetUsers();
+                    if (_user != null)
+                    {
+                        return (Ok(_user));
+                    }
+                    else
+                        return Conflict("No Users Found");
                 }
-                else 
-                    return Conflict("No Users Found");
+                return Unauthorized();
+                
             }
             catch(Exception ex)
             {
@@ -149,7 +157,22 @@ namespace SaadiaInventorySystem.Controllers
             }           
 
         }
-        
+        private bool IsCurentUserInAdminRole()
+        {
+
+            string currentRequestToken = Regex.Unescape( Request.Headers[AppProperties.SecurityTokenName]);
+            SessionData sessionData = SessionManager.GetInstance().SessionData(currentRequestToken);
+            if (sessionData.Token.Equals(currentRequestToken))
+            {
+                if (AppProperties.USER_ROLE_ADMIN == sessionData.User.Role.RoleName)
+                {
+                    return true;
+                }
+                else { return false; }
+            }
+            return false;
+        }
+
 
     }
 }

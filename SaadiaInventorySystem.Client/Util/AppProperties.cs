@@ -12,7 +12,7 @@ namespace SaadiaInventorySystem.Client
         public static string Url{ get; set; }
         public static string SecurityTokenName = "API_Token";
         public static string SecutiyTokenValue { get; set; }
-        public static int Role { get; set; }
+        public static string RoleName { get; set; }
 
         public static List<KeyValuePair<String, String>> UserRoles = new List<KeyValuePair<String, String>>()
         {
