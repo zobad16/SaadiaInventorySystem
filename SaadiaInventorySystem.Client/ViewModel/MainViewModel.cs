@@ -1,7 +1,9 @@
-﻿using SaadiaInventorySystem.Client.Util;
+﻿using SaadiaInventorySystem.Client.Model;
+using SaadiaInventorySystem.Client.Util;
 using SaadiaInventorySystem.Client.View;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -15,7 +17,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private ICommand _exitCommand;
         
         private IViewModel _currentPageViewModel;
-        private List<IViewModel> _pageViewModels;
+        private ObservableCollection<IViewModel> _pageViewModels;
         
         private Visibility _windowActive;
         private string _filePath;
@@ -24,28 +26,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public MainViewModel()
         {
             FilePath = "";
-            PageViewModels.Add(new UserViewModel());
-            PageViewModels.Add(new RoleViewModel());
-            PageViewModels.Add(new CustomerViewModel());
-            PageViewModels.Add(new QuotationViewModel());
-            PageViewModels.Add(new InvoiceViewModel());
-            PageViewModels.Add(new InventoryViewModel());           
-            // Set starting page
-            CurrentPageViewModel = PageViewModels[0];
             _windowActive = Visibility.Collapsed;
         }
         public MainViewModel(Visibility active)
         {
             FilePath = "";
-            PageViewModels.Add(new CustomerViewModel());
-            PageViewModels.Add(new UserViewModel());
-            PageViewModels.Add(new RoleViewModel());
-            PageViewModels.Add(new QuotationViewModel());
-            PageViewModels.Add(new InvoiceViewModel());
-            PageViewModels.Add(new InventoryViewModel());
             Active = _windowActive;
-            // Set starting page
-            CurrentPageViewModel = PageViewModels[0];
         }
 
         #region Properties / Commands
@@ -91,17 +77,18 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
         }
 
-        public List<IViewModel> PageViewModels
+        public ObservableCollection<IViewModel> PageViewModels
         {
             get
             {
                 if (_pageViewModels == null)
                 {
-                    _pageViewModels = new List<IViewModel>();
+                    _pageViewModels = new ObservableCollection<IViewModel>();
                 }
 
                 return _pageViewModels;
             }
+            private set { _pageViewModels = value; RaisePropertyChanged(); }
         }
 
         public IViewModel CurrentPageViewModel
@@ -128,41 +115,60 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         #endregion
         #region Methods
-        public void LoaderViews()
-        { 
-            string type = "admin";
-            if (type == "admin")
+        public async void LoadViews()
+        {
+            PageViewModels = null;
+            foreach (var vm in PageViewModels)
+            {
+                string name = vm.VMName();
+                if (name == "Customer") { PageViewModels.Remove(vm); }
+                if (name == "User") { PageViewModels.Remove(vm); }
+                if (name == "Inventory") { PageViewModels.Remove(vm); }
+                if (name == "Role") { PageViewModels.Remove(vm); }
+                if (name == "Quotation") { PageViewModels.Remove(vm); }
+                if (name == "Invoice") { PageViewModels.Remove(vm); }
+            }
+            
+            if (AppProperties.RoleName == AppProperties.ROLE_ADMIN)
             {
                 FilePath = "";
-                PageViewModels.Add(new CustomerViewModel());
                 PageViewModels.Add(new UserViewModel());
+                PageViewModels.Add(new CustomerViewModel());
+                PageViewModels.Add(new InventoryViewModel());
                 PageViewModels.Add(new RoleViewModel());
                 PageViewModels.Add(new QuotationViewModel());
                 PageViewModels.Add(new InvoiceViewModel());
-                PageViewModels.Add(new InventoryViewModel());
                 // Set starting page
-                CurrentPageViewModel = PageViewModels[0];
+                CurrentPageViewModel = PageViewModels[1];
+                CurrentPageViewModel.Activate();
             }
-            else
+            else if (AppProperties.RoleName == AppProperties.ROLE_USER)
             {
                 FilePath = "";
                 PageViewModels.Add(new CustomerViewModel());
-                PageViewModels.Add(new UserViewModel());
+                PageViewModels.Add(new InventoryViewModel());
                 PageViewModels.Add(new QuotationViewModel());
                 PageViewModels.Add(new InvoiceViewModel());
-                PageViewModels.Add(new InventoryViewModel());
                 // Set starting page
                 CurrentPageViewModel = PageViewModels[0];
+                CurrentPageViewModel.Activate();
             }
-
+            else 
+            {
+                MessageBox.Show("Error. Invalid Client state.\nExiting");
+                OnExit();
+            }
+            await CurrentPageViewModel.GetAll();
         }
         private void ChangeViewModel(IViewModel viewModel)
         {
             if (!PageViewModels.Contains(viewModel))
                 PageViewModels.Add(viewModel);
-
+            CurrentPageViewModel.Deactivate();
             CurrentPageViewModel = PageViewModels
                 .FirstOrDefault(vm => vm == viewModel);
+
+            CurrentPageViewModel.Activate();
 
             CurrentPageViewModel.GetAll();           
         }

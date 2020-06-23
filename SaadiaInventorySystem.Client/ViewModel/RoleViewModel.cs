@@ -26,6 +26,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             EditWindowCommand = new RelayCommand(p => OpenEditWindow(), (a) => SelectedRole != null);
             NewRole = new Role();
             IsEdit = false;
+            Active = 0;
         }
 
         private readonly RoleService service;
@@ -54,7 +55,19 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public RelayCommand<IClosable> CancelCloseCommand { get => _cancelCloseCommand; set { _cancelCloseCommand = value; RaisePropertyChanged(); } }
 
         public bool IsEdit { get => isEdit; set => isEdit = value; }
+        public int Active { get => active; set { active = value; RaisePropertyChanged(); } }
 
+        private int active;
+        public bool Activate()
+        {
+            Active = 1;
+            return Active == 1;
+        }
+        public bool Deactivate()
+        {
+            Active = 0;
+            return Active == 0;
+        }
         #endregion
 
 
@@ -94,7 +107,10 @@ namespace SaadiaInventorySystem.Client.ViewModel
            
 
         }
-
+        public string VMName()
+        {
+            return Name;
+        }
         private async void Cancel(IClosable p)
         {
             p.Close();

@@ -8,6 +8,9 @@ namespace SaadiaInventorySystem.Client.ViewModel
 {
     public interface IViewModel
     {
+        string VMName();
+        bool Activate();
+        bool Deactivate();
         Task GetAll();
         Task Get();
         Task<bool> AddAsync();

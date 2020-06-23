@@ -31,7 +31,7 @@ namespace SaadiaInventorySystem
             services.AddTransient(typeof(QuotationService));
             services.AddTransient(typeof(InvoiceService));
 
-            services.AddSingleton(typeof(AppDbContext));
+            services.AddScoped(typeof(AppDbContext));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

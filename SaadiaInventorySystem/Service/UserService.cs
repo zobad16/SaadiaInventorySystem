@@ -20,7 +20,7 @@ namespace SaadiaInventorySystem.Service
         {
             try
             {
-                bool exists = _userDao.Users.Any(p => p.UserName == data.UserName);
+                bool exists = _userDao.Users.AsNoTracking().Any(p => p.UserName == data.UserName);
                 if (exists) { return false; }
                 var user = new User()
                 {
@@ -107,6 +107,7 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 User user =(User) _userDao.Users
+                    .AsNoTracking()
                     .Include(r => r.Role)
                     .Where(x => x.UserName.Equals(username)).FirstOrDefault();
                 return user;
@@ -122,6 +123,7 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 User user =(User) _userDao.Users
+                    .AsNoTracking()
                     .Include(r=> r.Role)
                     .Where(user => user.Id.Equals(id));
                 return user;
@@ -153,6 +155,7 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 List<User> user = _userDao.Users
+                    .AsNoTracking()
                     .Include(r => r.Role)                
                     .ToList();
                     

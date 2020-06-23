@@ -19,10 +19,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
             SaveCommand = new RelayCommand<IClosable>(p => Save(p), p => true);
             CancelCommand = new RelayCommand<IClosable>(p => Cancel(p), p => true);
             CancelCloseCommand = new RelayCommand<IClosable>(p => CancelClose(p), p => true);
-            AddWindowCommand = new RelayCommand(   p => OpenAddWindow(),a => true);
-            EditWindowCommand = new RelayCommand(   p => OpenEditWindow(),a => CanEditWindow());
+            AddWindowCommand = new RelayCommand(p => OpenAddWindow(), a => true);
+            EditWindowCommand = new RelayCommand(p => OpenEditWindow(), a => CanEditWindow());
             NewCustomer = new Customer();
             IsEdit = false;
+            Active = 0;
         }
 
         #region variables and properties
@@ -41,7 +42,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public ObservableCollection<Customer> Customers { get => customers; set { customers = value; RaisePropertyChanged(); } }
         public Customer SelectedCustomer { get => selectedCustomer; set { selectedCustomer = value; RaisePropertyChanged(); } }
 
-        public string Name { get => name; set => name = value;}
+        public string Name { get => name; set => name = value; }
         public Customer NewCustomer { get => newCustomer; set { newCustomer = value; RaisePropertyChanged(); } }
 
         #endregion
@@ -55,6 +56,19 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         public bool IsEdit { get => isEdit; set { isEdit = value; RaisePropertyChanged(); } }
 
+        public int Active { get => active; set { active = value; RaisePropertyChanged();} }
+
+        private int active;
+        public bool Activate()
+        {
+            Active = 1;
+            return Active == 1;
+        }
+        public bool Deactivate()
+        {
+            Active = 0;
+            return Active == 0;
+        }
         #endregion
 
         #region Open Windows
@@ -215,6 +229,33 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 return false;
             }
         }
+        public async Task<bool> AdminDeleteAsync()
+        {
+            try
+            {
+                if (await service.CallAdminDeleteService(SelectedCustomer.Id.ToString()))
+                {
+                    MessageBox.Show("Customer Deleted Successfully");
+                    return true;
+                }
+                else
+                {
+                    MessageBox.Show("Error Deleting Customer");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An unexpected error occured: {ex.Message}");
+                return false;
+            }
+        }
+        public string VMName() 
+        {
+            return Name;
+        }
+
+        
         #endregion
     }
 }

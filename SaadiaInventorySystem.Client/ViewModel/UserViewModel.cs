@@ -30,6 +30,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             //NewUser = new User();
             IsEdit = false;
             IsEnabled = true;
+            Active = 0;
         }
 
         
@@ -93,7 +94,19 @@ namespace SaadiaInventorySystem.Client.ViewModel
         }
 
         public RelayCommand<IClosable> CancelCloseCommand { get => _cancelCloseCommand; set { _cancelCloseCommand = value; RaisePropertyChanged(); } }
+        public int Active { get => active; set { active = value; RaisePropertyChanged(); } }
 
+        private int active;
+        public bool Activate()
+        {
+            Active = 1;
+            return Active == 1;
+        }
+        public bool Deactivate()
+        {
+            Active = 0;
+            return Active == 0;
+        }
         private async void OpenAddWindow()
         {
             RoleService _service = new RoleService();
@@ -142,7 +155,6 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 if (await service.CallUpdateService(NewUser))
                 {
                     window.Close();
-                    await service.CallGetAllService();
                     IsEdit = false;
                 }
                 else
@@ -150,6 +162,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                     MessageBox.Show("Error: Unable to add new User");
                     IsEdit = false;
                 }
+                await service.CallGetAllService();
             }
             else
             {
@@ -308,6 +321,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 MessageBox.Show($"An unexpected error occured: {ex.Message}");
                 return false;
             }
+        }
+
+        public string VMName()
+        {
+            return Name;
         }
         #endregion
     }

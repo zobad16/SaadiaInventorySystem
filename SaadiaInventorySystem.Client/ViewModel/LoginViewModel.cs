@@ -42,7 +42,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
         }
 
-        public MainViewModel MainVM { get => _mainVM; private set {; } }
+        public MainViewModel MainVM { get => _mainVM; private set {_mainVM = value; } }
 
         public string UserName { get => _userName; set { _userName = value; RaisePropertyChanged("UserName"); } }
         public string Password { get => _password; set { _password = value; RaisePropertyChanged("Password"); } }
@@ -69,6 +69,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                     if (window != null)
                     {
                         MainVM.Active = Visibility.Visible;
+                        MainVM.LoadViews();
                         window.Close();
                     }
                 }

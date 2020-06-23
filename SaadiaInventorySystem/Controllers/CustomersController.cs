@@ -129,5 +129,26 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest(ex);
             }
         }
+        // POST api/<CustomersController>/delete
+        [HttpPost("admindelete")]
+        public async Task<ActionResult> AdminDeleteAsync([FromBody]string id)
+        {
+            try
+            {
+                var delete = await _customerService.AdminDeleteAsync(id);
+                if (delete)
+                {
+                    return Ok("Customer permanently deleted successfully");
+                }
+                else
+                {
+                    return Conflict("No Customers Found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
     }
 }

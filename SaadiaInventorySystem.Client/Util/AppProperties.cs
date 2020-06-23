@@ -19,5 +19,7 @@ namespace SaadiaInventorySystem.Client
             new KeyValuePair<String,String>("0","User"),
             new KeyValuePair<String,String>("1","Admin"),
         };
+        public static string ROLE_ADMIN = "Admin";
+        public static string ROLE_USER = "User";
     }
 }

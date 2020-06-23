@@ -29,7 +29,23 @@ namespace SaadiaInventorySystem.Client.ViewModel
             service = new QuotationService();
         }
         #region Business Logic
-        
+        public string VMName()
+        {
+            return Name;
+        }
+        public int Active { get => active; set { active = value; RaisePropertyChanged(); } }
+
+        private int active;
+        public bool Activate()
+        {
+            Active = 1;
+            return Active == 1;
+        }
+        public bool Deactivate()
+        {
+            Active = 0;
+            return Active == 0;
+        }
         public async Task<bool> UpdateAsync()
         {
             try

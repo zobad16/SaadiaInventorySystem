@@ -25,6 +25,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             EditWindowCommand = new RelayCommand(p => OpenEditWindow(), (a )=> SelectedInventory !=null );
             NewInventory = new Inventory() { IsActive = 1};
             IsEdit = false;
+            Active = 0;
         }
 
         
@@ -147,14 +148,30 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             return true;
         }
+        public int Active { get => active; set { active = value; RaisePropertyChanged(); } }
 
-        
+        private int active;
+        public bool Activate()
+        {
+            Active = 1;
+            return Active == 1;
+        }
+        public bool Deactivate()
+        {
+            Active = 0;
+            return Active == 0;
+        }
+
         /*public void Add()
         {
             AddInventoryView addInventory = new AddInventoryView();
             addInventory.ShowDialog();
             //Open Add Inventory Window
         }*/
+        public string VMName()
+        {
+            return Name;
+        }
         #region Business Logic
 
         public async Task GetAll()
