@@ -23,8 +23,13 @@ namespace SaadiaInventorySystem.Client.ViewModel
             CancelCloseCommand = new RelayCommand<IClosable>(p => CancelClose(p), p => true);
             AddWindowCommand = new RelayCommand(p => OpenAddWindow(), a => true);
             EditWindowCommand = new RelayCommand(p => OpenEditWindow(), (a )=> SelectedInventory !=null );
+            DisableCommand = new RelayCommand(i => DisableAsync(), (a) => SelectedInventory != null);
+            DeleteCommand = new RelayCommand(i => DeleteInventory(), (a) => SelectedInventory != null);
+            ActivateCommand = new RelayCommand(i => ActivateAsync(), (a )=> SelectedInventory !=null );
+
             NewInventory = new Inventory() { IsActive = 1};
             IsEdit = false;
+            IsAdmin = false;
             Active = 0;
         }
 
@@ -43,6 +48,9 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private RelayCommand<IClosable> _saveCommand;
         private RelayCommand<IClosable> _cancelCommand;
         private RelayCommand<IClosable> _cancelCloseCommand;
+        private RelayCommand _disableCommand;
+        private RelayCommand _deleteCommand;
+        private RelayCommand _activateCommand;
         private bool isEdit;
 
         public string Name { get => _name; set { _name = value; RaisePropertyChanged(); } }
@@ -57,8 +65,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public ICommand EditWindowCommand { get => _editWindowCommand; set { _editWindowCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> SaveCommand { get => _saveCommand; set { _saveCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> CancelCommand { get => _cancelCommand; set { _cancelCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand DisableCommand { get => _disableCommand; set { _disableCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand DeleteCommand { get => _deleteCommand; set { _deleteCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand ActivateCommand { get => _activateCommand; set { _activateCommand = value; RaisePropertyChanged(); } }
 
-        public bool IsEdit { get => isEdit; set => isEdit = value; }
+        public bool IsEdit { get => isEdit; set { isEdit = value; RaisePropertyChanged(); } }
+        public bool IsAdmin { get => isAdmin; set { isAdmin = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> CancelCloseCommand { get => _cancelCloseCommand; set { _cancelCloseCommand = value; RaisePropertyChanged(); } }
         private async void CancelClose(IClosable p)
         {
@@ -105,6 +117,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             p.Close();
             await GetAll();
         }
+        
         #endregion
         #region Open Windows
         private async void OpenAddWindow()
@@ -151,6 +164,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public int Active { get => active; set { active = value; RaisePropertyChanged(); } }
 
         private int active;
+        private bool isAdmin;
+
         public bool Activate()
         {
             Active = 1;
@@ -161,7 +176,14 @@ namespace SaadiaInventorySystem.Client.ViewModel
             Active = 0;
             return Active == 0;
         }
-
+        public async void ActivateAsyncCommand()
+        {
+             await service.CallActivateService(SelectedInventory.Id);
+        }
+        public async void DeactivateAsyncCommand()
+        {
+             await service.CallDeactivateService(SelectedInventory.Id);
+        }
         /*public void Add()
         {
             AddInventoryView addInventory = new AddInventoryView();
@@ -178,7 +200,16 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             try
             {
-                Inventories = new ObservableCollection<Inventory>(await service.CallGetAllService());
+                if (AppProperties.RoleName == AppProperties.ROLE_ADMIN)
+                {
+                    Inventories = new ObservableCollection<Inventory>(await service.CallAdminGetAllService());
+                    IsAdmin = true;
+                }
+                if (AppProperties.RoleName == AppProperties.ROLE_USER)
+                {
+                    Inventories = new ObservableCollection<Inventory>(await service.CallGetAllService());
+                    isAdmin = false;
+                }
             }
             catch (Exception ex)
             {
@@ -243,21 +274,32 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 return false;
             };
         }
-
+        public async void DeleteInventory()
+        {
+            if (await DeleteAsync())
+            {
+                MessageBox.Show("Inventory Deleted Successfully");
+                await GetAll();
+            }
+            else 
+            {
+                MessageBox.Show("Error Deleting Inventory");
+                await GetAll();
+            }
+        }
         public async Task<bool> DeleteAsync()
         {
             try
             {
-                if (await service.CallDeleteService(SelectedInventory.Id.ToString()))
+                if (CurrentUserRole(AppProperties.ROLE_ADMIN))
                 {
-                    MessageBox.Show("Inventory Deleted Successfully");
-                    return true;
+                    return (await service.CallAdminDeleteService(SelectedInventory.Id));
                 }
-                else
+                else if (CurrentUserRole(AppProperties.ROLE_USER)) 
                 {
-                    MessageBox.Show("Error Deleting Inventory");
-                    return false;
+                    return (await service.CallDeleteService(SelectedInventory.Id));
                 }
+                return false;
             }
             catch (Exception ex)
             {
@@ -265,7 +307,29 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 return false;
             }
         }
+        private async void DisableAsync()
+        {
+            if (await service.CallDeleteService(SelectedInventory.Id))
+            {
+                MessageBox.Show("User Disabled");
+                await GetAll();
+            }
+        }
+        private async void ActivateAsync()
+        {
+            if (await service.CallActivateService(SelectedInventory.Id))
+            {
+                MessageBox.Show("User Activated");
+                await GetAll();
+            }
+        }
+
 
         #endregion
+        bool CurrentUserRole(string role)
+        {
+            return AppProperties.RoleName == role;
+        }
     }
+    
 }

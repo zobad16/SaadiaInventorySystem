@@ -40,6 +40,27 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest(ex);
             }
         }
+        // GET: api/<CustomersController>
+        [HttpGet("admin-customers")]
+        public ActionResult<List<Customer>> AdminGetAll()
+        {
+            try
+            {
+                var customers = _customerService.AdminGetAll();
+                if (customers != null)
+                {
+                    return Ok(customers);
+                }
+                else
+                {
+                    return Conflict("No Customers Found");
+                }
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
 
         // GET api/<CustomersController>/5
         [HttpGet("{id}")]
@@ -84,6 +105,27 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest(ex);
             }
         }
+        // POST api/<CustomersController>/update
+        [HttpPost("activate")]
+        public async Task<ActionResult> ActivateCustomerAsync([FromBody] int id)
+        {
+            try
+            {
+                var update = await _customerService.ActivateAsync(id);
+                if (update)
+                {
+                    return Ok("Successully updated");
+                }
+                else
+                {
+                    return Conflict("Error! No Customer found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
 
         // POST api/<CustomersController>/add
         //[HttpPut("{id}")]
@@ -110,7 +152,7 @@ namespace SaadiaInventorySystem.Controllers
 
         // POST api/<CustomersController>/delete
         [HttpPost("delete")]
-        public async Task<ActionResult> DeleteAsync([FromBody]string id)
+        public async Task<ActionResult> DeleteAsync([FromBody]int id)
         {
             try
             {
@@ -131,7 +173,7 @@ namespace SaadiaInventorySystem.Controllers
         }
         // POST api/<CustomersController>/delete
         [HttpPost("admindelete")]
-        public async Task<ActionResult> AdminDeleteAsync([FromBody]string id)
+        public async Task<ActionResult> AdminDeleteAsync([FromBody]int id)
         {
             try
             {

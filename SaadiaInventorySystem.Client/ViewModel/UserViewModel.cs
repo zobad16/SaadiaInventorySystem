@@ -25,6 +25,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
             EditWindowCommand = new RelayCommand(i => OpenEditWindow(), i => CanOpenEditWindow());
             OpenForgetPasswordWindowCommand = new RelayCommand(i => OpenEditPasswordWindow(), i => CanOpenEditPasswordWindow());
             DisableCommand = new RelayCommand(i => DisableUser(), i => CanOpenEditPasswordWindow());
+            DeleteCommand = new RelayCommand(i => DeleteUser(), i => CanOpenEditPasswordWindow());
+            ActivateCommand = new RelayCommand(i => ActivateUser(), i => CanOpenEditPasswordWindow());
             CancelCommand = new RelayCommand<IClosable>(p => Cancel(p), p => true);
             CancelCloseCommand = new RelayCommand<IClosable>(p => CancelClose(p), p => true);
             //NewUser = new User();
@@ -55,6 +57,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private RelayCommand<IClosable> _cancelCloseCommand;
         private bool isEnabled;
         private RelayCommand _disableCommand;
+        private RelayCommand _deleteCommand;
+        private RelayCommand _activateCommand;
 
         public User SelectedUser { get => selectedUser; set { selectedUser = value; RaisePropertyChanged(); } }
 
@@ -74,6 +78,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public ICommand OpenForgetPasswordWindowCommand { get => _openForgetPasswordWindowCommand; set { _openForgetPasswordWindowCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> CancelCommand { get => _cancelCommand; set { _cancelCommand = value; RaisePropertyChanged(); } }
         public RelayCommand DisableCommand { get => _disableCommand; set { _disableCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand ActivateCommand { get => _activateCommand; set { _activateCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand DeleteCommand { get => _deleteCommand; set { _deleteCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> SaveCommand
         {
             get => _saveCommand;
@@ -207,9 +213,26 @@ namespace SaadiaInventorySystem.Client.ViewModel
         }
         private async void DisableUser()
         {
-            if (await service.CallDeleteService(SelectedUser.Id.ToString())) 
+            if (await service.CallDeleteService(SelectedUser.Id)) 
             {
                 MessageBox.Show("User Disabled");
+                await GetAll();
+            }
+        }
+        private async void DeleteUser()
+        {
+            if (await service.CallAdminDeleteService(SelectedUser.Id))
+            {
+                MessageBox.Show("User Deleted");
+                await GetAll();
+            }
+        }
+        private async void ActivateUser()
+        {
+            if (await service.CallActivateService(SelectedUser.Id)) 
+            {
+                MessageBox.Show("User Activated");
+                await GetAll();
             }
         }
 
@@ -258,7 +281,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             try
             {
-                if (await service.CallDeleteService(SelectedUser.Id.ToString()))
+                if (await service.CallDeleteService(SelectedUser.Id))
                 {
                     MessageBox.Show("User Deleted Successfully");
                     return true;

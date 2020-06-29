@@ -139,8 +139,7 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 List<User> user = _userDao.Users.AsNoTracking()
-                    .Include(r => r.Role)                
-                    .Where(i=> i.IsActive == 1).ToList();
+                    .Include(r => r.Role).ToList();
                     
                 return user;
             }
@@ -167,13 +166,29 @@ namespace SaadiaInventorySystem.Service
                 throw ex;
             }
         }
-        public async Task<bool> DeleteUser(string id)
+        public async Task<bool> ActivateUser(int id)
         {
             
             try
             {
-                int _id = int.Parse(id);
-                User user = (User)_userDao.Users.Find(_id);
+                User user = (User)_userDao.Users.Find(id);
+                            //.Where(user => user.Id.Equals(id)).FirstOrDefault();
+                user.IsActive = 1;
+                return await _userDao.SaveChangesAsync() > 0;
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+        }
+        public async Task<bool> DeleteUser(int id)
+        {
+            
+            try
+            {
+                User user = (User)_userDao.Users.Find(id);
                             //.Where(user => user.Id.Equals(id)).FirstOrDefault();
                 user.IsActive = 0;
                 return await _userDao.SaveChangesAsync() > 0;
@@ -185,13 +200,13 @@ namespace SaadiaInventorySystem.Service
                 throw ex;
             }
         }
-        public async Task<bool> AdminDeleteUser(string id)
+        public async Task<bool> AdminDeleteUser(int id)
         {
             
             try
             {
                 User user = (User)_userDao.Users
-                            .Where(user => user.UserName.Equals(id));
+                            .Where(user => user.Id == id).FirstOrDefault();
                 _userDao.Remove<User>(user);
                 return await _userDao.SaveChangesAsync() > 0;
                 

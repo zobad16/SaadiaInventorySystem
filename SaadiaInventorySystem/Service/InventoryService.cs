@@ -66,7 +66,41 @@ namespace SaadiaInventorySystem.Service
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<bool> DeleteAsync(string id) 
+        public async Task<bool> ActivateAsync(int id) 
+        {
+            try
+            {
+                Inventory part = (Inventory)dao.Inventories
+                            .Where(part => part.Id == id).FirstOrDefault();
+                part.IsActive = 1;
+                part.DateUpdate = DateTime.Now;
+                return await dao.SaveChangesAsync() > 0;
+
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<bool> DeactivateAsync(int id) 
+        {
+            try
+            {
+                Inventory part = (Inventory)dao.Inventories
+                            .Where(part => part.Id == id).FirstOrDefault();
+                part.IsActive = 0;
+                part.DateUpdate = DateTime.Now;
+                return await dao.SaveChangesAsync() > 0;
+
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<bool> DeleteAsync(int id) 
         {
             try
             {
@@ -82,7 +116,7 @@ namespace SaadiaInventorySystem.Service
                 throw ex;
             }
         }
-        public async Task<bool> AdminDeleteAsync(string id) 
+        public async Task<bool> AdminDeleteAsync(int id) 
         {
             try
             {
@@ -100,7 +134,7 @@ namespace SaadiaInventorySystem.Service
             }
             return false;
         }
-        public Inventory Get(string id) {
+        public Inventory Get(int id) {
             return  (Inventory)dao.Inventories
                             .Include(i => i.OldPart)
                             .Where(part => part.Id.Equals(id)).FirstOrDefault();

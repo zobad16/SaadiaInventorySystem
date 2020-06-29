@@ -66,8 +66,21 @@ namespace SaadiaInventorySystem.Controllers
             }
         }
 
+        [HttpPost("activate")]
+        public async Task<IActionResult> ActivateUser([FromBody] int id)
+        {
+            if (await _userService.ActivateUser(id))
+            {
+                return Ok($"Delete success");
+            }
+            else
+            {
+                return BadRequest("User Delete failed");
+            }
+
+        }
         [HttpPost("delete")]
-        public async Task<IActionResult> DeleteUser([FromBody] string id)
+        public async Task<IActionResult> DeleteUser([FromBody] int id)
         {
             if (await _userService.DeleteUser(id))
             {
@@ -80,7 +93,7 @@ namespace SaadiaInventorySystem.Controllers
 
         }
         [HttpPost("admindelete")]
-        public async Task<IActionResult> AdminDeleteUser([FromBody] string id)
+        public async Task<IActionResult> AdminDeleteUser([FromBody] int id)
         {
             if (await _userService.AdminDeleteUser(id))
             {

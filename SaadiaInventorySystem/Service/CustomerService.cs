@@ -70,13 +70,36 @@ namespace SaadiaInventorySystem.Service
                 throw ex;
             }
         }
-        public async Task<bool> DeleteAsync(string id) 
+
+        public async Task<bool> ActivateAsync(int id)
         {
             try
             {
                 bool saved = false;
                 Customer _customer = (Customer)_dao.Customers
-                            .Where(customer => customer.Id.Equals(id)).FirstOrDefault();
+                            .Where(customer => customer.Id == id).FirstOrDefault();
+                if (_customer != null)
+                {
+                    _customer.IsActive = 1;
+                    saved = await _dao.SaveChangesAsync() > 0;
+                }
+                return saved;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+        }
+
+        public async Task<bool> DeleteAsync(int id) 
+        {
+            try
+            {
+                bool saved = false;
+                Customer _customer = (Customer)_dao.Customers
+                            .Where(customer => customer.Id == id ).FirstOrDefault();
                 if (_customer != null)
                 {
                     _customer.IsActive = 0;
@@ -93,12 +116,12 @@ namespace SaadiaInventorySystem.Service
                 throw ex;
             }
         }
-        public async Task<bool> AdminDeleteAsync(string id)
+        public async Task<bool> AdminDeleteAsync(int id)
         {
             try
             {
                 Customer _customer = (Customer)_dao.Customers
-                            .Where(_customer => _customer.Id.Equals(id)).FirstOrDefault();
+                            .Where(_customer => _customer.Id == id).FirstOrDefault();
                 _dao.Customers.Remove(_customer);
                 
                 return await _dao.SaveChangesAsync() > 0;
@@ -110,6 +133,7 @@ namespace SaadiaInventorySystem.Service
                 throw ex;
             }
         }
+
         public Customer Get(string id)
         {
             try
@@ -129,6 +153,21 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 List<Customer> _customer = _dao.Customers.Where(i => i.IsActive == 1).ToList();
+
+                return _customer;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+            
+        }
+        public List<Customer> AdminGetAll() 
+        {
+            try
+            {
+                List<Customer> _customer = _dao.Customers.ToList();
 
                 return _customer;
             }

@@ -61,6 +61,22 @@ namespace SaadiaInventorySystem.Client.Services
                 return data;
             }
         }
+        public async Task<List<Customer>> CallAdminGetAllService()
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.GetAsync("api/customers/admin-customers");
+                List<Customer> data = new List<Customer>();
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    Task<List<Customer>> responseData = result.ReadAsAsync<List<Customer>>();
+                    data = responseData.Result;
+                    return data;
+                }
+                return data;
+            }
+        }
         public async Task<bool> CallUpdateService(Customer customer)
         {
             using (var client = GetClient())
@@ -78,7 +94,24 @@ namespace SaadiaInventorySystem.Client.Services
 
             }
         }
-        public async Task<bool> CallDeleteService(string id)
+        public async Task<bool> CallActivateService(int id)
+        {
+            using (var client = GetClient())
+            {
+                //var _customer = JsonConvert.SerializeObject(customer);
+
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/customers/activate", id);
+
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else return false;
+
+            }
+        }
+        public async Task<bool> CallDeleteService(int id)
         {
             using (var client = GetClient())
             {
@@ -93,7 +126,7 @@ namespace SaadiaInventorySystem.Client.Services
 
             }
         }
-        public async Task<bool> CallAdminDeleteService(string id)
+        public async Task<bool> CallAdminDeleteService(int id)
         {
             using (var client = GetClient())
             {

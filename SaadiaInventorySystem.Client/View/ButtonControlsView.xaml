@@ -34,7 +34,7 @@
             <Button Content="Delete" 
                         Height="20"
                         Width="60"
-                        Command="{Binding Delete}"
+                        Command="{Binding DeleteCommand}"
                         />
         </StackPanel>
 

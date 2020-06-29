@@ -62,6 +62,22 @@ namespace SaadiaInventorySystem.Client.Services
                 return data;
             }
         }
+        public async Task<List<Inventory>> CallAdminGetAllService()
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.GetAsync("api/inventory/inventory/admin");
+                List<Inventory> data = new List<Inventory>();
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    Task<List<Inventory>> responseData = result.ReadAsAsync<List<Inventory>>();
+                    data = responseData.Result;
+                    return data;
+                }
+                return data;
+            }
+        }
         public async Task<bool> CallUpdateService(Inventory inventory)
         {
             using (var client = GetClient())
@@ -77,7 +93,37 @@ namespace SaadiaInventorySystem.Client.Services
 
             }
         }
-        public async Task<bool> CallDeleteService(string id)
+        public async Task<bool> CallActivateService(int id)
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/inventory/activate", id);
+
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else return false;
+
+            }
+        }
+        public async Task<bool> CallDeactivateService(int id)
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/inventory/deactivate", id);
+
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else return false;
+
+            }
+        }
+        public async Task<bool> CallDeleteService(int id)
         {
             using (var client = GetClient())
             {
@@ -92,11 +138,11 @@ namespace SaadiaInventorySystem.Client.Services
 
             }
         }
-        public async Task<bool> CallAdminDeleteService(string id)
+        public async Task<bool> CallAdminDeleteService(int id)
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/inventory/admindelete", id);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/inventory/delete/admin", id);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)

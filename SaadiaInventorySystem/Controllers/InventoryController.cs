@@ -34,8 +34,27 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest(ex);
             }
         }
+        [HttpGet("inventory/admin")]
+        public ActionResult<List<Inventory>> AdminGetAll()
+        {
+            try
+            {
+                var invoices = _inventoryService.AdminGetAll();
+                if (invoices != null)
+                {
+                    return Ok(invoices);
+                }
+                else
+                    return Conflict("No Invoices Found");
+            }
+            catch (Exception ex)
+            {
+                //Log error
+                return BadRequest(ex);
+            }
+        }
         [HttpGet("{id}")]
-        public ActionResult<Inventory> Get(string id)
+        public ActionResult<Inventory> Get(int id)
         {
             try
             {
@@ -96,12 +115,75 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest();
             }
         }
+        [HttpPost("activate")]
+        public async Task<IActionResult> ActivateInventoryAsync([FromBody] int id)
+        {
+            try
+            {
+                bool success = await _inventoryService.ActivateAsync(id);
+                if (success)
+                {
+                    return Ok("Inventory part updated successfully");
+                }
+                else
+                {
+                    return Conflict("Inventory part not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                //log
+                return BadRequest();
+            }
+        }
+        [HttpPost("deactivate")]
+        public async Task<IActionResult> DeactivateInventoryAsync([FromBody] int id)
+        {
+            try
+            {
+                bool success = await _inventoryService.DeactivateAsync(id);
+                if (success)
+                {
+                    return Ok("Inventory part updated successfully");
+                }
+                else
+                {
+                    return Conflict("Inventory part not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                //log
+                return BadRequest();
+            }
+        }
         [HttpPost("delete")]
-        public async Task<IActionResult> DeleteInvoiceAsync([FromBody] string id)
+        public async Task<IActionResult> DeleteInventoryAsync([FromBody] int id)
         {
             try
             {
                 bool success = await _inventoryService.DeleteAsync(id);
+                if (success)
+                {
+                    return Ok("Inventory deleted successfully");
+                }
+                else
+                {
+                    return Conflict("Inventory part not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                //log
+                return BadRequest();
+            }
+        }
+        [HttpPost("delete/admin")]
+        public async Task<IActionResult> AdminDeleteInventoryAsync([FromBody] int id)
+        {
+            try
+            {
+                bool success = await _inventoryService.AdminDeleteAsync(id);
                 if (success)
                 {
                     return Ok("Inventory deleted successfully");

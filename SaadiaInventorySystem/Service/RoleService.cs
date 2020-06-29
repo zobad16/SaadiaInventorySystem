@@ -97,8 +97,7 @@ namespace SaadiaInventorySystem.Service
         }
         public List<Role> GetAll()
         {
-            var role = dao.Roles.AsNoTracking()
-                .Where(r=> r.IsActive == 1).ToList();
+            var role = dao.Roles.AsNoTracking().ToList();
             return role;
         }
         public List<Role> AdminGetAll()

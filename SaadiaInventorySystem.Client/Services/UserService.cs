@@ -109,7 +109,7 @@ namespace SaadiaInventorySystem.Client.Services
 
             }
         }
-        public async Task<bool> CallDeleteService(string id)
+        public async Task<bool> CallDeleteService(int id)
         {
             using (var client = GetClient())
             {
@@ -124,7 +124,22 @@ namespace SaadiaInventorySystem.Client.Services
 
             }
         }
-        public async Task<bool> CallAdminDeleteService(string id)
+        public async Task<bool> CallActivateService(int id)
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/user/activate", id);
+
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else return false;
+
+            }
+        }
+        public async Task<bool> CallAdminDeleteService(int id)
         {
             using (var client = GetClient())
             {

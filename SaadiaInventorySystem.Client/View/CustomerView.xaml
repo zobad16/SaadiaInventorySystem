@@ -12,6 +12,44 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,10">
                 <local:ButtonControlsView/>
+                <Button Content="Disable User"
+                        Width="100"
+                        Height="20"
+                        Margin="5,0,5,0"
+                        Command="{Binding DisableCommand}"
+                         >
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAdmin}" Value="true">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsAdmin}" Value="false">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="Activate User"
+                            Width="100"
+                            Height="20"
+                            Margin="0,0,5,0"
+                            Command="{Binding ActivateCommand}"
+                             >
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAdmin}" Value="true">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsAdmin}" Value="false">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
             </StackPanel>
             <DataGrid ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer}"    
                   AutoGenerateColumns="False" 
