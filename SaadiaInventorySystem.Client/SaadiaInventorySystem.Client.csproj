@@ -109,6 +109,9 @@
     <Compile Include="View\AddInventoryView.xaml.cs">
       <DependentUpon>AddInventoryView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\AddQuotationView.xaml.cs">
+      <DependentUpon>AddQuotationView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\AddRoleView.xaml.cs">
       <DependentUpon>AddRoleView.xaml</DependentUpon>
     </Compile>
@@ -146,6 +149,12 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="View\QuotationAddCustomerView.xaml.cs">
+      <DependentUpon>QuotationAddCustomerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\QuotationAddPartsView.xaml.cs">
+      <DependentUpon>QuotationAddPartsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\QuotationView.xaml.cs">
       <DependentUpon>QuotationView.xaml</DependentUpon>
     </Compile>
@@ -163,6 +172,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\AddInventoryView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\AddQuotationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -207,6 +220,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\QuotationAddCustomerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\QuotationAddPartsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

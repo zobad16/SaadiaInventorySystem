@@ -41,16 +41,36 @@ namespace SaadiaInventorySystem.Service
                 Quotation quote = dao.Quotations.
                     Where(q => q.Id.Equals(data.Id)).FirstOrDefault();
                 quote.DateUpdated = DateTime.Now;
-                quote.Items = data.Items;
+                quote.OrderId = quote.OrderId;
+                quote.Order = data.Order;
                 quote.CustomerId = data.CustomerId;
                 quote.Customer = data.Customer;
-                
+                quote.Attn = data.Attn;
+                quote.Message = data.Message;
+                quote.MS = data.MS;
+                quote.Note = data.Note;
+                quote.OfferedDiscount = data.OfferedDiscount;
+                quote.QuotationNumber = quote.QuotationNumber;
+                quote.ReferenceNumber = quote.ReferenceNumber;
+                quote.VAT = quote.VAT;
                 return await dao.SaveChangesAsync() > 0;
             }
             catch (Exception ex){ throw ex; }
             
         }
         public async Task<bool> DeleteAsync(string id)
+        {
+            try 
+            {
+                Quotation quote = dao.Quotations.
+                    Where(q => q.Id.Equals(id)).FirstOrDefault();
+                quote.IsActive = 0;
+                return await dao.SaveChangesAsync() > 0;
+            }
+            catch (Exception ex){ throw ex; }
+            
+        }
+        public async Task<bool> ActivateAsync(string id)
         {
             try 
             {

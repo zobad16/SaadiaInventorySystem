@@ -13,11 +13,11 @@ namespace SaadiaInventorySystem.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Inventory> Inventories { get; set; }
         public DbSet<OldPart> OldParts { get; set; }
-        //public DbSet<Order> Orders { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<InvoiceItem> InvoiceItems { get; set; }
         public DbSet<Quotation> Quotations { get; set; }
-        public DbSet<QuotationItem> QuotationItems { get; set; }
+        //public DbSet<QuotationItem> QuotationItems { get; set; }
         
         public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder =>
         {
@@ -41,34 +41,40 @@ namespace SaadiaInventorySystem.Data
                 .HasForeignKey<Inventory>(fk => fk.OldPartFK)
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
+            //OrderItem composite key
+            //OrderId and InventoryId
+            modelBuilder.Entity<OrderItem>()
+                .HasKey(qt => new { qt.OrderId, qt.InventoryId });
 
-            //QuotationItem foreign key with Inventory
-            //QuotationItem -> (Quotation,Inventory)
-            modelBuilder.Entity<QuotationItem>()
-                .HasKey(qt => new { qt.QuotationId, qt.InventoryId});
-            //QuotationItem -> Quotation
-            modelBuilder.Entity<QuotationItem>()
-                .HasOne(qt => qt.Quotation)
-                .WithMany(b => b.Items)
-                .HasForeignKey(fk => fk.QuotationId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
-            //QuotaionItem -> Inventory
-            modelBuilder.Entity<QuotationItem>()
-                .HasOne<Inventory>(ct => ct.Inventory)
+            //Order and OrderItem
+            //1 Order Has many Order Items
+            //OrderItems has foreign key OrderId
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(qt => qt.Order)
+                .WithMany(b => b.OrderItems)
+                .HasForeignKey(fk => fk.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            //OrderItem -> Inventory
+            modelBuilder.Entity<OrderItem>()
+                .HasOne<Inventory>(inventory => inventory.Inventory)
                 .WithMany()
-                .HasForeignKey(bc => bc.InventoryId);
-            //Quotaion Foreign key with Quotaion Item and Customer
+                .HasForeignKey(orderitem => orderitem.InventoryId);
+            
+            //Quotaion Foreign key with Order Item and Customer
             //Quotation -> Customer
             modelBuilder.Entity<Quotation>()
                 .HasOne<Customer>(qt => qt.Customer )
                 .WithOne()
                 .HasForeignKey<Quotation>(fk=> fk.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
-            //Quotation -> Quotation Item
+            //Quotation -> Order
+            //Quoation has 1 Order
+            //Quotation => Order foreign key on OrderId
             modelBuilder.Entity<Quotation>()
-                .HasMany<QuotationItem>(qt => qt.Items)
-                .WithOne(c => c.Quotation)
-                .HasForeignKey(fk=> fk.QuotationId);
+                .HasOne<Order>(qt => qt.Order)
+                .WithOne()
+                .HasForeignKey<Quotation>(quotation=> quotation.OrderId);
             
             
             //InvoiceItem foreign key with Inventory
@@ -111,6 +117,9 @@ namespace SaadiaInventorySystem.Data
             SeedDataCustomer(modelBuilder);
             SeedDataUser(modelBuilder);
             SeedDataInventory(modelBuilder);
+            SeedDataOrder(modelBuilder);
+            SeedDataOrderItems(modelBuilder);
+            SeedDataQuotation(modelBuilder);
             //Seed Master data.
 
         }
@@ -349,8 +358,95 @@ namespace SaadiaInventorySystem.Data
         public void SeedDataOldPart(ModelBuilder modelBuilder) { }
         public void SeedDataInvoice(ModelBuilder modelBuilder) { }
         public void SeedDataInvoiceItem(ModelBuilder modelBuilder) { }
-        public void SeedDataQuotation(ModelBuilder modelBuilder) { }
-        public void SeedDataQuotationItem(ModelBuilder modelBuilder) { }
+        public void SeedDataQuotation(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Quotation>().HasData(new List<Quotation>()
+            {
+                new Quotation()
+                { 
+                    Id = 1,
+                    CustomerId = 2,
+                    OrderId = 1,
+                    ReferenceNumber = "NISSAN.TFA430K00725",
+                    IsActive =1,
+                    Attn = "Negotiation",
+                    VAT = 5.00,
+                    DateCreated = DateTime.Now,
+                    DateUpdated = DateTime.Now,
+                    MS = "SAADIA TRADING CO.LLC",
+                    OfferedDiscount = 0.00,
+                    Note = "Dear Sir.Thank you for your inquiry. We are pleased to quote our best prices as follows:",
+                    Message = "Delivery: 5 days on order confirmation., Price quoted Net in UAE Dirhams, ex-warehouse.\nMake: Genuine Part\nValidity: 1 week \nPayment: 100% cash on order confirmation.\nAwaiting your valued order & assuring you of our best services always.",
+                    
+
+                }
+
+            });
+
+        }
+        public void SeedDataOrder(ModelBuilder modelBuilder) 
+        {
+            modelBuilder.Entity<Order>().HasData(new List<Order>()
+            {
+                new Order()
+                {
+                    Id =1,
+                    DateCreated= DateTime.Now,
+                    DateUpdated= DateTime.Now,
+                },
+                new Order()
+                {
+                    Id =2,
+                    DateCreated= DateTime.Now,
+                    DateUpdated= DateTime.Now,
+                }
+
+            }); 
+        }
+        public void SeedDataOrderItems(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<OrderItem>().HasData(new List<OrderItem>() 
+            {
+                new OrderItem()
+                {
+                    InventoryId=10,
+                    OrderId = 1,
+                    OfferedPrice= 200,
+                    OrderQty = 2,
+                    Total = 400.00
+
+                },
+                new OrderItem()
+                {
+                    InventoryId=3,
+                    OrderId = 1,
+                    OfferedPrice= 200,
+                    OrderQty = 2,
+                    Total = 400.00
+
+                },
+                new OrderItem()
+                {
+                    InventoryId=3,
+                    OrderId = 2,
+                    OfferedPrice= 200,
+                    OrderQty = 2,
+                    Total = 400.00
+
+                },
+                new OrderItem()
+                {
+                    InventoryId=10,
+                    OrderId = 2,
+                    OfferedPrice= 200,
+                    OrderQty = 2,
+                    Total = 400.00
+
+                }
+            });
+
+
+        }
 
 
     }

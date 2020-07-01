@@ -22,7 +22,7 @@
                      />
         </z:EventTrigger>
     </z:Interaction.Triggers>
-    <Grid Background="Silver">
+    <Grid Background="WhiteSmoke">
         <Grid.RowDefinitions>
             <RowDefinition Height="2*"/>
             <RowDefinition Height="1*"/>
