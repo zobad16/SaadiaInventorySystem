@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using SaadiaInventorySystem.Client.ViewModel;
+using System.Windows.Controls;
 
 namespace SaadiaInventorySystem.Client.View
 {

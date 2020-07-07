@@ -9,5 +9,6 @@ namespace SaadiaInventorySystem.Model
         public List<OrderItem> OrderItems { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateUpdated { get; set; }
+        public int IsActive { get; internal set; }
     }
 }

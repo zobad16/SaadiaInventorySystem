@@ -21,7 +21,7 @@ namespace SaadiaInventorySystem.Model
         public string Attn { get; set; }
         public string Note { get; set; }
         public string Message { get; set; }
-        public int IsActive { get; internal set; }
+        public int IsActive { get; set; }
 
         [NotMapped]
         public double Total { get; set; }

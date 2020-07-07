@@ -375,8 +375,8 @@ namespace SaadiaInventorySystem.Data
                     DateUpdated = DateTime.Now,
                     MS = "SAADIA TRADING CO.LLC",
                     OfferedDiscount = 0.00,
-                    Note = "Dear Sir.Thank you for your inquiry. We are pleased to quote our best prices as follows:",
-                    Message = "Delivery: 5 days on order confirmation., Price quoted Net in UAE Dirhams, ex-warehouse.\nMake: Genuine Part\nValidity: 1 week \nPayment: 100% cash on order confirmation.\nAwaiting your valued order & assuring you of our best services always.",
+                    Message = "Dear Sir.Thank you for your inquiry. We are pleased to quote our best prices as follows:",
+                    Note = "Delivery: 5 days on order confirmation., Price quoted Net in UAE Dirhams, ex-warehouse.\nMake: Genuine Part\nValidity: 1 week \nPayment: 100% cash on order confirmation.\nAwaiting your valued order & assuring you of our best services always.",
                     
 
                 }

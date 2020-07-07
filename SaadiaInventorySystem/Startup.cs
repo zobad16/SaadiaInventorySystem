@@ -20,7 +20,8 @@ namespace SaadiaInventorySystem
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            //services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddMvc();
             services.AddTransient(typeof(LoginService));
             services.AddTransient(typeof(UserService));
@@ -29,6 +30,7 @@ namespace SaadiaInventorySystem
             services.AddTransient(typeof(InventoryService));
             services.AddTransient(typeof(OldPartService));
             services.AddTransient(typeof(QuotationService));
+            services.AddTransient(typeof(OrderService));
             services.AddTransient(typeof(InvoiceService));
 
             services.AddScoped(typeof(AppDbContext));

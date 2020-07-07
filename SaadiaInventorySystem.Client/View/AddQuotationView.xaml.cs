@@ -1,4 +1,5 @@
 ﻿using SaadiaInventorySystem.Client.Util;
+using SaadiaInventorySystem.Client.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,10 @@ namespace SaadiaInventorySystem.Client.View
     /// </summary>
     public partial class AddQuotationView : Window, IClosable
     {
-        public AddQuotationView()
+        public AddQuotationView(QuotationViewModel vm)
         {
             InitializeComponent();
+            DataContext = vm;
         }
     }
 }

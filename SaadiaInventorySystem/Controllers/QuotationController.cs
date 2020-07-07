@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace SaadiaInventorySystem.Controllers
 {
+    [Route("api/[controller]")]
     public class QuotationController : ControllerBase
     {
         private readonly QuotationService _quotationService;
@@ -20,22 +21,28 @@ namespace SaadiaInventorySystem.Controllers
         {
             try
             {
-                var invoices = _quotationService.GetAll();
-                if (invoices != null)
+                List<Quotation> quotes = _quotationService.GetAll();
+                if (quotes != null)
                 {
-                    return Ok(invoices);
+                    Console.Out.WriteLine("Invoices Found");
+                    return Ok(quotes);
                 }
                 else
+                {
+                    Console.Out.WriteLine("No Invoices Found");
                     return Conflict("No Invoices Found");
+
+                }
             }
             catch (Exception ex)
             {
                 //Log error
+                Console.Error.WriteLine($"Quotation Controller Error: Method: Get, Error:{ex.Message} ");
                 return BadRequest(ex);
             }
         }
         [HttpGet("{id}")]
-        public ActionResult<Quotation> Get(string id)
+        public ActionResult<Quotation> Get(int id)
         {
             try
             {
@@ -50,7 +57,8 @@ namespace SaadiaInventorySystem.Controllers
             }
             catch (Exception ex)
             {
-                //Log error
+                //Log 
+                Console.Error.WriteLine($"Quotation Controller Error: Method: Get, Error:{ex.Message} ");
                 return BadRequest(ex);
             }
         }
@@ -72,6 +80,7 @@ namespace SaadiaInventorySystem.Controllers
             catch (Exception ex)
             {
                 //log
+                Console.Error.WriteLine($"Quotation Controller Error: Method: Add, Error:{ex.Message} ");
                 return BadRequest();
             }
         }
@@ -93,6 +102,7 @@ namespace SaadiaInventorySystem.Controllers
             catch (Exception ex)
             {
                 //log
+                Console.Error.WriteLine($"Quotation Controller Error: Method: Update, Error:{ex.Message} ");
                 return BadRequest();
             }
         }
@@ -114,6 +124,8 @@ namespace SaadiaInventorySystem.Controllers
             catch (Exception ex)
             {
                 //log
+                
+                Console.Error.WriteLine($"Quotation Controller Error: Method: Delete, Error:{ex.Message} ");
                 return BadRequest();
             }
         }

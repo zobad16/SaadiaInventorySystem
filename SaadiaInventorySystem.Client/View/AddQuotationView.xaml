@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SaadiaInventorySystem.Client.View"
         mc:Ignorable="d"
-        Title="AddQuotationView" Height="450" Width="900"
+        Height="450" Width="900"
         x:Name="_AddQuotationWindow"
         xmlns:z="http://schemas.microsoft.com/expression/2010/interactivity"
+        ResizeMode="CanMinimize"
         >
     <z:Interaction.Triggers>
         <z:EventTrigger EventName="Closing">
@@ -24,7 +25,11 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="9*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="10"/>
@@ -43,7 +48,7 @@
                      Grid.Row="1"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewCustomer.FirstName}"
+        <TextBox Text="{Binding Path=NewQuotation.Customer.FirstName}"
                      Grid.Column="2"
                      Grid.Row="1"
                      HorizontalAlignment="Stretch"
@@ -56,7 +61,7 @@
                      HorizontalAlignment="Left"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewCustomer.LastName}"
+        <TextBox Text="{Binding Path=NewQuotation.Customer.LastName}"
                      Height="25"
                      HorizontalAlignment="Stretch"
                      Grid.Column="4"
@@ -68,7 +73,7 @@
                      Grid.Row="2"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewCustomer.CompanyName}"
+        <TextBox Text="{Binding Path=NewQuotation.Customer.CompanyName}"
                      Grid.Column="2"
                      Grid.Row="2"
                      HorizontalAlignment="Stretch"
@@ -81,7 +86,7 @@
                      HorizontalAlignment="Left"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewCustomer.Address}"
+        <TextBox Text="{Binding Path=NewQuotation.Customer.Address}"
                      Height="25"
                      HorizontalAlignment="Stretch"
                      Grid.Column="4"
@@ -95,7 +100,7 @@
                      HorizontalAlignment="Left"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewCustomer.Trn}"
+        <TextBox Text="{Binding Path=NewQuotation.Customer.Trn}"
                  Height="25"
                  HorizontalAlignment="Stretch"
                  Grid.Column="2"
@@ -108,7 +113,7 @@
                      HorizontalAlignment="Left"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewCustomer.PhoneNumber}" 
+        <TextBox Text="{Binding Path=NewQuotation.Customer.PhoneNumber}" 
                 Height="25"
                 HorizontalAlignment="Stretch"
                 Grid.Column="4"
@@ -121,7 +126,7 @@
                    HorizontalAlignment="Left"
                    VerticalAlignment="Center"
                    Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewCustomer.EmailAddress}"
+        <TextBox Text="{Binding Path=NewQuotation.Customer.EmailAddress}"
                  Height="25"
                  HorizontalAlignment="Stretch"
                  Grid.Column="2"
@@ -134,7 +139,7 @@
                    HorizontalAlignment="Left"
                    VerticalAlignment="Center"
                    Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewCustomer.Postcode}"
+        <TextBox Text="{Binding Path=NewQuotation.Customer.Postcode}"
                  Height="25"
                  HorizontalAlignment="Stretch"
                  Grid.Column="4"
@@ -148,8 +153,10 @@
                  Grid.RowSpan="2"
                  VerticalAlignment="Center"
                  VerticalContentAlignment="Center"
-                 Margin="10,0,0,0">
-            <TextBlock Text="Add Existing Customer" TextWrapping="Wrap"/>
+                 Margin="10,0,0,0"
+                 Command="{Binding OpenAddCustomerWindowCommand}">
+            <TextBlock Text="Add Existing Customer" 
+                       TextWrapping="Wrap"/>
         </Button>
         <Button  Height="50"                 
                  HorizontalAlignment="Stretch"
@@ -158,19 +165,12 @@
                  Grid.RowSpan="2"
                  VerticalAlignment="Top"
                  VerticalContentAlignment="Center"
-                 Margin="10,0,0,0">
-            <TextBlock Text="Add Parts" TextWrapping="Wrap"/>
+                 Margin="10,0,0,0"
+                 Command="{Binding OpenAddPartsWindowCommand}">
+            <TextBlock Text="Add Parts" 
+                       TextWrapping="Wrap"/>
         </Button>
-        <Button  Height="50"                 
-                 HorizontalAlignment="Stretch"
-                 Grid.Column="5"
-                 Grid.Row="5"
-                 Grid.RowSpan="2"
-                 VerticalAlignment="Top"
-                 VerticalContentAlignment="Center"
-                 Margin="10,0,0,0">
-            <TextBlock Text="Cancel" TextWrapping="Wrap"/>
-        </Button>
+        
         <StackPanel Orientation="Vertical"
                     HorizontalAlignment="Stretch"
                     Grid.Row="5"
@@ -178,59 +178,137 @@
                     Grid.ColumnSpan="4"
                     Grid.RowSpan="2">
             <TextBlock Text="Order Items:" Margin="10,0"/>
-            <DataGrid ItemsSource="{Binding InvoicesList}" SelectedItem="{Binding SelectedExchange}"    
+            <DataGrid ItemsSource="{Binding NewQuotation.Order.OrderItems}" SelectedItem="{Binding RemoveSelectedOrderItem}"    
                   AutoGenerateColumns="False" 
                   IsReadOnly="True"
                   Margin="0,4"
-                  Height="200"                      
+                  Height="110"                      
                   HorizontalAlignment="Stretch" 
                   HorizontalContentAlignment="Stretch" 
                   ColumnWidth="*"
+                  VerticalScrollBarVisibility="Auto"                      
                   >
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Part Number"
-                                    Binding="{Binding ID}" />
+                                    Binding="{Binding Inventory.Id}" />
                     <DataGridTextColumn Header="Description"
-                                    Binding="{Binding PartNumber}" />
+                                    Binding="{Binding Inventory.PartNumber}" />
                     <DataGridTextColumn Header="Quantity"
-                                    Binding="{Binding Description}" />
+                                    Binding="{Binding Inventory.Description}" />
                     <DataGridTextColumn Header="Units"
-                                    Binding="{Binding Location}" />
+                                    Binding="{Binding Inventory.Location}" />
+                    <DataGridTextColumn Header="Order Quantity"
+                                    Binding="{Binding OrderQty}" />
                     <DataGridTextColumn Header="Unit Price"
-                                    Binding="{Binding UnitPrice}" />
+                                    Binding="{Binding Inventory.UnitPrice}" />
+                    <DataGridTextColumn Header="Offered Price"
+                                    Binding="{Binding OfferedPrice}" />
                     <DataGridTextColumn Header="Total Price"
-                                                    Binding="{Binding UnitPrice}" />
+                                    Binding="{Binding Total}" />
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>
         <TextBlock Text="Total" Margin="10,0,0,0"
                  Grid.Row="7"
                  Grid.Column="1"/>
-        <TextBox Text="{Binding Total}" 
+        <TextBox Text="{Binding NewQuotation.Order.TotalPrice}" 
                  Grid.Row="7"
                  Grid.Column="2"
-                 HorizontalAlignment="Stretch"/>
+                 HorizontalAlignment="Stretch" 
+                 VerticalAlignment="Center" 
+                 VerticalContentAlignment="Center" 
+                 Height="25"/>
         <TextBlock Text="Discount" Margin="10,0,0,0"
                  Grid.Row="7"
                  Grid.Column="3"/>
-        <TextBox Text="{Binding Total}" 
+        <TextBox Text="{Binding NewQuotation.OfferedDiscount}" 
                  Grid.Row="7"
                  Grid.Column="4"
-                 HorizontalAlignment="Stretch"/>
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center"
+                 Height="25"/>
         <TextBlock Text="VAT" Margin="10,0,0,0"
                  Grid.Row="8"
                  Grid.Column="1"/>
-        <TextBox Text="{Binding Vat}" 
+        <TextBox Text="{Binding NewQuotation.VAT}" 
                  Grid.Row="8"
                  Grid.Column="2"
-                 HorizontalAlignment="Stretch"/>
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center"
+                 Height="25"/>
         <TextBlock Text="Net Total" Margin="10,0,0,0"
                  Grid.Row="8"
                  Grid.Column="3"/>
-        <TextBox Text="{Binding NetTotal}"
+        <TextBox Text="{Binding NewQuotation.NetTotal}"
                  Grid.Row="8"
                  Grid.Column="4"
-                 HorizontalAlignment="Stretch"/>
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center"
+                 Height="25"/>
+        <TextBlock Text="M/S" Margin="10,0,0,0"
+                 Grid.Row="9"
+                 Grid.Column="1"/>
+        <TextBox Text="{Binding NewQuotation.MS}"
+                 Grid.Row="9"
+                 Grid.Column="2"
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center"
+                 Height="25"/>
+        <TextBlock Text="Attn" Margin="10,0,0,0"
+                 Grid.Row="9"
+                 Grid.Column="3"/>
+        <TextBox Text="{Binding NewQuotation.Attn}"
+                 Grid.Row="9"
+                 Grid.Column="4"
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center"
+                 Height="25"/>
+        <TextBlock Text="Message" Margin="10,0,0,0"
+                 Grid.Row="10"
+                 Grid.Column="1" 
+                 VerticalAlignment="Stretch"  />
+        <TextBox Text="{Binding NewQuotation.Message}"
+                 Grid.Row="10"
+                 Grid.Column="2"
+                 HorizontalAlignment="Stretch"
+                 Grid.RowSpan="2"
+                 TextWrapping="Wrap"
+                 VerticalContentAlignment="Center"/>
+        <TextBlock Text="Note" Margin="10,0,0,0"
+                 Grid.Row="10"
+                 Grid.Column="3"/>
+        <TextBox Text="{Binding NewQuotation.Note}"
+                 Grid.Row="10"
+                 Grid.Column="4"
+                 Grid.RowSpan="2"
+                 HorizontalAlignment="Stretch"
+                 VerticalContentAlignment="Center"
+                 TextWrapping="Wrap"/>
+        <Button Content="Save" 
+                VerticalAlignment="Stretch" 
+                HorizontalAlignment="Right"
+                Margin="5,5,0,0"
+                Width="100"
+                Grid.Row="12"
+                Grid.Column="2"
+                Command="{Binding SaveCommand}"
+                CommandParameter="{Binding ElementName=_AddQuotationWindow}"/>
+        <Button Content="Cancel"
+                Width="100"                 
+                Grid.Column="3"
+                Grid.Row="12"
+                Margin="5,5,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Center"
+                Command="{Binding CancelCommand}"
+                CommandParameter="{Binding ElementName=_AddQuotationWindow}"/>
+
     </Grid>
 
 </Window>

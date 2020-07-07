@@ -7,11 +7,11 @@
         mc:Ignorable="d"
         d:DesignHeight="500" d:DesignWidth="800"
         ResizeMode="CanMinimize"
-        x:Name="_QuotationCustomerSelectWindow">
+        x:Name="_quotationCustomerSelectWindow">
     <Grid>
         <StackPanel Orientation="Vertical" Margin="10,10">
-            
-            <DataGrid ItemsSource="{Binding CustomersList}" SelectedItem="{Binding SelectedQuotation.Customer}"    
+
+            <DataGrid ItemsSource="{Binding CustomersList}" SelectedItem="{Binding NewQuotation.Customer}"    
                   AutoGenerateColumns="False" 
                   Grid.Row="0"  IsReadOnly="True"
                   ColumnWidth="*"
@@ -43,12 +43,13 @@
                 <Button Content="Select"
                         Width="100"
                         Margin="5,5"
-                        Command="{Binding SelectCustomerCommand}"/>
+                        Command="{Binding SelectCustomerCommand}"
+                        CommandParameter="{Binding ElementName=_quotationCustomerSelectWindow}"/>
                 <Button Content="Cancel"
                         Width="100"
                         Margin="5,5"
-                        Command="{Binding CancelCustomerSelectCommand}"
-                        CommandParameter="{Binding ElementName=_QuotationCustomerSelectWindow}"/>
+                        Command="{Binding CancelCommand}"
+                        CommandParameter="{Binding ElementName=_quotationCustomerSelectWindow}"/>
             </StackPanel>
         </StackPanel>
     </Grid>

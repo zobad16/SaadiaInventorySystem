@@ -1,7 +1,9 @@
-﻿using SaadiaInventorySystem.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SaadiaInventorySystem.Data;
 using SaadiaInventorySystem.Model;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -95,13 +97,16 @@ namespace SaadiaInventorySystem.Service
             catch (Exception ex){ throw ex; }
             
         }
-        public Quotation Get(string id) 
+        public Quotation Get(int id) 
         {
             try
             {
-                var quotation = dao.Quotations.
-                    Where((quote)=> quote.Id.Equals(id)
-                    ).FirstOrDefault();
+                var quotation = dao.Quotations.Include(c => c.Customer)
+                    .Include(r => r.Order)
+                    .ThenInclude(r=> r.OrderItems)
+                    .ThenInclude(r=> r.Inventory)
+                    .Where((quote)=> quote.Id == id )
+                    .FirstOrDefault();
                 return quotation;
             }
             catch(Exception ex)
@@ -111,11 +116,19 @@ namespace SaadiaInventorySystem.Service
         }
         public List<Quotation> GetAll() 
         {
-            return dao.Quotations.Where(i => i.IsActive == 1).ToList<Quotation>(); 
+            return dao.Quotations.Include(c=> c.Customer)
+                .Include(r => r.Order)
+                .ThenInclude(r => r.OrderItems)
+                .ThenInclude(r => r.Inventory)
+                .Where(i => i.IsActive == 1).ToList<Quotation>(); 
         }
         public List<Quotation> AdminGetAll() 
         {
-            return dao.Quotations.ToList<Quotation>(); 
+            return dao.Quotations.Include(c => c.Customer)
+                    .Include(r => r.Order)
+                    .ThenInclude(r => r.OrderItems)
+                    .ThenInclude(r => r.Inventory)
+                    .ToList<Quotation>(); 
         }
     }
 }
