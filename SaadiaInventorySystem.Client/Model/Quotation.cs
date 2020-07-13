@@ -65,9 +65,10 @@ namespace SaadiaInventorySystem.Client.Model
         public void CalculateNetTotal()
         {
             Order.CalculateTotalPrice();
-            double total_percent = (VAT + offeredDiscount) / 100;
-            double adj_price = total_percent * Order.TotalPrice;
-            NetTotal = Order.TotalPrice - adj_price;
+            double total_percent = offeredDiscount/ 100;
+            double vat_adj = VAT/100 * Order.TotalPrice;
+            double discount_adj = total_percent * Order.TotalPrice;
+            NetTotal = (Order.TotalPrice - discount_adj) + vat_adj;
             RaisePropertyChanged("NetTotal");
         }
 

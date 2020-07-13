@@ -10,7 +10,7 @@ namespace SaadiaInventorySystem.Model
         public string Description { get; set; }
         public string Location { get; set; }
         
-        [Column(TypeName = "decimal(5, 2)")]
+        [Column(TypeName = "decimal(16, 2)")]
         public decimal UnitPrice { get; set; }
         public int AvailableQty { get; set; }
         public string Rem { get; set; }

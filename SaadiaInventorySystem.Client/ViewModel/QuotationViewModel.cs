@@ -18,20 +18,28 @@ namespace SaadiaInventorySystem.Client.ViewModel
             Name = "Quotation";
             service = new QuotationService();
             AddWindowCommand = new RelayCommand(i => OpenAddWindow(), i => true);
+            RemovePartCommand = new RelayCommand(i=> RemovePart(), i =>  RemoveSelectedOrderItem != null );
             EditWindowCommand = new RelayCommand(i => OpenEditWindow(), i => SelectedQuotation != null);
             OpenAddCustomerWindowCommand = new RelayCommand(i => OpenAddCustomerWindow(), i => true);
             OpenAddPartsWindowCommand = new RelayCommand(i => OpenAddPartsWindow(), i => true);
             CancelCommand = new RelayCommand<IClosable>(i => Cancel(i), i => true);
             SaveCommand = new RelayCommand<IClosable>(i => Save(i), i => true);
+            ActivateCommand = new RelayCommand(i => ActivateAsync(), (a) => SelectedQuotation != null);
+            DisableCommand = new RelayCommand(i => DisableAsync(), (a) => SelectedQuotation != null);
+            DeleteCommand = new RelayCommand(i => Delete(), (a) => SelectedQuotation != null);
+
             SelectCustomerCommand = new RelayCommand<IClosable>(i => SelectCustomersCommand(i),i=> true);
             SelectPartCommand = new RelayCommand<IClosable>(i => SelectPartsCommand(i),i=> true);
             AddOrderItemCommand = new RelayCommand<IClosable>(i => AddOrderItem(i), i => true);
+            isEdit = false;
+            isAdmin = false;
          //   NewQuotation = new Quotation();
         }
 
         
 
         private string _name;
+        private static bool isEdit;
         private readonly QuotationService service;
         private Quotation _quotation;
         private Quotation _selectedQuotation;
@@ -39,14 +47,21 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private double _netTotal;
         private string message;
         private string note;
+        private bool isAdmin;
 
         private ObservableCollection<Quotation> _quotations;
         private ObservableCollection<Customer> _customersList;
         private Customer _selectedCustomer;
         private ObservableCollection<Inventory> _partsList;
         private OrderItem _selectedOrderItem;
+        private OrderItem _removeSelectedOrderItem;
         
         private ICommand _addWindowCommand;
+        private ICommand _removePartCommand;
+        private RelayCommand _activateCommand;
+        private RelayCommand _disableCommand;
+        private RelayCommand _deleteCommand;
+
         private ICommand _openAddCustomerWindowCommand;
         private ICommand _openAddPartsWindowCommand;
         private ICommand _editWindowCommand;
@@ -78,8 +93,14 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public Quotation SelectedQuotation { get => _selectedQuotation; set { _selectedQuotation = value; RaisePropertyChanged(); } }
         public Quotation NewQuotation { get => _newQuotation; set { _newQuotation = value; RaisePropertyChanged(); } }
         public int Active { get => active; set { active = value; RaisePropertyChanged(); } }
+        public bool IsAdmin { get => isAdmin; set { isAdmin = value; RaisePropertyChanged(); } }
 
         public ICommand AddWindowCommand { get => _addWindowCommand; set { _addWindowCommand = value; RaisePropertyChanged(); } }
+        public ICommand RemovePartCommand { get => _removePartCommand; set { _removePartCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand ActivateCommand { get => _activateCommand; set { _activateCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand DisableCommand { get => _disableCommand; set { _disableCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand DeleteCommand { get => _deleteCommand; set { _deleteCommand = value; RaisePropertyChanged(); } }
+
         public ICommand OpenAddCustomerWindowCommand { get => _openAddCustomerWindowCommand; set { _openAddCustomerWindowCommand = value; RaisePropertyChanged(); } }
         public ICommand OpenAddPartsWindowCommand { get => _openAddPartsWindowCommand; set { _openAddPartsWindowCommand = value; RaisePropertyChanged(); } }
         public ICommand EditWindowCommand { get => _editWindowCommand; set { _editWindowCommand = value; RaisePropertyChanged(); } }
@@ -94,6 +115,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public Customer SelectedCustomer { get => _selectedCustomer; set { _selectedCustomer = value; RaisePropertyChanged(); } }
         public ObservableCollection<Inventory> PartsList { get => _partsList; set { _partsList = value; RaisePropertyChanged(); } }
         public OrderItem SelectedOrderItem { get => _selectedOrderItem; set { _selectedOrderItem = value; RaisePropertyChanged(); } }
+        public OrderItem RemoveSelectedOrderItem { get => _removeSelectedOrderItem; set { _removeSelectedOrderItem = value; RaisePropertyChanged(); } }
 
         public string Message { get => message; set { message = value; RaisePropertyChanged(); } }
         public string Note { get => note; set { note = value; RaisePropertyChanged(); } }
@@ -113,7 +135,27 @@ namespace SaadiaInventorySystem.Client.ViewModel
             //Data Checks
             //Check if it is create or update mode
             //if create mode
-            //Check if partnumber exists. if it does replace Inventory with the id
+            //Check if inventory id > 0 then set inventory to null
+            foreach (var item in NewQuotation.Order.OrderItems)
+            {
+                if (item.InventoryId > 0)
+                {
+                    item.Inventory = null;
+                }
+                item.IsActive = 1;
+                item.OrderId = NewQuotation.OrderId;
+            }
+            NewQuotation.CustomerId = NewQuotation.Customer.Id;
+            NewQuotation.Customer = null;
+
+            if (!isEdit)
+            {
+                await AddAsync();
+            }
+            else if (isEdit)
+            {
+                await UpdateAsync();
+            }
 
             p.Close();
             await GetAll();
@@ -139,7 +181,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         private void OpenEditWindow()
         {
-            throw new NotImplementedException();
+            isEdit = true;
+            NewQuotation = SelectedQuotation;
+            var window = new AddQuotationView(this);
+            window.ShowDialog();
+            
         }
 
         private void OpenAddWindow()
@@ -148,7 +194,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             NewQuotation.IsActive = 1;
             NewQuotation.Message = Message;
             NewQuotation.Note = Note;
-
+            isEdit = false;
             
             var window = new AddQuotationView(this);
             window.ShowDialog();
@@ -161,17 +207,64 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             if(SelectedOrderItem.Inventory.PartNumber != "") 
             {
+                SelectedOrderItem.Inventory.IsActive = 1;
                 SelectedOrderItem.CalculateTotal();
                 if (NewQuotation.Order.OrderItems.Count == 0)
                 {
                     NewQuotation.Order.OrderItems = new ObservableCollection<OrderItem>();
                 }
-                NewQuotation.Order.OrderItems.Add(SelectedOrderItem);
+                NewQuotation.Order.OrderItems.Add( new OrderItem() {
+                    Inventory = SelectedOrderItem.Inventory ,
+                    InventoryId = SelectedOrderItem.Inventory.Id,
+                    OfferedPrice = SelectedOrderItem.OfferedPrice,
+                    Order = SelectedOrderItem.Order,
+                    OrderId = SelectedOrderItem.OrderId,
+                    OrderQty = SelectedOrderItem.OrderQty,
+                    Total = SelectedOrderItem.Total,
+                    IsActive =1
+                   
+                } );
                 NewQuotation.CalculateNetTotal();
-
+                
                 i.Close();
             }
             
+        }
+        private void RemovePart()
+        {
+            NewQuotation.Order.OrderItems.Remove(RemoveSelectedOrderItem);
+            NewQuotation.CalculateNetTotal();
+            
+        }
+        
+        private async void DisableAsync()
+        {
+            if (await service.CallDeleteService(SelectedQuotation.Id))
+            {
+                MessageBox.Show("Quoatation Disabled");
+                await GetAll();
+            }
+        }
+        public async void Delete()
+        {
+            if (await DeleteAsync())
+            {
+                MessageBox.Show("Quotation Deleted Successfully");
+                await GetAll();
+            }
+            else
+            {
+                MessageBox.Show("Error Deleting Quotation");
+                await GetAll();
+            }
+        }
+        private async void ActivateAsync()
+        {
+            if (await service.CallActivateService(SelectedQuotation.Id))
+            {
+                MessageBox.Show("Quotation Activated");
+                await GetAll();
+            }
         }
 
         private void SelectCustomersCommand(IClosable i)
@@ -200,7 +293,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             try
             {
-                if (await service.CallUpdateService(SelectedQuotation))
+                if (await service.CallUpdateService(NewQuotation))
                 {
                     MessageBox.Show("Quotation Updated Successfully");
                     return true;
@@ -221,21 +314,20 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             try
             {
-                if (await service.CallDeleteService(SelectedQuotation.Id))
+                if (CurrentUserRole(AppProperties.ROLE_ADMIN))
                 {
-                    MessageBox.Show("Quotation Deleted Successfully");
-                    return true;
+                    return (await service.CallAdminDeleteService(SelectedQuotation.Id));
                 }
-                else
+                else if (CurrentUserRole(AppProperties.ROLE_USER))
                 {
-                    MessageBox.Show("Error Deleting Quotation");
-                    return false;
+                    return (await service.CallDeleteService(SelectedQuotation.Id));
                 }
+                return false;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"An unexpected error occured: {ex.Message}");
-                throw ex;
+                return false;
             }
         }
 
@@ -243,13 +335,30 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             try
             {
-                Quotations = new ObservableCollection<Quotation>(await service.CallGetAllService());
-                foreach(var item in Quotations)
+                if (CurrentUserRole(AppProperties.ROLE_ADMIN))
                 {
-                    item.CalculateNetTotal();
+
+                    Quotations = new ObservableCollection<Quotation>(await service.CallAdminGetAllService());
+                    foreach (var item in Quotations)
+                    {
+                        item.CalculateNetTotal();
+                    }
+                    Message = Quotations[0].Message;
+                    Note = Quotations[0].Note;
+                    IsAdmin = true;
                 }
-                Message = Quotations[0].Message;
-                Note = Quotations[0].Note;
+            else if (CurrentUserRole(AppProperties.ROLE_USER))
+                {
+
+                    Quotations = new ObservableCollection<Quotation>(await service.CallGetAllService());
+                    foreach (var item in Quotations)
+                    {
+                        item.CalculateNetTotal();
+                    }
+                    Message = Quotations[0].Message;
+                    Note = Quotations[0].Note;
+                    IsAdmin = false;
+                }
             }
             catch (Exception ex)
             {
@@ -292,7 +401,10 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 return false;
             }
         }
-
+        bool CurrentUserRole(string role)
+        {
+            return AppProperties.RoleName == role;
+        }
         #endregion
     }
 }

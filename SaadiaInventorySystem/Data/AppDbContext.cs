@@ -65,9 +65,10 @@ namespace SaadiaInventorySystem.Data
             //Quotation -> Customer
             modelBuilder.Entity<Quotation>()
                 .HasOne<Customer>(qt => qt.Customer )
-                .WithOne()
-                .HasForeignKey<Quotation>(fk=> fk.CustomerId)
+                .WithMany()
+                .HasForeignKey(fk=> fk.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
+
             //Quotation -> Order
             //Quoation has 1 Order
             //Quotation => Order foreign key on OrderId

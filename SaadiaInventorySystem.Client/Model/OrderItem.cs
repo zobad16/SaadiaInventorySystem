@@ -19,6 +19,9 @@ namespace SaadiaInventorySystem.Client.Model
         public Inventory Inventory { get => inventory; set { inventory = value; RaisePropertyChanged(); } }
         public double OfferedPrice { get => offeredPrice; set { offeredPrice = value; RaisePropertyChanged(); } }
         public double Total { get => total; set { total = value; RaisePropertyChanged(); } }
+
+        public int IsActive { get; internal set; }
+
         public void CalculateTotal()
         {
             total = OrderQty * OfferedPrice;

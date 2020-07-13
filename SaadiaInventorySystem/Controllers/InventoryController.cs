@@ -73,6 +73,26 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest(ex);
             }
         }
+        [HttpGet("partno/{id}")]
+        public ActionResult<Inventory> GetPartnumber(string part)
+        {
+            try
+            {
+                Inventory inventory = _inventoryService.GetByPartNumber(part);
+                if (inventory != null)
+                {
+                    return (Ok(inventory));
+                }
+                else
+                    return Conflict("Inventory not Found");
+
+            }
+            catch (Exception ex)
+            {
+                //Log error
+                return BadRequest(ex);
+            }
+        }
         [HttpPost("add")]
         public async Task<IActionResult> AddInventoryAsync([FromBody] Inventory inventory)
         {

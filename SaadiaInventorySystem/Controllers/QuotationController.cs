@@ -41,6 +41,31 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest(ex);
             }
         }
+        [HttpGet("quotations/admin")]
+        public ActionResult<List<Quotation>> AdminGetAll()
+        {
+            try
+            {
+                List<Quotation> quotes = _quotationService.AdminGetAll();
+                if (quotes != null)
+                {
+                    Console.Out.WriteLine("Invoices Found");
+                    return Ok(quotes);
+                }
+                else
+                {
+                    Console.Out.WriteLine("No Invoices Found");
+                    return Conflict("No Invoices Found");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log error
+                Console.Error.WriteLine($"Quotation Controller Error: Method: Get, Error:{ex.Message} ");
+                return BadRequest(ex);
+            }
+        }
         [HttpGet("{id}")]
         public ActionResult<Quotation> Get(int id)
         {
@@ -67,6 +92,10 @@ namespace SaadiaInventorySystem.Controllers
         {
             try
             {
+                quotation.DateCreated = DateTime.Now;
+                quotation.DateUpdated = DateTime.Now;
+                quotation.IsActive = 1;
+
                 bool success = await _quotationService.AddAsync(quotation);
                 if (success)
                 {
@@ -107,7 +136,7 @@ namespace SaadiaInventorySystem.Controllers
             }
         }
         [HttpPost("delete")]
-        public async Task<IActionResult> DeleteQuotationAsync([FromBody] string id)
+        public async Task<IActionResult> DeleteQuotationAsync([FromBody] int id)
         {
             try
             {
@@ -126,6 +155,50 @@ namespace SaadiaInventorySystem.Controllers
                 //log
                 
                 Console.Error.WriteLine($"Quotation Controller Error: Method: Delete, Error:{ex.Message} ");
+                return BadRequest();
+            }
+        }
+        [HttpPost("delete/admin")]
+        public async Task<IActionResult> AdminDeleteQuotationAsync([FromBody] int id)
+        {
+            try
+            {
+                bool success = await _quotationService.AdminDeleteAsync(id);
+                if (success)
+                {
+                    return Ok("Quotation deleted successfully");
+                }
+                else
+                {
+                    return Conflict("Quotation part not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                //log
+                
+                Console.Error.WriteLine($"Quotation Controller Error: Method: Delete, Error:{ex.Message} ");
+                return BadRequest();
+            }
+        }
+        [HttpPost("activate")]
+        public async Task<IActionResult> ActivateInventoryAsync([FromBody] int id)
+        {
+            try
+            {
+                bool success = await _quotationService.ActivateAsync(id);
+                if (success)
+                {
+                    return Ok("Quotation successfully activated");
+                }
+                else
+                {
+                    return Conflict("Quotation not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                //log
                 return BadRequest();
             }
         }

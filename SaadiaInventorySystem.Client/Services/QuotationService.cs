@@ -16,9 +16,7 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                var _quotation = JsonConvert.SerializeObject(quotation);
-
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/quotation/add", _quotation);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/quotation/add", quotation);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -81,10 +79,23 @@ namespace SaadiaInventorySystem.Client.Services
         public async Task<bool> CallUpdateService(Quotation quotation)
         {
             using (var client = GetClient())
-            {
-                var _quotation = JsonConvert.SerializeObject(quotation);
+            {                
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/quotation/update", quotation);
 
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/quotation/update", _quotation);
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else return false;
+
+            }
+        }
+        public async Task<bool> CallActivateService(int id)
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/quotation/activate", id);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)

@@ -139,6 +139,11 @@ namespace SaadiaInventorySystem.Service
                             .Include(i => i.OldPart)
                             .Where(part => part.Id.Equals(id)).FirstOrDefault();
         }
+        public Inventory GetByPartNumber(string part) {
+            return  (Inventory)dao.Inventories
+                            .Include(i => i.OldPart)
+                            .Where(part => part.PartNumber.Equals(part)).FirstOrDefault();
+        }
         public List<Inventory> GetAll() 
         {
 

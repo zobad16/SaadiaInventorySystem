@@ -21,18 +21,47 @@ namespace SaadiaInventorySystem.Service
         {
             try
             {
+                data.Order.IsActive = 1;
+                data.Order.DateCreated = DateTime.Now;
+                data.Order.DateUpdated = DateTime.Now;
+                foreach(var item in data.Order.OrderItems)
+                {
+                    if (item.Inventory.Id == 0) 
+                    {
+                        item.Inventory.DateCreated = DateTime.Now;
+                        item.Inventory.DateUpdate = DateTime.Now;
+                        item.Inventory.IsActive = 1;
+                    }
+                }
+
                 bool exists = dao.Quotations.Any(q => q.Id.Equals(data.Id));
+
+                //bulk insert inventory if not exists
+               /* var orderitems = data.Order.OrderItems;
+
+                List<Inventory> partslist = new List<Inventory>();
+                foreach (var part in orderitems)
+                {
+                    if (part.InventoryId == 0) { partslist.Add(part.Inventory); }
+                }
+                
+                await dao.Inventories.AddRangeAsync(missingvalues);
+                */
                 if (!exists) 
                 {
                     data.DateCreated = DateTime.Now;
                     data.DateUpdated = DateTime.Now;
+                    data.Order.DateCreated = DateTime.Now;
+                    data.Order.DateUpdated = DateTime.Now;
+                    
                     await dao.Quotations.AddAsync(data);
+                    
                     return await dao.SaveChangesAsync() > 0;
                 }
             }
             catch(Exception ex)
             {
-                throw ex;
+                Console.WriteLine($"Quotation Add: Error: {ex.ToString()}");
             }
             return false; 
         }
@@ -40,11 +69,23 @@ namespace SaadiaInventorySystem.Service
         {
             try 
             {
-                Quotation quote = dao.Quotations.
-                    Where(q => q.Id.Equals(data.Id)).FirstOrDefault();
+                Quotation quote = dao.Quotations
+                    .Include(r => r.Order)
+                    .ThenInclude(r => r.OrderItems)
+                    .ThenInclude(r => r.Inventory)
+                    .Where(q => q.Id.Equals(data.Id)).FirstOrDefault();
+                    
+                //if(quote.Order.OrderItems != null)
+                //{
+                //    dao.Remove(quote.Order.OrderItems);
+                //}
+
                 quote.DateUpdated = DateTime.Now;
                 quote.OrderId = quote.OrderId;
-                quote.Order = data.Order;
+                
+                //quote.Order = data.Order;
+
+                quote.Order.OrderItems = data.Order.OrderItems;
                 quote.CustomerId = data.CustomerId;
                 quote.Customer = data.Customer;
                 quote.Attn = data.Attn;
@@ -52,45 +93,49 @@ namespace SaadiaInventorySystem.Service
                 quote.MS = data.MS;
                 quote.Note = data.Note;
                 quote.OfferedDiscount = data.OfferedDiscount;
-                quote.QuotationNumber = quote.QuotationNumber;
-                quote.ReferenceNumber = quote.ReferenceNumber;
+                quote.QuotationNumber = data.QuotationNumber;
+                quote.ReferenceNumber = data.ReferenceNumber;
                 quote.VAT = quote.VAT;
                 return await dao.SaveChangesAsync() > 0;
             }
-            catch (Exception ex){ throw ex; }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Quotation Update error: {ex.InnerException}");
+                throw ex; 
+            }
             
         }
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(int id)
         {
             try 
             {
                 Quotation quote = dao.Quotations.
-                    Where(q => q.Id.Equals(id)).FirstOrDefault();
+                    Where(q => q.Id == id).FirstOrDefault();
                 quote.IsActive = 0;
                 return await dao.SaveChangesAsync() > 0;
             }
             catch (Exception ex){ throw ex; }
             
         }
-        public async Task<bool> ActivateAsync(string id)
+        public async Task<bool> ActivateAsync(int id)
         {
             try 
             {
                 Quotation quote = dao.Quotations.
-                    Where(q => q.Id.Equals(id)).FirstOrDefault();
-                quote.IsActive = 0;
+                    Where(q => q.Id == id).FirstOrDefault();
+                quote.IsActive = 1;
                 return await dao.SaveChangesAsync() > 0;
             }
             catch (Exception ex){ throw ex; }
             
         }
         
-        public async Task<bool> AdminDeleteAsync(string id) 
+        public async Task<bool> AdminDeleteAsync(int id) 
         {
             try 
             {
                 Quotation quote = dao.Quotations.
-                    Where(q => q.Id.Equals(id)).FirstOrDefault();
+                    Where(q => q.Id == id).FirstOrDefault();
                 dao.Quotations.Remove(quote);
                 return await dao.SaveChangesAsync() > 0;
             }
