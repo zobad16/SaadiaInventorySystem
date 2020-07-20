@@ -1,10 +1,13 @@
-﻿using SaadiaInventorySystem.Client.Model;
+﻿using ExcelDataReader;
+using SaadiaInventorySystem.Client.Model;
 using SaadiaInventorySystem.Client.Services;
 using SaadiaInventorySystem.Client.Util;
 using SaadiaInventorySystem.Client.View;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -27,7 +30,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             ActivateCommand = new RelayCommand(i => ActivateAsync(), (a) => SelectedQuotation != null);
             DisableCommand = new RelayCommand(i => DisableAsync(), (a) => SelectedQuotation != null);
             DeleteCommand = new RelayCommand(i => Delete(), (a) => SelectedQuotation != null);
-
+            ImportCommand = new RelayCommand(i => ReadQuotationFileExcel(), i=> true);
             SelectCustomerCommand = new RelayCommand<IClosable>(i => SelectCustomersCommand(i),i=> true);
             SelectPartCommand = new RelayCommand<IClosable>(i => SelectPartsCommand(i),i=> true);
             AddOrderItemCommand = new RelayCommand<IClosable>(i => AddOrderItem(i), i => true);
@@ -61,6 +64,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private RelayCommand _activateCommand;
         private RelayCommand _disableCommand;
         private RelayCommand _deleteCommand;
+        private RelayCommand _importCommand;
 
         private ICommand _openAddCustomerWindowCommand;
         private ICommand _openAddPartsWindowCommand;
@@ -100,6 +104,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public RelayCommand ActivateCommand { get => _activateCommand; set { _activateCommand = value; RaisePropertyChanged(); } }
         public RelayCommand DisableCommand { get => _disableCommand; set { _disableCommand = value; RaisePropertyChanged(); } }
         public RelayCommand DeleteCommand { get => _deleteCommand; set { _deleteCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand ImportCommand { get => _importCommand; set { _importCommand = value; RaisePropertyChanged(); } }
 
         public ICommand OpenAddCustomerWindowCommand { get => _openAddCustomerWindowCommand; set { _openAddCustomerWindowCommand = value; RaisePropertyChanged(); } }
         public ICommand OpenAddPartsWindowCommand { get => _openAddPartsWindowCommand; set { _openAddPartsWindowCommand = value; RaisePropertyChanged(); } }
@@ -271,6 +276,147 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
 
             i.Close();
+        }
+        private void ReadQuotationFileExcel()
+        {
+            string filePath = "C:\\Users\\zobad\\Desktop\\Hamza\\QUOTATION.P.P.DEPT.xlsx";
+            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
+            {
+                // Auto-detect format, supports:
+                //  - Binary Excel files (2.0-2003 format; *.xls)
+                //  - OpenXml Excel files (2007 format; *.xlsx)
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    var result = reader.AsDataSet();
+                    var quotes = new List<Quotation>(); 
+                    int tabs = result.Tables.Count;
+                    bool noteflag = false;
+                    bool orderitemflag = false;
+                    for(int tab = 0; tab <tabs; tab++) 
+                    {
+                        var q = new Quotation();
+                        int rows = result.Tables[tab].Rows.Count;
+                        int columns = result.Tables[tab].Columns.Count;
+
+                        for (int row = 3; row < rows; row++)
+                        {
+                            for (int col = 0; col < columns; col++)
+                            {
+
+                                var data = result.Tables[tab];
+                                var current = data.Rows[row][col].ToString();
+                                if (current.Contains("ATTN"))
+                                {
+                                    string input = current;
+                                    string res2 = input.Split(':')[1]; 
+                                    string pattern = @"\bATTN:\b";
+                                    string replace = " ";
+                                    string res = Regex.Replace(input, pattern, replace, RegexOptions.IgnoreCase);
+                                    q.Attn = res2.Trim();
+
+                                }
+                                if(current.Contains("Dear"))
+                                    noteflag = true;
+                                if(noteflag)
+                                {
+                                    if(String.IsNullOrEmpty(current)) continue;
+                                    if(!current.Contains("S.No"))
+                                    {
+                                        q.Note += current;
+                                    }
+                                }
+                                if(current.Contains("S.No"))
+                                {
+                                    noteflag = false;
+                                    orderitemflag = true;
+                                    break;
+                                }
+                                if(orderitemflag && col ==1)
+                                {
+                                    if(String.IsNullOrEmpty(data.Rows[row][1].ToString()) && String.IsNullOrEmpty(data.Rows[row][2].ToString())&& String.IsNullOrEmpty(data.Rows[row][3].ToString()))
+                                    { break; }
+                                    var item = new OrderItem();
+                                    item.Inventory = new Inventory();
+                                    item.Inventory.PartNumber = data.Rows[row][1].ToString().Trim();
+                                    item.Inventory.Description = data.Rows[row][2].ToString().Trim();
+                                    int qty = 0;
+                                    bool parse = Int32.TryParse( data.Rows[row][3].ToString().Trim(), out qty);
+                                    if (parse) item.OrderQty = qty;
+                                    if (data.Rows[row][4].ToString().Contains("Ea")) item.OfferedPrice = Double.Parse(data.Rows[row][5].ToString().Trim());
+                                    if (data.Rows[row][5].ToString().Contains("Ea")) item.OfferedPrice = Double.Parse(data.Rows[row][6].ToString().Trim());
+                                    item.CalculateTotal();
+                                    q.Order.OrderItems.Add(item);
+                                    break;
+                                }
+                                if(data.Rows[row][0].ToString().Trim().Contains("Gross Total"))
+                                {
+                                    orderitemflag = false;
+                                    if (String.IsNullOrEmpty(current) || current.Contains("Gross Total")) continue;
+                                    string price = current;
+                                    q.Order.TotalPrice = Double.Parse(price);
+                                    break;
+                                }
+                                if(data.Rows[row][0].ToString().Trim().Contains("VAT"))
+                                {
+                                    orderitemflag = false;
+                                    //if (String.IsNullOrEmpty(current)|| current.Contains("VAT")) continue;
+
+                                    string vat = current.ToString().Trim();
+                                    string res2 = vat.Split('%')[0];
+                                    q.VAT = Int32.Parse(res2);
+                                    q.CalculateNetTotal();
+                                    break;
+                                }
+                                if (col > 0)
+                                {
+                                    if (String.IsNullOrEmpty(current)) continue;
+                                    var prev = data.Rows[row][col - 1].ToString();
+                                    
+                                    if (prev.Contains("REF"))
+                                        q.ReferenceNumber += current.Trim();
+                                    if (prev.Contains("M/S"))
+                                        q.MS = current;
+                                    if (prev.Contains("To"))
+                                    {
+                                        string input = current;
+                                        if (String.IsNullOrEmpty(input)) continue;
+                                        char[] delimiter = new char[] { '\t', '.',' ' };
+                                        string[] words = input.Split(' ');
+                                        //string first = (words[0].Contains("MR") || words[0].Contains("MR")) ? words[0] : words[1];
+                                        q.Customer.FirstName = $"{words[0] + words[1] }";
+                                        q.Customer.LastName = $"{words[2] }";
+                                    }
+                                        if (prev.Contains("DATE"))
+                                    {
+                                        string date = current;
+                                        if (String.IsNullOrEmpty(date)) { continue; }
+                                        q.Date = current;
+                                        q.DateCreated = Convert.ToDateTime(current);
+                                    }
+                                    if (col > 1 )
+                                    {
+                                        var prevM1 = data.Rows[row][col - 2].ToString();
+                                        if(prevM1.Contains("REF"))
+                                            q.ReferenceNumber += current.Trim();
+                                    }
+                                }
+
+                                
+                            }
+                        }
+                        quotes.Add(q);
+                    }
+                    foreach(var q in quotes)
+                    {
+                        Console.WriteLine($"Quotation Entity:\nReference:{q.ReferenceNumber} QuotationNumber: {q.QuotationNumber} Date: {q.Date}");
+                        Console.WriteLine($"Name:{q.Customer.FirstName + q.Customer.LastName} Attn: {q.Attn} Date: {q.DateCreated}");
+                        Console.WriteLine($"M/S:{q.MS} Attn: {q.Attn} Date: {q.DateCreated}");
+
+                    }
+                    // The result of each spreadsheet is in result.Tables
+                }
+            }
+
         }
         #region Business Logic
         public string VMName()

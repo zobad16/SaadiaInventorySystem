@@ -28,6 +28,7 @@ namespace SaadiaInventorySystem.Client.Model
         }
         public void CalculateTotalPrice() 
         {
+            TotalPrice = 0.0;
             foreach(var item in OrderItems) 
             {
                 TotalPrice += item.Total;
