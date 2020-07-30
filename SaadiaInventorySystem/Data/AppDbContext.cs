@@ -67,7 +67,7 @@ namespace SaadiaInventorySystem.Data
                 .HasOne<Customer>(qt => qt.Customer )
                 .WithMany()
                 .HasForeignKey(fk=> fk.CustomerId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
+                .OnDelete(DeleteBehavior.SetNull);
 
             //Quotation -> Order
             //Quoation has 1 Order
@@ -76,8 +76,11 @@ namespace SaadiaInventorySystem.Data
                 .HasOne<Order>(qt => qt.Order)
                 .WithOne()
                 .HasForeignKey<Quotation>(quotation=> quotation.OrderId);
-            
-            
+            modelBuilder.Entity<Customer>()
+                .HasMany<Quotation>()
+                .WithOne(i => i.Customer)
+                .OnDelete(DeleteBehavior.SetNull);
+
             //InvoiceItem foreign key with Inventory
             //InvoiceItem -> (Invoice, Inventory) 
             modelBuilder.Entity<InvoiceItem>()
@@ -105,7 +108,7 @@ namespace SaadiaInventorySystem.Data
                 .HasMany<InvoiceItem>(qt => qt.Item)
                 .WithOne(c => c.Invoice)
                 .HasForeignKey(fk=> fk.InvoiceId);
-
+            
 
             modelBuilder.Entity<User>()
                 .HasOne<Role>(a => a.Role)

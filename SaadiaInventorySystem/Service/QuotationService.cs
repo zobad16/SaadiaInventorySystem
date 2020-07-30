@@ -36,17 +36,6 @@ namespace SaadiaInventorySystem.Service
 
                 bool exists = dao.Quotations.Any(q => q.Id.Equals(data.Id));
 
-                //bulk insert inventory if not exists
-               /* var orderitems = data.Order.OrderItems;
-
-                List<Inventory> partslist = new List<Inventory>();
-                foreach (var part in orderitems)
-                {
-                    if (part.InventoryId == 0) { partslist.Add(part.Inventory); }
-                }
-                
-                await dao.Inventories.AddRangeAsync(missingvalues);
-                */
                 if (!exists) 
                 {
                     data.DateCreated = DateTime.Now;
@@ -64,6 +53,94 @@ namespace SaadiaInventorySystem.Service
                 Console.WriteLine($"Quotation Add: Error: {ex.ToString()}");
             }
             return false; 
+        }
+
+        public async Task<bool> BulkAddAsync(List<Quotation> data)
+        {
+            try
+            {
+                foreach (var item in data)
+                {
+                    item.IsActive = 1;
+                    item.Order.IsActive = 1;
+                    item.Order.DateCreated = DateTime.Now;
+                    item.DateUpdated = DateTime.Now;
+                    
+                    //Customers:
+                    //If Customer null && customerid == null : No Customer for quotation
+                    //If Customer null && customerid >0: Existing customer
+                    //If Customer !null && customerid ==0: New Customer 
+                    //If Customer !null && customerid >0 : Update Customer
+                    if(item.Customer != null)
+                    {
+                        if (item.Customer.Id == 0)
+                        {
+                            item.Customer.DateCreated = DateTime.Now;
+                            item.Customer.IsActive = 1;
+                        }
+                        else { item.Customer.DateUpdated = DateTime.Now; }
+                    }
+                    
+                    foreach (var part in item.Order.OrderItems)
+                    {
+                        if (part.Inventory != null)
+                        {
+                            part.Inventory.DateCreated = DateTime.Now;
+                            part.Inventory.IsActive = 1;
+                        }
+                        //else 
+                        //{
+                        //    part.Inventory.DateUpdate = DateTime.Now;
+                        //}
+                    }
+                }                
+                await dao.Quotations.AddRangeAsync(data);
+                //if (updatelist.Count > 0) { await dao.Quotations.UpdateRangeAsync(addlist); }
+
+                return await dao.SaveChangesAsync() > 0;
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Quotation Add: Error: {ex.InnerException.Message.ToString()}");
+                
+            }
+            return false;
+        }
+        public async Task<bool> BulkUpdateAsync(List<Quotation> data)
+        {
+            try
+            {
+                foreach (var item in data)
+                {
+                    item.IsActive = 1;
+                    item.Order.IsActive = 1;
+                    item.DateUpdated = DateTime.Now; 
+                    if(item.Customer != null)
+                    {
+                        item.Customer.DateUpdated = DateTime.Now; 
+                    }
+                    
+                    foreach (var part in item.Order.OrderItems)
+                    {
+                        if (part.Inventory != null)
+                        {
+                            part.Inventory.IsActive = 1;
+                            part.Inventory.DateUpdate = DateTime.Now;
+                        }
+                    }
+                }                
+                dao.Quotations.UpdateRange(data);
+
+                return await dao.SaveChangesAsync() > 0;
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Quotation Update: Error: {ex.InnerException.Message.ToString()}");
+                
+            }
+            return false;
         }
         public async Task<bool> UpdateAsync(Quotation data)
         {
@@ -156,24 +233,44 @@ namespace SaadiaInventorySystem.Service
             }
             catch(Exception ex)
             {
-                throw ex;
+                Console.WriteLine(ex.InnerException.Message);
+                throw new Exception(ex.InnerException.Message);
             }
         }
         public List<Quotation> GetAll() 
         {
-            return dao.Quotations.Include(c=> c.Customer)
-                .Include(r => r.Order)
-                .ThenInclude(r => r.OrderItems)
-                .ThenInclude(r => r.Inventory)
-                .Where(i => i.IsActive == 1).ToList<Quotation>(); 
-        }
-        public List<Quotation> AdminGetAll() 
-        {
-            return dao.Quotations.Include(c => c.Customer)
+            try
+            {
+                var quotes = dao.Quotations.Include(c => c.Customer)
                     .Include(r => r.Order)
                     .ThenInclude(r => r.OrderItems)
                     .ThenInclude(r => r.Inventory)
-                    .ToList<Quotation>(); 
+                    .Where(i => i.IsActive == 1)
+                    .ToList<Quotation>();
+                return quotes;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.InnerException.Message);
+                throw new Exception(ex.InnerException.Message);
+            }
+        }
+        public List<Quotation> AdminGetAll() 
+        {
+            try
+            {
+                var quotes = dao.Quotations.Include(c => c.Customer)
+                    .Include(r => r.Order)
+                    .ThenInclude(r => r.OrderItems)
+                    .ThenInclude(r => r.Inventory)
+                    .ToList<Quotation>();
+                return quotes;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.InnerException.Message);
+                throw new Exception(ex.InnerException.Message);
+            }
         }
     }
 }

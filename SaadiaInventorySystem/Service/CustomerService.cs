@@ -129,7 +129,7 @@ namespace SaadiaInventorySystem.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.InnerException.Message);
                 throw ex;
             }
         }

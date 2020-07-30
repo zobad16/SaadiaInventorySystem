@@ -9,7 +9,7 @@ namespace SaadiaInventorySystem.Model
         public string QuotationNumber { get; set; }
         public string ReferenceNumber { get; set; }
         
-        public int CustomerId { get; set; }
+        public int ? CustomerId { get; set; }
         public Customer Customer { get; set; }
         
         public int OrderId { get; set; }

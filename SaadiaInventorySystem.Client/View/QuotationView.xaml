@@ -69,6 +69,8 @@
                   HorizontalScrollBarVisibility="Auto"    
                   >
                 <DataGrid.Columns>
+                    <DataGridTextColumn Header="Quotation Id"
+                                    Binding="{Binding Id}" />
                     <DataGridTextColumn Header="Order Id"
                                     Binding="{Binding OrderId}" />
                     <DataGridTextColumn Header="Reference #"

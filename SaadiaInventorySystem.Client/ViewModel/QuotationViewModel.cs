@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -30,16 +31,21 @@ namespace SaadiaInventorySystem.Client.ViewModel
             ActivateCommand = new RelayCommand(i => ActivateAsync(), (a) => SelectedQuotation != null);
             DisableCommand = new RelayCommand(i => DisableAsync(), (a) => SelectedQuotation != null);
             DeleteCommand = new RelayCommand(i => Delete(), (a) => SelectedQuotation != null);
-            ImportCommand = new RelayCommand(i => ReadQuotationFileExcel(), i=> true);
+            ImportCommand = new RelayCommand(i => ImportQuotation(), i=> true);
+            UploadCommand = new RelayCommand<IClosable>(i => Upload(i), i=> true);
             SelectCustomerCommand = new RelayCommand<IClosable>(i => SelectCustomersCommand(i),i=> true);
             SelectPartCommand = new RelayCommand<IClosable>(i => SelectPartsCommand(i),i=> true);
             AddOrderItemCommand = new RelayCommand<IClosable>(i => AddOrderItem(i), i => true);
+            DuplicateCommand = new RelayCommand(i => SetDuplicateSet(i), i => true);
             isEdit = false;
             isAdmin = false;
          //   NewQuotation = new Quotation();
         }
 
-        
+        private void SetDuplicateSet(object param)
+        {
+            DuplicateState = (string)param;
+        }
 
         private string _name;
         private static bool isEdit;
@@ -51,6 +57,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private string message;
         private string note;
         private bool isAdmin;
+        private string _duplicateState;
+        private string _filePath;
 
         private ObservableCollection<Quotation> _quotations;
         private ObservableCollection<Customer> _customersList;
@@ -65,6 +73,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private RelayCommand _disableCommand;
         private RelayCommand _deleteCommand;
         private RelayCommand _importCommand;
+        private RelayCommand _duplicateCommand;
+        private RelayCommand<IClosable> _uploadCommand;
 
         private ICommand _openAddCustomerWindowCommand;
         private ICommand _openAddPartsWindowCommand;
@@ -105,6 +115,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public RelayCommand DisableCommand { get => _disableCommand; set { _disableCommand = value; RaisePropertyChanged(); } }
         public RelayCommand DeleteCommand { get => _deleteCommand; set { _deleteCommand = value; RaisePropertyChanged(); } }
         public RelayCommand ImportCommand { get => _importCommand; set { _importCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand DuplicateCommand { get => _duplicateCommand; set { _duplicateCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand<IClosable> UploadCommand { get => _uploadCommand; set { _uploadCommand = value; RaisePropertyChanged(); } }
 
         public ICommand OpenAddCustomerWindowCommand { get => _openAddCustomerWindowCommand; set { _openAddCustomerWindowCommand = value; RaisePropertyChanged(); } }
         public ICommand OpenAddPartsWindowCommand { get => _openAddPartsWindowCommand; set { _openAddPartsWindowCommand = value; RaisePropertyChanged(); } }
@@ -124,6 +136,9 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         public string Message { get => message; set { message = value; RaisePropertyChanged(); } }
         public string Note { get => note; set { note = value; RaisePropertyChanged(); } }
+        public string DuplicateState { get => _duplicateState; set { _duplicateState = value; RaisePropertyChanged(); } }
+
+        public string FilePath { get => _filePath; set { _filePath = value; RaisePropertyChanged(); } }
 
         private async void CancelClose(IClosable p)
         {
@@ -277,10 +292,24 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
             i.Close();
         }
-        private void ReadQuotationFileExcel()
+        private void Upload(IClosable i)
         {
-            string filePath = "C:\\Users\\zobad\\Desktop\\Hamza\\QUOTATION.P.P.DEPT.xlsx";
-            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
+            if (DuplicateState.Equals("Update")) { ReadQuotationFileExcel(FilePath); }
+            else if (DuplicateState.Equals("Ignore")) { ReadQuotationFileExcel(FilePath); }
+            i.Close();
+        }
+        private void ImportQuotation()
+        {
+            FilePath = "";
+            DuplicateState = "";
+            var window = new ImportFileView();
+            window.DataContext = this;
+            window.ShowDialog();
+            
+        }
+        private async void ReadQuotationFileExcel(string path)
+        {
+            using (var stream = File.Open(path, FileMode.Open, FileAccess.Read))
             {
                 // Auto-detect format, supports:
                 //  - Binary Excel files (2.0-2003 format; *.xls)
@@ -289,6 +318,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 {
                     var result = reader.AsDataSet();
                     var quotes = new List<Quotation>(); 
+                    var updatequotes = new List<Quotation>(); 
+                    var addquotes = new List<Quotation>(); 
                     int tabs = result.Tables.Count;
                     bool noteflag = false;
                     bool orderitemflag = false;
@@ -359,7 +390,6 @@ namespace SaadiaInventorySystem.Client.ViewModel
                                 if(data.Rows[row][0].ToString().Trim().Contains("VAT"))
                                 {
                                     orderitemflag = false;
-                                    //if (String.IsNullOrEmpty(current)|| current.Contains("VAT")) continue;
 
                                     string vat = current.ToString().Trim();
                                     string res2 = vat.Split('%')[0];
@@ -371,22 +401,25 @@ namespace SaadiaInventorySystem.Client.ViewModel
                                 {
                                     if (String.IsNullOrEmpty(current)) continue;
                                     var prev = data.Rows[row][col - 1].ToString();
-                                    
-                                    if (prev.Contains("REF"))
+
+                                    if (prev.Contains("REF")) 
+                                    { 
                                         q.ReferenceNumber += current.Trim();
+                                    }
                                     if (prev.Contains("M/S"))
+                                    {
                                         q.MS = current;
+                                    }
                                     if (prev.Contains("To"))
                                     {
                                         string input = current;
                                         if (String.IsNullOrEmpty(input)) continue;
                                         char[] delimiter = new char[] { '\t', '.',' ' };
                                         string[] words = input.Split(' ');
-                                        //string first = (words[0].Contains("MR") || words[0].Contains("MR")) ? words[0] : words[1];
                                         q.Customer.FirstName = $"{words[0] + words[1] }";
                                         q.Customer.LastName = $"{words[2] }";
                                     }
-                                        if (prev.Contains("DATE"))
+                                    if (prev.Contains("DATE") || prev.Contains("Date"))
                                     {
                                         string date = current;
                                         if (String.IsNullOrEmpty(date)) { continue; }
@@ -400,24 +433,106 @@ namespace SaadiaInventorySystem.Client.ViewModel
                                             q.ReferenceNumber += current.Trim();
                                     }
                                 }
-
-                                
                             }
                         }
                         quotes.Add(q);
                     }
-                    foreach(var q in quotes)
-                    {
-                        Console.WriteLine($"Quotation Entity:\nReference:{q.ReferenceNumber} QuotationNumber: {q.QuotationNumber} Date: {q.Date}");
-                        Console.WriteLine($"Name:{q.Customer.FirstName + q.Customer.LastName} Attn: {q.Attn} Date: {q.DateCreated}");
-                        Console.WriteLine($"M/S:{q.MS} Attn: {q.Attn} Date: {q.DateCreated}");
+                    quotes = await DuplicateChecks(quotes);
 
+                    foreach (var item in quotes)
+                    {
+                        if (item.Id > 0)
+                        {
+                            updatequotes.Add(item);
+                        }
+                        else if (item.Id == 0)
+                        {
+                            addquotes.Add(item);
+                        }
                     }
+
+                    if (addquotes.Count > 0) { await service.CallBulkInsert(addquotes); }
+                    if (updatequotes.Count > 0) { await service.CallBulkUpdate(updatequotes); }
                     // The result of each spreadsheet is in result.Tables
                 }
             }
 
         }
+        private async Task< List<Quotation>>  DuplicateChecks(List<Quotation> quotes )
+        {
+            //If Records missing Customer
+            //Skip Them, Count the number of records
+            //List Reasons
+            var _service = new CustomerService();
+            var _partsService = new InventoryService();
+            CustomersList = new ObservableCollection<Customer>(await _service.CallGetAllService());
+            PartsList = new ObservableCollection<Inventory>(await _partsService.CallGetAllService());
+            var quote_list = new List<Quotation>();
+            foreach (var q in quotes)
+            {
+                //If quotation exists and ignore then remove
+                //else if quotation exists and update
+                // if quotation ! found
+                if (q!= null)
+                {
+                    var _quotes = Quotations.Where(i => (q.QuotationNumber != null && q.QuotationNumber == i.QuotationNumber) ||(q.ReferenceNumber == i.ReferenceNumber)).FirstOrDefault();
+                    if(_quotes != null && DuplicateState.Equals("Ignore"))
+                    {
+                        continue;
+                    }
+                    else if(_quotes != null && DuplicateState.Equals("Update"))
+                    {
+                        q.Id = _quotes.Id;
+                        //quote_list.Add(q);
+                    }
+                    //Check Customer
+                    if (String.IsNullOrEmpty(q.Customer.FirstName) && String.IsNullOrEmpty(q.Customer.FirstName))
+                    {
+                        q.Customer.FirstName = ""; q.Customer.LastName = "";
+                    }
+                    
+                    Customer customer = CustomersList.Where(i => i.FirstName.Equals(q.Customer.FirstName) && i.LastName.Equals(q.Customer.LastName)).FirstOrDefault();
+
+                    if (customer != null)
+                    {
+                        //Record found
+                        //if DuplpicateState equals ignore: remove object set id
+                        if (DuplicateState.Equals("Ignore"))
+                        {
+                            q.CustomerId = customer.Id;
+                            q.Customer = null;
+                        }
+                        else if (DuplicateState.Equals("Update"))
+                        {
+                            q.CustomerId = customer.Id;
+                            q.Customer = null;
+                        }
+                    }
+                    //Check order Parts
+                    foreach (var part in q.Order.OrderItems)
+                    {
+                        var item = PartsList.Where(i => i.PartNumber.Equals(part.Inventory.PartNumber) || i.Description.Equals(part.Inventory.Description)).FirstOrDefault();
+                        if (item != null)
+                        {
+                            if (DuplicateState.Equals("Ignore"))
+                            {
+                                part.InventoryId = item.Id;
+                                part.Inventory = null;
+                            }
+                            else if (DuplicateState.Equals("Update"))
+                            {
+                                part.InventoryId = item.Id;
+                                part.Inventory = null;
+                            }
+                        }
+                    }
+                    quote_list.Add(q);
+                }             
+            }
+
+            return quote_list;
+        }
+
         #region Business Logic
         public string VMName()
         {

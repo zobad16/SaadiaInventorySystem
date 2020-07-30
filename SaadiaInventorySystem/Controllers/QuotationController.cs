@@ -37,7 +37,7 @@ namespace SaadiaInventorySystem.Controllers
             catch (Exception ex)
             {
                 //Log error
-                Console.Error.WriteLine($"Quotation Controller Error: Method: Get, Error:{ex.Message} ");
+                Console.Error.WriteLine($"Quotation Controller Error: Method: Get, Error:{ex.InnerException.Message} ");
                 return BadRequest(ex);
             }
         }
@@ -62,7 +62,7 @@ namespace SaadiaInventorySystem.Controllers
             catch (Exception ex)
             {
                 //Log error
-                Console.Error.WriteLine($"Quotation Controller Error: Method: Get, Error:{ex.Message} ");
+                Console.Error.WriteLine($"Quotation Controller Error: Method: Get, Error:{ex.InnerException.Message} ");
                 return BadRequest(ex);
             }
         }
@@ -83,7 +83,7 @@ namespace SaadiaInventorySystem.Controllers
             catch (Exception ex)
             {
                 //Log 
-                Console.Error.WriteLine($"Quotation Controller Error: Method: Get, Error:{ex.Message} ");
+                Console.Error.WriteLine($"Quotation Controller Error: Method: Get, Error:{ex.InnerException.Message} ");
                 return BadRequest(ex);
             }
         }
@@ -109,7 +109,29 @@ namespace SaadiaInventorySystem.Controllers
             catch (Exception ex)
             {
                 //log
-                Console.Error.WriteLine($"Quotation Controller Error: Method: Add, Error:{ex.Message} ");
+                Console.Error.WriteLine($"Quotation Controller Error: Method: Add, Error:{ex.InnerException.Message} ");
+                return BadRequest();
+            }
+        }
+        [HttpPost("add/bulk")]
+        public async Task<IActionResult> BulkAddQuotationAsync([FromBody] List<Quotation> quotation)
+        {
+            try
+            {                
+                bool success = await _quotationService.BulkAddAsync(quotation);
+                if (success)
+                {
+                    return Ok("Quotation Bulk Add successfully");
+                }
+                else
+                {
+                    return Conflict("Duplicate Quotation");
+                }
+            }
+            catch (Exception ex)
+            {
+                //log
+                Console.Error.WriteLine($"Quotation Controller Error: Method: BulkAdd, Error:{ex.InnerException.Message} ");
                 return BadRequest();
             }
         }
@@ -131,7 +153,29 @@ namespace SaadiaInventorySystem.Controllers
             catch (Exception ex)
             {
                 //log
-                Console.Error.WriteLine($"Quotation Controller Error: Method: Update, Error:{ex.Message} ");
+                Console.Error.WriteLine($"Quotation Controller Error: Method: Update, Error:{ex.InnerException.Message} ");
+                return BadRequest();
+            }
+        }
+         [HttpPost("update/bulk")]
+        public async Task<IActionResult> UpdateQuotationBulkAsync([FromBody] List<Quotation> quotation)
+        {
+            try
+            {
+                bool success = await _quotationService.BulkUpdateAsync(quotation);
+                if (success)
+                {
+                    return Ok("Quotation updated successfully");
+                }
+                else
+                {
+                    return Conflict("Quotation not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                //log
+                Console.Error.WriteLine($"Quotation Controller Error: Method: Update, Error:{ex.InnerException.Message} ");
                 return BadRequest();
             }
         }

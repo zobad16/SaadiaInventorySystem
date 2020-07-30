@@ -24,7 +24,34 @@ namespace SaadiaInventorySystem.Client.Services
                     return true;
                 }
                 else return false;
+            }
+        }
+        public async Task<bool> CallBulkInsert(List<Quotation> quotations)
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/quotation/add/bulk", quotations);
 
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else return false;
+            }
+        }
+        public async Task<bool> CallBulkUpdate(List<Quotation> quotations)
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/quotation/update/bulk", quotations);
+
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else return false;
             }
         }
 
