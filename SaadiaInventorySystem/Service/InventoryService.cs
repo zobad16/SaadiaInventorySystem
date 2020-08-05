@@ -41,6 +41,58 @@ namespace SaadiaInventorySystem.Service
                 throw ex;
             }
         }
+        public async Task<bool> BulkAddAsync(List<Inventory> data)
+        {
+            try
+            {
+                foreach (var item in data)
+                {
+                    item.DateUpdate = DateTime.Now;
+                    if (item != null)
+                    {
+                        if (item.Id == 0)
+                        {
+                            item.IsActive = 1;
+                            item.DateCreated = DateTime.Now;
+
+                        }
+                        else { item.DateUpdate = DateTime.Now; }
+                    }
+                }
+                await dao.Inventories.AddRangeAsync(data);      
+                return await dao.SaveChangesAsync() > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Inventory Bulk Add: Error: {ex.InnerException.Message.ToString()}");
+            }
+            return false;
+        }
+        public async Task<bool> BulkUpdateAsync(List<Inventory> data)
+        {
+            try
+            {
+                foreach (var item in data)
+                {
+                    if (item != null)
+                    {
+                        item.IsActive = 1;
+                        item.DateUpdate = DateTime.Now;
+                    }
+                }
+                dao.Inventories.UpdateRange(data);
+
+                return await dao.SaveChangesAsync() > 0;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Inventory Bulk Update: Error: {ex.InnerException.Message.ToString()}");
+
+            }
+            return false;
+        }
+
         public async Task<bool> UpdateAsync(Inventory data) 
         {
             try

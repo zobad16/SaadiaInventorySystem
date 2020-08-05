@@ -88,21 +88,16 @@ namespace SaadiaInventorySystem.Service
                             part.Inventory.DateCreated = DateTime.Now;
                             part.Inventory.IsActive = 1;
                         }
-                        //else 
-                        //{
-                        //    part.Inventory.DateUpdate = DateTime.Now;
-                        //}
                     }
                 }                
                 await dao.Quotations.AddRangeAsync(data);
-                //if (updatelist.Count > 0) { await dao.Quotations.UpdateRangeAsync(addlist); }
 
                 return await dao.SaveChangesAsync() > 0;
                 
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Quotation Add: Error: {ex.InnerException.Message.ToString()}");
+                Console.WriteLine($"Quotation Bulk Add: Error: {ex.InnerException.Message.ToString()}");
                 
             }
             return false;
@@ -137,7 +132,7 @@ namespace SaadiaInventorySystem.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Quotation Update: Error: {ex.InnerException.Message.ToString()}");
+                Console.WriteLine($"Quotation Bulk Update: Error: {ex.InnerException.Message.ToString()}");
                 
             }
             return false;

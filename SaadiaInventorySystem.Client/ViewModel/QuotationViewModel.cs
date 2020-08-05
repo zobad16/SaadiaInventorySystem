@@ -39,6 +39,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             DuplicateCommand = new RelayCommand(i => SetDuplicateSet(i), i => true);
             isEdit = false;
             isAdmin = false;
+            IsIgnoreCheck = true;
          //   NewQuotation = new Quotation();
         }
 
@@ -59,7 +60,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private bool isAdmin;
         private string _duplicateState;
         private string _filePath;
+        private bool _isUpdateCheck;
+        private bool _isIgnoreCheck;
 
+        public bool IsUpdateCheck { get => _isUpdateCheck; set { _isUpdateCheck = value; RaisePropertyChanged(); } }
+        public bool IsIgnoreCheck { get => _isIgnoreCheck; set { _isIgnoreCheck = value; RaisePropertyChanged(); } }
         private ObservableCollection<Quotation> _quotations;
         private ObservableCollection<Customer> _customersList;
         private Customer _selectedCustomer;
@@ -292,11 +297,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
             i.Close();
         }
-        private void Upload(IClosable i)
+        private async Task Upload(IClosable i)
         {
-            if (DuplicateState.Equals("Update")) { ReadQuotationFileExcel(FilePath); }
-            else if (DuplicateState.Equals("Ignore")) { ReadQuotationFileExcel(FilePath); }
-            i.Close();
+            if (IsIgnoreCheck) { await ReadQuotationFileExcel(FilePath); }
+            else if (IsUpdateCheck) { await ReadQuotationFileExcel(FilePath); }
+            i.Close();            
         }
         private void ImportQuotation()
         {
@@ -307,162 +312,181 @@ namespace SaadiaInventorySystem.Client.ViewModel
             window.ShowDialog();
             
         }
-        private async void ReadQuotationFileExcel(string path)
+        private async Task ReadQuotationFileExcel(string path)
         {
-            using (var stream = File.Open(path, FileMode.Open, FileAccess.Read))
+            if (path.IndexOf("quotation", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                // Auto-detect format, supports:
-                //  - Binary Excel files (2.0-2003 format; *.xls)
-                //  - OpenXml Excel files (2007 format; *.xlsx)
-                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                using (var stream = File.Open(path, FileMode.Open, FileAccess.Read))
                 {
-                    var result = reader.AsDataSet();
-                    var quotes = new List<Quotation>(); 
-                    var updatequotes = new List<Quotation>(); 
-                    var addquotes = new List<Quotation>(); 
-                    int tabs = result.Tables.Count;
-                    bool noteflag = false;
-                    bool orderitemflag = false;
-                    for(int tab = 0; tab <tabs; tab++) 
+                    // Auto-detect format, supports:
+                    //  - Binary Excel files (2.0-2003 format; *.xls)
+                    //  - OpenXml Excel files (2007 format; *.xlsx)
+                    using (var reader = ExcelReaderFactory.CreateReader(stream))
                     {
-                        var q = new Quotation();
-                        int rows = result.Tables[tab].Rows.Count;
-                        int columns = result.Tables[tab].Columns.Count;
-
-                        for (int row = 3; row < rows; row++)
+                        var result = reader.AsDataSet();
+                        var quotes = new List<Quotation>();
+                        var updatequotes = new List<Quotation>();
+                        var addquotes = new List<Quotation>();
+                        int tabs = result.Tables.Count;
+                        bool noteflag = false;
+                        bool orderitemflag = false;
+                        for (int tab = 0; tab < tabs; tab++)
                         {
-                            for (int col = 0; col < columns; col++)
+                            var q = new Quotation();
+                            int rows = result.Tables[tab].Rows.Count;
+                            int columns = result.Tables[tab].Columns.Count;
+
+                            for (int row = 3; row < rows; row++)
                             {
+                                for (int col = 0; col < columns; col++)
+                                {
 
-                                var data = result.Tables[tab];
-                                var current = data.Rows[row][col].ToString();
-                                if (current.Contains("ATTN"))
-                                {
-                                    string input = current;
-                                    string res2 = input.Split(':')[1]; 
-                                    string pattern = @"\bATTN:\b";
-                                    string replace = " ";
-                                    string res = Regex.Replace(input, pattern, replace, RegexOptions.IgnoreCase);
-                                    q.Attn = res2.Trim();
-
-                                }
-                                if(current.Contains("Dear"))
-                                    noteflag = true;
-                                if(noteflag)
-                                {
-                                    if(String.IsNullOrEmpty(current)) continue;
-                                    if(!current.Contains("S.No"))
-                                    {
-                                        q.Note += current;
-                                    }
-                                }
-                                if(current.Contains("S.No"))
-                                {
-                                    noteflag = false;
-                                    orderitemflag = true;
-                                    break;
-                                }
-                                if(orderitemflag && col ==1)
-                                {
-                                    if(String.IsNullOrEmpty(data.Rows[row][1].ToString()) && String.IsNullOrEmpty(data.Rows[row][2].ToString())&& String.IsNullOrEmpty(data.Rows[row][3].ToString()))
-                                    { break; }
-                                    var item = new OrderItem();
-                                    item.Inventory = new Inventory();
-                                    item.Inventory.PartNumber = data.Rows[row][1].ToString().Trim();
-                                    item.Inventory.Description = data.Rows[row][2].ToString().Trim();
-                                    int qty = 0;
-                                    bool parse = Int32.TryParse( data.Rows[row][3].ToString().Trim(), out qty);
-                                    if (parse) item.OrderQty = qty;
-                                    if (data.Rows[row][4].ToString().Contains("Ea")) item.OfferedPrice = Double.Parse(data.Rows[row][5].ToString().Trim());
-                                    if (data.Rows[row][5].ToString().Contains("Ea")) item.OfferedPrice = Double.Parse(data.Rows[row][6].ToString().Trim());
-                                    item.CalculateTotal();
-                                    q.Order.OrderItems.Add(item);
-                                    break;
-                                }
-                                if(data.Rows[row][0].ToString().Trim().Contains("Gross Total"))
-                                {
-                                    orderitemflag = false;
-                                    if (String.IsNullOrEmpty(current) || current.Contains("Gross Total")) continue;
-                                    string price = current;
-                                    q.Order.TotalPrice = Double.Parse(price);
-                                    break;
-                                }
-                                if(data.Rows[row][0].ToString().Trim().Contains("VAT"))
-                                {
-                                    orderitemflag = false;
-
-                                    string vat = current.ToString().Trim();
-                                    string res2 = vat.Split('%')[0];
-                                    q.VAT = Int32.Parse(res2);
-                                    q.CalculateNetTotal();
-                                    break;
-                                }
-                                if (col > 0)
-                                {
-                                    if (String.IsNullOrEmpty(current)) continue;
-                                    var prev = data.Rows[row][col - 1].ToString();
-
-                                    if (prev.Contains("REF")) 
-                                    { 
-                                        q.ReferenceNumber += current.Trim();
-                                    }
-                                    if (prev.Contains("M/S"))
-                                    {
-                                        q.MS = current;
-                                    }
-                                    if (prev.Contains("To"))
+                                    var data = result.Tables[tab];
+                                    var current = data.Rows[row][col].ToString();
+                                    if (current.Contains("ATTN"))
                                     {
                                         string input = current;
-                                        if (String.IsNullOrEmpty(input)) continue;
-                                        char[] delimiter = new char[] { '\t', '.',' ' };
-                                        string[] words = input.Split(' ');
-                                        q.Customer.FirstName = $"{words[0] + words[1] }";
-                                        q.Customer.LastName = $"{words[2] }";
+                                        string res2 = input.Split(':')[1];
+                                        string pattern = @"\bATTN:\b";
+                                        string replace = " ";
+                                        string res = Regex.Replace(input, pattern, replace, RegexOptions.IgnoreCase);
+                                        q.Attn = res2.Trim();
+
                                     }
-                                    if (prev.Contains("DATE") || prev.Contains("Date"))
+                                    if (current.Contains("Dear"))
+                                        noteflag = true;
+                                    if (noteflag)
                                     {
-                                        string date = current;
-                                        if (String.IsNullOrEmpty(date)) { continue; }
-                                        q.Date = current;
-                                        q.DateCreated = Convert.ToDateTime(current);
+                                        if (String.IsNullOrEmpty(current)) continue;
+                                        if (!current.Contains("S.No"))
+                                        {
+                                            q.Note += current;
+                                        }
                                     }
-                                    if (col > 1 )
+                                    if (current.Contains("S.No"))
                                     {
-                                        var prevM1 = data.Rows[row][col - 2].ToString();
-                                        if(prevM1.Contains("REF"))
+                                        noteflag = false;
+                                        orderitemflag = true;
+                                        break;
+                                    }
+                                    if (orderitemflag && col == 1)
+                                    {
+                                        if (String.IsNullOrEmpty(data.Rows[row][1].ToString()) && String.IsNullOrEmpty(data.Rows[row][2].ToString()) && String.IsNullOrEmpty(data.Rows[row][3].ToString()))
+                                        { break; }
+                                        var item = new OrderItem();
+                                        item.Inventory = new Inventory();
+                                        item.Inventory.PartNumber = data.Rows[row][1].ToString().Trim();
+                                        item.Inventory.Description = data.Rows[row][2].ToString().Trim();
+                                        int qty = 0;
+                                        bool parse = Int32.TryParse(data.Rows[row][3].ToString().Trim(), out qty);
+                                        if (parse) item.OrderQty = qty;
+                                        if (data.Rows[row][4].ToString().Contains("Ea")) item.OfferedPrice = Double.Parse(data.Rows[row][5].ToString().Trim());
+                                        if (data.Rows[row][5].ToString().Contains("Ea")) item.OfferedPrice = Double.Parse(data.Rows[row][6].ToString().Trim());
+                                        item.CalculateTotal();
+                                        q.Order.OrderItems.Add(item);
+                                        break;
+                                    }
+                                    if (data.Rows[row][0].ToString().Trim().Contains("Gross Total"))
+                                    {
+                                        orderitemflag = false;
+                                        if (String.IsNullOrEmpty(current) || current.Contains("Gross Total")) continue;
+                                        string price = current;
+                                        q.Order.TotalPrice = Double.Parse(price);
+                                        break;
+                                    }
+                                    if (data.Rows[row][0].ToString().Trim().Contains("VAT"))
+                                    {
+                                        orderitemflag = false;
+
+                                        string vat = current.ToString().Trim();
+                                        string res2 = vat.Split('%')[0];
+                                        q.VAT = Int32.Parse(res2);
+                                        q.CalculateNetTotal();
+                                        break;
+                                    }
+                                    if (col > 0)
+                                    {
+                                        if (String.IsNullOrEmpty(current)) continue;
+                                        var prev = data.Rows[row][col - 1].ToString();
+
+                                        if (prev.Contains("REF"))
+                                        {
                                             q.ReferenceNumber += current.Trim();
+                                        }
+                                        if (prev.Contains("M/S"))
+                                        {
+                                            q.MS = current;
+                                        }
+                                        if (prev.Contains("To"))
+                                        {
+                                            string input = current;
+                                            if (String.IsNullOrEmpty(input)) continue;
+                                            char[] delimiter = new char[] { '\t', '.', ' ' };
+                                            string[] words = input.Split(' ');
+                                            q.Customer.FirstName = $"{words[0] + words[1] }";
+                                            q.Customer.LastName = $"{words[2] }";
+                                        }
+                                        if (prev.Contains("DATE") || prev.Contains("Date"))
+                                        {
+                                            string date = current;
+                                            if (String.IsNullOrEmpty(date)) { continue; }
+                                            q.Date = current;
+                                            q.DateCreated = Convert.ToDateTime(current);
+                                        }
+                                        if (col > 1)
+                                        {
+                                            var prevM1 = data.Rows[row][col - 2].ToString();
+                                            if (prevM1.Contains("REF"))
+                                                q.ReferenceNumber += current.Trim();
+                                        }
                                     }
                                 }
                             }
+                            quotes.Add(q);
                         }
-                        quotes.Add(q);
-                    }
-                    quotes = await DuplicateChecks(quotes);
+                        quotes = await DuplicateChecks(quotes);
 
-                    foreach (var item in quotes)
-                    {
-                        if (item.Id > 0)
+                        foreach (var item in quotes)
                         {
-                            updatequotes.Add(item);
+                            if (item.Id > 0)
+                            {
+                                updatequotes.Add(item);
+                            }
+                            else if (item.Id == 0)
+                            {
+                                addquotes.Add(item);
+                            }
                         }
-                        else if (item.Id == 0)
-                        {
-                            addquotes.Add(item);
-                        }
-                    }
 
-                    if (addquotes.Count > 0) { await service.CallBulkInsert(addquotes); }
-                    if (updatequotes.Count > 0) { await service.CallBulkUpdate(updatequotes); }
-                    // The result of each spreadsheet is in result.Tables
+                        if (addquotes.Count > 0)
+                        {
+                            if (await service.CallBulkInsert(addquotes))
+                            {
+                                MessageBox.Show("Bulk Insert Success");
+                            }
+                        }
+                        else if (updatequotes.Count > 0)
+                        {
+                            await service.CallBulkUpdate(updatequotes);
+                            MessageBox.Show("Bulk Insert Success. Duplicates records updated");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Nothing to insert.Records Already uptodate");
+                        }
+                        await GetAll();
+                        // The result of each spreadsheet is in result.Tables
+                    }
                 }
+            }
+            else 
+            {
+                MessageBox.Show("Error Reading File. Make sure the file path contains quotation");
             }
 
         }
         private async Task< List<Quotation>>  DuplicateChecks(List<Quotation> quotes )
         {
-            //If Records missing Customer
-            //Skip Them, Count the number of records
-            //List Reasons
             var _service = new CustomerService();
             var _partsService = new InventoryService();
             CustomersList = new ObservableCollection<Customer>(await _service.CallGetAllService());
@@ -470,22 +494,17 @@ namespace SaadiaInventorySystem.Client.ViewModel
             var quote_list = new List<Quotation>();
             foreach (var q in quotes)
             {
-                //If quotation exists and ignore then remove
-                //else if quotation exists and update
-                // if quotation ! found
                 if (q!= null)
                 {
                     var _quotes = Quotations.Where(i => (q.QuotationNumber != null && q.QuotationNumber == i.QuotationNumber) ||(q.ReferenceNumber == i.ReferenceNumber)).FirstOrDefault();
-                    if(_quotes != null && DuplicateState.Equals("Ignore"))
+                    if(_quotes != null && IsIgnoreCheck)
                     {
                         continue;
                     }
-                    else if(_quotes != null && DuplicateState.Equals("Update"))
+                    else if(_quotes != null && IsUpdateCheck)
                     {
                         q.Id = _quotes.Id;
-                        //quote_list.Add(q);
                     }
-                    //Check Customer
                     if (String.IsNullOrEmpty(q.Customer.FirstName) && String.IsNullOrEmpty(q.Customer.FirstName))
                     {
                         q.Customer.FirstName = ""; q.Customer.LastName = "";
@@ -497,12 +516,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
                     {
                         //Record found
                         //if DuplpicateState equals ignore: remove object set id
-                        if (DuplicateState.Equals("Ignore"))
+                        if (IsIgnoreCheck)
                         {
                             q.CustomerId = customer.Id;
                             q.Customer = null;
                         }
-                        else if (DuplicateState.Equals("Update"))
+                        else if (IsUpdateCheck)
                         {
                             q.CustomerId = customer.Id;
                             q.Customer = null;
@@ -514,12 +533,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
                         var item = PartsList.Where(i => i.PartNumber.Equals(part.Inventory.PartNumber) || i.Description.Equals(part.Inventory.Description)).FirstOrDefault();
                         if (item != null)
                         {
-                            if (DuplicateState.Equals("Ignore"))
+                            if (IsIgnoreCheck)
                             {
                                 part.InventoryId = item.Id;
                                 part.Inventory = null;
                             }
-                            else if (DuplicateState.Equals("Update"))
+                            else if (IsUpdateCheck)
                             {
                                 part.InventoryId = item.Id;
                                 part.Inventory = null;

@@ -114,6 +114,50 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest();
             }
         }
+        [HttpPost("add/bulk")]
+        public async Task<IActionResult> BulkAddInventoryAsync([FromBody] List<Inventory> inventory)
+        {
+            try
+            {
+                bool success = await _inventoryService.BulkAddAsync(inventory);
+                if (success)
+                {
+                    return Ok("Inventory Bulk Add successfully");
+                }
+                else
+                {
+                    return Conflict("Error Bulk Adding");
+                }
+            }
+            catch (Exception ex)
+            {
+                //log
+                Console.Error.WriteLine($"Inventory Controller Error: Method: BulkAdd, Error:{ex.InnerException.Message} ");
+                return BadRequest();
+            }
+        }
+        [HttpPost("update/bulk")]
+        public async Task<IActionResult> UpdateQuotationBulkAsync([FromBody] List<Inventory> inventory)
+        {
+            try
+            {
+                bool success = await _inventoryService.BulkUpdateAsync(inventory);
+                if (success)
+                {
+                    return Ok("Inventory updated successfully");
+                }
+                else
+                {
+                    return Conflict("Inventory not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                //log
+                Console.Error.WriteLine($"Inventory Controller Error: Method: Update, Error:{ex.InnerException.Message} ");
+                return BadRequest();
+            }
+        }
         [HttpPost("update")]
         public async Task<IActionResult> UpdateInventoryAsync([FromBody] Inventory inventory)
         {

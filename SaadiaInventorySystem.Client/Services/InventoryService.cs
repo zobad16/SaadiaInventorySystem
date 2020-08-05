@@ -16,9 +16,37 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                //var _inventory = JsonConvert.SerializeObject(inventory);
-                
                 HttpResponseMessage response = await client.PostAsJsonAsync("api/inventory/add", inventory);
+
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else return false;
+
+            }
+        }
+        public async Task<bool> CallBulkInsert(List<Inventory> inventory)
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/inventory/add/bulk", inventory);
+
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else return false;
+
+            }
+        }
+        public async Task<bool> CallBulkUpdate(List<Inventory> inventory)
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/inventory/update/bulk", inventory);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)

@@ -40,11 +40,13 @@
                 <RadioButton Name="Ignore"
                              Margin="10,10"
                              Content="Ignore"
+                             IsChecked="{Binding IsIgnoreCheck}"
                              Command="{Binding DuplicateCommand}"
                              CommandParameter="{Binding ElementName=Ignore,Path=Content}"/>
                 <RadioButton Name="Update"
                              Margin="10,0"
                              Content="Update"
+                             IsChecked="{Binding IsUpdateCheck}"
                              Command="{Binding DuplicateCommand}"
                              CommandParameter="{Binding ElementName=Update,Path=Content}"/>
             </StackPanel>
