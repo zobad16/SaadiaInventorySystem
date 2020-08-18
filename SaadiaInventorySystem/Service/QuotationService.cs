@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SaadiaInventorySystem.Data;
 using SaadiaInventorySystem.Model;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -12,15 +14,22 @@ namespace SaadiaInventorySystem.Service
     public class QuotationService
     {
         private AppDbContext dao;
+        private readonly ILogger<QuotationService> _logger;
         public QuotationService(AppDbContext db)
         {
             dao = db;
+        }
+        public QuotationService(AppDbContext db, ILogger<QuotationService> logger)
+        {
+            dao = db;
+            _logger = logger;
         }
 
         public async Task<bool> AddAsync(Quotation data) 
         {
             try
             {
+                _logger.LogDebug("Inserting Quotation");
                 data.Order.IsActive = 1;
                 data.Order.DateCreated = DateTime.Now;
                 data.Order.DateUpdated = DateTime.Now;
@@ -44,13 +53,26 @@ namespace SaadiaInventorySystem.Service
                     data.Order.DateUpdated = DateTime.Now;
                     
                     await dao.Quotations.AddAsync(data);
-                    
-                    return await dao.SaveChangesAsync() > 0;
+                    int results = await dao.SaveChangesAsync();
+                    bool success = results > 0;
+                    if (success)
+                    {
+                        _logger.LogDebug("Quotation: Insert operation success. Records Inserted {a}",results);
+                    }
+                    else 
+                    {
+                        _logger.LogDebug("Quotation: Insert operation Failed. Records inserted {b}", results);
+                    }
+                    return success;
                 }
+                _logger.LogDebug("Insert operation failed. Duplicate record found");
             }
             catch(Exception ex)
             {
-                Console.WriteLine($"Quotation Add: Error: {ex.ToString()}");
+                _logger.LogError("Adding Quotation threw an Exception:{exception} ", ex.Message);
+                _logger.LogError("Adding Quotation threw an Exception:{exception} ",ex.InnerException.ToString());
+                
+                
             }
             return false; 
         }
@@ -59,6 +81,7 @@ namespace SaadiaInventorySystem.Service
         {
             try
             {
+                _logger.LogDebug("Bulk Inserting quotations");
                 foreach (var item in data)
                 {
                     item.IsActive = 1;
@@ -91,14 +114,24 @@ namespace SaadiaInventorySystem.Service
                     }
                 }                
                 await dao.Quotations.AddRangeAsync(data);
-
-                return await dao.SaveChangesAsync() > 0;
+                int results = await dao.SaveChangesAsync();
+                bool success = results > 0;
+                if (success)
+                {
+                    _logger.LogDebug("Quotations bulk insert success. Records inserted {records}", results);
+                }
+                else 
+                {
+                    _logger.LogDebug("Quotations bulk insert failed. No records were saved");
+                }
+                return success;
                 
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Quotation Bulk Add: Error: {ex.InnerException.Message.ToString()}");
-                
+                _logger.LogError("Quotation Bulk Add: Error: {exception} ", ex.Message);
+                _logger.LogError("Exception Inner exception details: {exception} ", ex.InnerException.ToString());
+
             }
             return false;
         }
@@ -106,6 +139,7 @@ namespace SaadiaInventorySystem.Service
         {
             try
             {
+                _logger.LogDebug("Bulk Updating quotations");
                 foreach (var item in data)
                 {
                     item.IsActive = 1;
@@ -126,14 +160,24 @@ namespace SaadiaInventorySystem.Service
                     }
                 }                
                 dao.Quotations.UpdateRange(data);
-
-                return await dao.SaveChangesAsync() > 0;
+                int results = await dao.SaveChangesAsync();
+                bool success = results > 0;
+                if (success)
+                {
+                    _logger.LogDebug("Quotations Bulk Insert Success. Records updated {a}", results);
+                }
+                else
+                {
+                    _logger.LogDebug("Quotations Bulk Insert Failed. Records updated {a}", results);
+                }
+                return success;
                 
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Quotation Bulk Update: Error: {ex.InnerException.Message.ToString()}");
-                
+                _logger.LogError("Quotation Bulk Update: Error:{exception} ", ex.Message);
+                _logger.LogError("Inner Exception details: {a}", ex.InnerException.ToString());
+
             }
             return false;
         }
@@ -141,16 +185,13 @@ namespace SaadiaInventorySystem.Service
         {
             try 
             {
+                _logger.LogDebug("Updating Quotations");
                 Quotation quote = dao.Quotations
                     .Include(r => r.Order)
                     .ThenInclude(r => r.OrderItems)
                     .ThenInclude(r => r.Inventory)
                     .Where(q => q.Id.Equals(data.Id)).FirstOrDefault();
                     
-                //if(quote.Order.OrderItems != null)
-                //{
-                //    dao.Remove(quote.Order.OrderItems);
-                //}
 
                 quote.DateUpdated = DateTime.Now;
                 quote.OrderId = quote.OrderId;
@@ -168,104 +209,182 @@ namespace SaadiaInventorySystem.Service
                 quote.QuotationNumber = data.QuotationNumber;
                 quote.ReferenceNumber = data.ReferenceNumber;
                 quote.VAT = quote.VAT;
-                return await dao.SaveChangesAsync() > 0;
+                int results = await dao.SaveChangesAsync();
+                bool success = results > 0;
+                if (success)
+                {
+                    _logger.LogDebug("Quotations Update Success. Records updated {a}", results);
+                }
+                else
+                {
+                    _logger.LogDebug("Quotations Update Failed. Records updated {a}", results);
+                }
+                return success;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Quotation Update error: {ex.InnerException}");
-                throw ex; 
+                _logger.LogError("Quotation Update Failed. Returned an exception: {a}",ex.Message);
+                _logger.LogError("Stack trace: {a}",ex.StackTrace);
             }
-            
+            return false;
         }
         public async Task<bool> DeleteAsync(int id)
         {
             try 
             {
+                _logger.LogDebug("Deleting Quotaion");
                 Quotation quote = dao.Quotations.
                     Where(q => q.Id == id).FirstOrDefault();
                 quote.IsActive = 0;
-                return await dao.SaveChangesAsync() > 0;
+                int results = await dao.SaveChangesAsync();
+                bool success = results > 0;
+                if (success)
+                {
+                    _logger.LogDebug("Delete quotation successs. Records deleted{records}", results);
+                }
+                else 
+                {
+                    _logger.LogDebug("Delete quotation Failed. Records deleted{records}", results);
+                }
             }
-            catch (Exception ex){ throw ex; }
-            
+            catch (Exception ex)
+            {
+                _logger.LogError("Error Deleting record: An exception occured {exception}", ex.Message);
+                _logger.LogError("Stack Trace {exception}", ex.StackTrace);
+            }
+            return false;
         }
         public async Task<bool> ActivateAsync(int id)
         {
             try 
             {
+                _logger.LogDebug("Activating quotation");
                 Quotation quote = dao.Quotations.
                     Where(q => q.Id == id).FirstOrDefault();
                 quote.IsActive = 1;
-                return await dao.SaveChangesAsync() > 0;
+                int results = await dao.SaveChangesAsync();
+                bool success = results > 0;
+                if (success)
+                {
+                    _logger.LogDebug("Quotation Activated successfully. Records updated {records}", results);
+                }
+                else 
+                {
+                    _logger.LogDebug("Quotation Activation failed. Records updated {records}", results);
+                }
+                return success;
             }
-            catch (Exception ex){ throw ex; }
-            
+            catch (Exception ex)
+            {
+                _logger.LogError("Quotation Activate threw an exception. Exception message: {message}", ex.Message);
+                _logger.LogError("Stack trace: {trace}", ex.StackTrace);
+            }
+            return false;
         }
         
         public async Task<bool> AdminDeleteAsync(int id) 
         {
             try 
             {
+                _logger.LogDebug("Quotaion Admin deleting");
                 Quotation quote = dao.Quotations.
                     Where(q => q.Id == id).FirstOrDefault();
                 dao.Quotations.Remove(quote);
-                return await dao.SaveChangesAsync() > 0;
+                int results = await dao.SaveChangesAsync();
+                bool success = results > 0;
+                if (success)
+                {
+                    _logger.LogDebug("Quotation Admin deleted successfully. Records updated {records}", results);
+                }
+                else
+                {
+                    _logger.LogDebug("Quotation Admin delete failed. Records updated {records}", results);
+                }
+
+                return success;
             }
-            catch (Exception ex){ throw ex; }
-            
+            catch (Exception ex)
+            {
+                _logger.LogError("Quotation Admin Delete threw an exception. Exception message: {message}", ex.Message);
+                _logger.LogError("Stack trace: {trace}", ex.StackTrace);
+            }
+            return false;
         }
         public Quotation Get(int id) 
         {
             try
             {
+                _logger.LogDebug("Fetching Quotation with id: {id}",id);
+
                 var quotation = dao.Quotations.Include(c => c.Customer)
                     .Include(r => r.Order)
                     .ThenInclude(r=> r.OrderItems)
                     .ThenInclude(r=> r.Inventory)
                     .Where((quote)=> quote.Id == id )
                     .FirstOrDefault();
+                if (quotation != null)
+                {
+                    _logger.LogDebug("Quotation found");
+                }
+                else 
+                {
+                    _logger.LogDebug("Quotaion not found");
+                }
                 return quotation;
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.InnerException.Message);
-                throw new Exception(ex.InnerException.Message);
+                _logger.LogError("Quotation get threw an exception. Exception message: {message}", ex.Message);
+                _logger.LogError("Stack trace: {trace}", ex.StackTrace);
             }
+        
+            return null;
         }
         public List<Quotation> GetAll() 
         {
             try
             {
+                _logger.LogDebug("Fetching Quotaions");
+
                 var quotes = dao.Quotations.Include(c => c.Customer)
                     .Include(r => r.Order)
                     .ThenInclude(r => r.OrderItems)
                     .ThenInclude(r => r.Inventory)
                     .Where(i => i.IsActive == 1)
                     .ToList<Quotation>();
+                int records = quotes.Count();
+                _logger.LogDebug("Quotation records fetched: {record}", records);
                 return quotes;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.InnerException.Message);
-                throw new Exception(ex.InnerException.Message);
+                _logger.LogError("Quotation get all threw an exception. Exception message: {message}", ex.Message);
+                _logger.LogError("Stack trace: {trace}", ex.StackTrace);
             }
+        
+            return null;
         }
         public List<Quotation> AdminGetAll() 
         {
             try
             {
+                _logger.LogDebug("Getting admin level quotaions");
                 var quotes = dao.Quotations.Include(c => c.Customer)
                     .Include(r => r.Order)
                     .ThenInclude(r => r.OrderItems)
                     .ThenInclude(r => r.Inventory)
                     .ToList<Quotation>();
+                int records = quotes.Count();
+                _logger.LogDebug("Quotation records fetched: {record}", records);
+
                 return quotes;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.InnerException.Message);
-                throw new Exception(ex.InnerException.Message);
+                _logger.LogError("Quotation admin get all threw an exception. Exception message: {message}", ex.Message);
+                _logger.LogError("Stack trace: {trace}", ex.StackTrace);
             }
+            return null;
         }
     }
 }

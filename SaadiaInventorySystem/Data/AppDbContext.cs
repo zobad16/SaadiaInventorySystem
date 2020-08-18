@@ -15,7 +15,7 @@ namespace SaadiaInventorySystem.Data
         public DbSet<OldPart> OldParts { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
-        public DbSet<InvoiceItem> InvoiceItems { get; set; }
+        //public DbSet<InvoiceItem> InvoiceItems { get; set; }
         public DbSet<Quotation> Quotations { get; set; }
         //public DbSet<QuotationItem> QuotationItems { get; set; }
         
@@ -81,33 +81,20 @@ namespace SaadiaInventorySystem.Data
                 .WithOne(i => i.Customer)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            //InvoiceItem foreign key with Inventory
-            //InvoiceItem -> (Invoice, Inventory) 
-            modelBuilder.Entity<InvoiceItem>()
-                .HasKey(qt => new { qt.InvoiceId, qt.InventoryId});
-            //InvoiceItem -> Invoice
-            modelBuilder.Entity<InvoiceItem>()
-                .HasOne(qt => qt.Invoice)
-                .WithMany(b => b.Item)
-                .HasForeignKey(fk => fk.InvoiceId)
-                .OnDelete(DeleteBehavior.ClientSetNull);
-            //InvoiceItem -> Inventory
-            modelBuilder.Entity<InvoiceItem>()
-                .HasOne(ct => ct.Inventory)
-                .WithMany()
-                .HasForeignKey(bc => bc.InventoryId);
-            //Quotaion Foreign key with Quotaion Item and Customer
-            //Invoice -> Customer
             modelBuilder.Entity<Invoice>()
                 .HasOne<Customer>(qt => qt.Customer )
                 .WithOne()
                 .HasForeignKey<Invoice>(fk=> fk.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
-            //Invoice -> InvoiceItem
+            modelBuilder.Entity<Customer>()
+                .HasMany<Invoice>()
+                .WithOne(i => i.Customer)
+                .OnDelete(DeleteBehavior.SetNull);
             modelBuilder.Entity<Invoice>()
-                .HasMany<InvoiceItem>(qt => qt.Item)
-                .WithOne(c => c.Invoice)
-                .HasForeignKey(fk=> fk.InvoiceId);
+               .HasOne<Order>(qt => qt.Order)
+               .WithOne()
+               .HasForeignKey<Invoice>(invoice => invoice.OrderId);
+            
             
 
             modelBuilder.Entity<User>()

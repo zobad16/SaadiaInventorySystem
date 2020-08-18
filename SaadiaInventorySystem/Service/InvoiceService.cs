@@ -1,4 +1,5 @@
-﻿using SaadiaInventorySystem.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SaadiaInventorySystem.Data;
 using SaadiaInventorySystem.Model;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,7 @@ namespace SaadiaInventorySystem.Service
                     data.DateCreated = DateTime.Now;
                     data.DateUpdated = DateTime.Now;
                     await dao.Invoices.AddAsync(data);
+                    //if confirmed then deduct from inventory
                     return await dao.SaveChangesAsync() > 0;
                 }
                 return false;
@@ -41,9 +43,21 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 Invoice invoice = (Invoice)dao.Invoices
-                            .Where(invoice => invoice.Id.Equals(data.Id)).FirstOrDefault();
-                invoice.Item = data.Item;
+                    .Include(r => r.Order)
+                    .ThenInclude(r => r.OrderItems)
+                    .ThenInclude(r => r.Inventory)
+                    .Where(q => q.Id.Equals(data.Id)).FirstOrDefault();
+                            
                 invoice.DateUpdated = DateTime.Now;
+                invoice.OrderId = data.OrderId;
+                invoice.OrderPurchaseNumber = data.OrderPurchaseNumber;
+                invoice.QuotationId = data.QuotationId;
+                invoice.Order.OrderItems = data.Order.OrderItems;
+                invoice.CustomerId = data.CustomerId;
+                invoice.Customer = data.Customer;
+                invoice.OfferedDiscount = data.OfferedDiscount;
+                invoice.VAT = data.VAT;
+                invoice.IsActive = data.IsActive;
                 return await dao.SaveChangesAsync() > 0;
 
             }

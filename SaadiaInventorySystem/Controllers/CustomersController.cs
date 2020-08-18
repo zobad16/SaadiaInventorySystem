@@ -29,7 +29,7 @@ namespace SaadiaInventorySystem.Controllers
         {
             try
             {
-                _logger.LogInformation("Fetching Customers");
+                _logger.LogDebug("Fetching Customers");
                 var customers = _customerService.GetAll();
                 if (customers != null)
                 {
@@ -37,13 +37,14 @@ namespace SaadiaInventorySystem.Controllers
                 }
                 else
                 {
-                    _logger.LogInformation("Error fetching customers. No Customer found");
+                    _logger.LogDebug("Error fetching customers. No Customer found");
                     return Conflict("No Customers Found");
                 }
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex, "An exception occured while fetching customers data.");
+                _logger.LogError("An Exception occured: {ex}", ex.Message);
+                _logger.LogError("Stack Trace: {ex}", ex.StackTrace);
                 return BadRequest(ex);
             }
         }
@@ -53,21 +54,23 @@ namespace SaadiaInventorySystem.Controllers
         {
             try
             {
-                _logger.LogInformation("Fetching Customers");
+                _logger.LogDebug("admin Fetching Customers");
                 var customers = _customerService.AdminGetAll();
                 if (customers != null)
                 {
+                    _logger.LogDebug("Customers Found");
                     return Ok(customers);
                 }
                 else
                 {
-                    _logger.LogInformation("Error fetching customers. No Customer found");
+                    _logger.LogDebug("Error fetching customers. No Customers found");
                     return Conflict("No Customers Found");
                 }
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex, "An exception occured while fetching customers data.");
+                _logger.LogError("An Exception occured: {ex}", ex.Message);
+                _logger.LogError("Stack Trace: {ex}", ex.StackTrace);
                 return BadRequest(ex);
             }
         }
@@ -78,19 +81,23 @@ namespace SaadiaInventorySystem.Controllers
         {
             try 
             {
+                _logger.LogDebug("Fetching Customer");
                 var customer = _customerService.Get(id);
                 if (customer != null)
                 {
+                    _logger.LogDebug("Customer Found");
                     return Ok(customer);
                 }
                 else
                 {
+                    _logger.LogDebug("Customer not found");
                     return Conflict("No Customers Found");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An exception occured while fetching customer data.");
+                _logger.LogError("An Exception occured: {ex}", ex.Message);
+                _logger.LogError("Stack Trace: {ex}", ex.StackTrace);
                 return BadRequest(ex);
             }
         }
@@ -101,21 +108,23 @@ namespace SaadiaInventorySystem.Controllers
         {
             try
             {
+                _logger.LogDebug("Updating Customer");
                 var update = await _customerService.UpdateAsync(value);
                 if (update)
                 {
-                    _logger.LogInformation("{first} {last} updated successfully", value.FirstName, value.LastName);
+                    _logger.LogDebug("{first} {last} updated successfully", value.FirstName, value.LastName);
                     return Ok("Successully updated");
                 }
                 else
                 {
-                    _logger.LogError("{first} {last} not found", value.FirstName,value.LastName);
+                    _logger.LogDebug("{first} {last} not found", value.FirstName,value.LastName);
                     return Conflict("Error! No Customer found");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An exception occured while updating customers data.");
+                _logger.LogError("An Exception occured: {ex}", ex.Message);
+                _logger.LogError("Stack Trace: {ex}", ex.StackTrace);
                 return BadRequest(ex);
             }
         }
@@ -125,21 +134,23 @@ namespace SaadiaInventorySystem.Controllers
         {
             try
             {
+                _logger.LogDebug("Activating Customer");
                 var update = await _customerService.ActivateAsync(id);
                 if (update)
                 {
-                    _logger.LogInformation("Customer with customer id:{id} updated", id);
+                    _logger.LogDebug("Customer Activated");
                     return Ok("Successully updated");
                 }
                 else
                 {
-                    _logger.LogInformation("Customer with Id:{id} not found", id);
+                    _logger.LogDebug("Customer not found");
                     return Conflict("Error! No Customer found");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An exception occured.");
+                _logger.LogError("An Exception occured: {ex}", ex.Message);
+                _logger.LogError("Stack Trace: {ex}", ex.StackTrace);
                 return BadRequest(ex);
             }
         }
@@ -151,21 +162,23 @@ namespace SaadiaInventorySystem.Controllers
         {
             try
             {
+                _logger.LogDebug("Inserting new Customer");
                 var add = await _customerService.AddAsync(value);
                 if (add)
                 {
-                    _logger.LogInformation("{firstname} {lastname} added successfully",value.FirstName,value.LastName);
+                    _logger.LogDebug("{firstname} {lastname} added successfully",value.FirstName,value.LastName);
                     return Ok($"Customer{value.FirstName} {value.LastName} added successfully");
                 }
                 else
                 {
-                    _logger.LogInformation("{firstname} {lastname} already exists", value.FirstName, value.LastName);
+                    _logger.LogDebug("{firstname} {lastname} already exists", value.FirstName, value.LastName);
                     return Conflict("Error! Duplicate Found");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An exception occured while adding a new customer.");
+                _logger.LogError("An Exception occured: {ex}", ex.Message);
+                _logger.LogError("Stack Trace: {ex}", ex.StackTrace);
                 return BadRequest(ex);
             }
         }
@@ -176,21 +189,23 @@ namespace SaadiaInventorySystem.Controllers
         {
             try
             {
+                _logger.LogDebug("Deleting Customer");
                 var delete = await _customerService.DeleteAsync(id);
                 if (delete)
                 {
-                    _logger.LogInformation("Customer with CustomerId{customerid} deleted", id);
+                    _logger.LogDebug("Customer deleted successfully", id);
                     return Ok("Customer deleted successfully");
                 }
                 else
                 {
-                    _logger.LogInformation("Customer with CustomerId{customerid} not found", id);
+                    _logger.LogDebug("Customer Delete Failed. Customer not found");
                     return Conflict("No Customers Found");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An exception occured while deleting a customer.");
+                _logger.LogError("An Exception occured: {ex}", ex.Message);
+                _logger.LogError("Stack Trace: {ex}", ex.StackTrace);
                 return BadRequest(ex);
             }
         }
@@ -200,21 +215,23 @@ namespace SaadiaInventorySystem.Controllers
         {
             try
             {
+                _logger.LogDebug("Permanently Deleting customer");
                 var delete = await _customerService.AdminDeleteAsync(id);
                 if (delete)
                 {
-                    _logger.LogInformation("Customer with CustomerId{customerid} deleted",id);
+                    _logger.LogDebug("Customer permanently deleted ");
                     return Ok("Customer permanently deleted successfully");
                 }
                 else
                 {
-                    _logger.LogInformation("Customer with CustomerId{customerid} not found", id);
+                    _logger.LogDebug("Customer delete failed. Cusotmer not found", id);
                     return Conflict("No Customers Found");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An exception occured while deleting a customer.");
+                _logger.LogError("An Exception occured: {ex}", ex.Message);
+                _logger.LogError("Stack Trace: {ex}", ex.StackTrace);
                 return BadRequest(ex);
             }
         }
