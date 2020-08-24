@@ -68,17 +68,17 @@
                      HorizontalAlignment="Left"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding NewUser.Password}"
-                     Height="25"
+        <PasswordBox Height="25"
                      Width="400"
                      HorizontalAlignment="Left"
                      Grid.Column="2"
                      Grid.Row="2"
                      Margin="10,0,0,0"
                      VerticalAlignment="Center"
-                     VerticalContentAlignment="Center">
-            <TextBox.Style>
-                <Style TargetType="TextBox">
+                     VerticalContentAlignment="Center"
+                     PasswordChanged="PasswordBox_PasswordChanged">
+            <PasswordBox.Style>
+                <Style TargetType="PasswordBox">
                     <Setter Property="IsEnabled" Value="True"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsEdit}" Value="True">
@@ -86,16 +86,42 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </TextBox.Style>
-        </TextBox>
+            </PasswordBox.Style>
+        </PasswordBox>
+        <TextBlock Text="Confirm Password"
+                     Grid.Column="1"
+                     Grid.Row="3" 
+                     HorizontalAlignment="Left"
+                     VerticalAlignment="Center"
+                     Margin="10,0,0,0"/>
+        <PasswordBox Height="25"
+                     Width="400"
+                     HorizontalAlignment="Left"
+                     Grid.Column="2"
+                     Grid.Row="3"
+                     Margin="10,0,0,0"
+                     VerticalAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     PasswordChanged="PasswordBox_PasswordChanged_1">
+            <PasswordBox.Style>
+                <Style TargetType="PasswordBox">
+                    <Setter Property="IsEnabled" Value="True"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsEdit}" Value="True">
+                            <Setter Property="IsEnabled" Value="False"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </PasswordBox.Style>
+        </PasswordBox>
         <TextBlock Text="First Name"
                      Grid.Column="1"
-                     Grid.Row="3"
+                     Grid.Row="4"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
         <TextBox Text="{Binding NewUser.FirstName}"
                      Grid.Column="2"
-                     Grid.Row="3"
+                     Grid.Row="4"
                      HorizontalAlignment="Left"
                      Height="25"
                      Width="400"
@@ -104,7 +130,7 @@
                      VerticalContentAlignment="Center"/>
         <TextBlock Text="Last Name"
                      Grid.Column="1"
-                     Grid.Row="4" 
+                     Grid.Row="5" 
                      HorizontalAlignment="Left"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
@@ -113,18 +139,18 @@
                      Width="400"
                      HorizontalAlignment="Left"
                      Grid.Column="2"
-                     Grid.Row="4"
+                     Grid.Row="5"
                      Margin="10,0,0,0"
                      VerticalAlignment="Center"
                      VerticalContentAlignment="Center"/>
         <TextBlock Text="Phone Number"
                      Grid.Column="1"
-                     Grid.Row="5"
+                     Grid.Row="6"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
         <TextBox Text="{Binding NewUser.PhoneNumber}"
                      Grid.Column="2"
-                     Grid.Row="5"
+                     Grid.Row="6"
                      HorizontalAlignment="Left"
                      Height="25"
                      Width="400"
@@ -133,7 +159,7 @@
                      VerticalContentAlignment="Center"/>
         <TextBlock Text="Email Address"
                      Grid.Column="1"
-                     Grid.Row="6" 
+                     Grid.Row="7" 
                      HorizontalAlignment="Left"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
@@ -142,14 +168,14 @@
                      Width="400"
                      HorizontalAlignment="Left"
                      Grid.Column="2"
-                     Grid.Row="6"
+                     Grid.Row="7"
                      Margin="10,0,0,0"
                      VerticalAlignment="Center"
                      VerticalContentAlignment="Center"
                      />
         <TextBlock Text="Role"
                      Grid.Column="1"
-                     Grid.Row="7" 
+                     Grid.Row="8" 
                      HorizontalAlignment="Left"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
@@ -160,14 +186,14 @@
                   Width="400"
                   HorizontalAlignment="Left"
                   Grid.Column="2"
-                  Grid.Row="7"
+                  Grid.Row="8"
                   Margin="10,0,0,0"
                   VerticalAlignment="Center"
                   VerticalContentAlignment="Center"/>
             
         <StackPanel Grid.ColumnSpan="2"
                     Grid.Column="1"
-                    Grid.Row="8"
+                    Grid.Row="9"
                     Orientation="Horizontal"
                     HorizontalAlignment="Center"
                     Height="20">

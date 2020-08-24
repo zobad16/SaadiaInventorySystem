@@ -4,6 +4,8 @@ using SaadiaInventorySystem.Client.Model;
 using SaadiaInventorySystem.Client.Services;
 using SaadiaInventorySystem.Client.Util;
 using System;
+using System.Net;
+using System.Security;
 using System.Text.RegularExpressions;
 using System.Windows;
 
@@ -23,7 +25,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             _mainVM = vm;
             UserName = "zobad16";
-            Password = "12345";
+            Password =  "12345";
             service = new LoginService();
             userservice = new UserService();
         }
@@ -45,7 +47,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public MainViewModel MainVM { get => _mainVM; private set {_mainVM = value; } }
 
         public string UserName { get => _userName; set { _userName = value; RaisePropertyChanged("UserName"); } }
-        public string Password { get => _password; set { _password = value; RaisePropertyChanged("Password"); } }
+        public string Password { private get => _password; set { _password = value; RaisePropertyChanged("Password"); } }
 
         #endregion
 

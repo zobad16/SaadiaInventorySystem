@@ -19,7 +19,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             Name = "User";
             service = new UserService();
-            SaveCommand = new RelayCommand<IClosable>(p => Save(p), p => CanAdd());
+            SaveCommand = new RelayCommand<IClosable>(p => Save(p), p => true);
             SavePasswordCommand = new RelayCommand<IClosable>(p => SavePassword(p), p => CanSavePassword());
             AddWindowCommand = new RelayCommand(i => OpenAddWindow(), i => CanAdd());
             EditWindowCommand = new RelayCommand(i => OpenEditWindow(), i => CanOpenEditWindow());
@@ -172,16 +172,24 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
             else
             {
-                NewUser.IsActive = 1;
-                //NewUser.Role = null;
-                if (await service.CallAddService(NewUser))
+                if(NewUser.Password == ConfirmPassword)
                 {
-                    window.Close();
-                    await service.CallGetAllService();
+                    NewUser.IsActive = 1;
+                    //NewUser.Role = null;
+                    if (await service.CallAddService(NewUser))
+                    {
+                        window.Close();
+                        await service.CallGetAllService();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error: Unable to add new User");
+                    }
+
                 }
                 else
                 {
-                    MessageBox.Show("Error: Unable to add new User");
+                    MessageBox.Show("Error: Passwords dont match");
                 }
 
             }
@@ -239,6 +247,15 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public bool CanAdd()
         {
             return true;
+        }
+        public bool CanSave()
+        {
+            if(!String.IsNullOrEmpty(NewUser.Password) && !String.IsNullOrEmpty(ConfirmPassword))
+            {
+                if (NewUser.Password == ConfirmPassword)
+                    return true;
+            }
+            return false;
         }
         public bool CanOpenEditWindow()
         {
