@@ -262,36 +262,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             
         }
         
-        private async void DisableAsync()
-        {
-            if (await service.CallDeleteService(SelectedQuotation.Id))
-            {
-                MessageBox.Show("Quoatation Disabled");
-                await GetAll();
-            }
-        }
-        public async void Delete()
-        {
-            if (await DeleteAsync())
-            {
-                MessageBox.Show("Quotation Deleted Successfully");
-                await GetAll();
-            }
-            else
-            {
-                MessageBox.Show("Error Deleting Quotation");
-                await GetAll();
-            }
-        }
-        private async void ActivateAsync()
-        {
-            if (await service.CallActivateService(SelectedQuotation.Id))
-            {
-                MessageBox.Show("Quotation Activated");
-                await GetAll();
-            }
-        }
-
+        
         private void SelectCustomersCommand(IClosable i)
         {
 
@@ -568,6 +539,36 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             Active = 0;
             return Active == 0;
+        }
+        private async void ActivateAsync()
+        {
+            if (await service.CallActivateService(SelectedQuotation.Id))
+            {
+                MessageBox.Show("Quotation Activated");
+                await GetAll();
+            }
+        }
+
+        private async void DisableAsync()
+        {
+            if (await service.CallDeleteService(SelectedQuotation.Id))
+            {
+                MessageBox.Show("Quoatation Disabled");
+                await GetAll();
+            }
+        }
+        public async void Delete()
+        {
+            if (await DeleteAsync())
+            {
+                MessageBox.Show("Quotation Deleted Successfully");
+                await GetAll();
+            }
+            else
+            {
+                MessageBox.Show("Error Deleting Quotation");
+                await GetAll();
+            }
         }
         public async Task<bool> UpdateAsync()
         {

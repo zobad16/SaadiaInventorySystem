@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SaadiaInventorySystem.Data;
 using SaadiaInventorySystem.Model;
 using System;
@@ -10,16 +11,22 @@ namespace SaadiaInventorySystem.Service
 {
     public class OldPartService
     {
+        private readonly AppDbContext context;
+        private readonly ILogger<OldPartService> _logger;
+
         public OldPartService(AppDbContext db)
         {
             context = db;
         }
-        private readonly AppDbContext context;
+        
         
         public async Task<bool> AddAsync(OldPart data)
         {
             try
             {
+                _logger.LogDebug("Adding Old part");
+
+                bool saved = false;
                 bool isexists = context.Inventories.Any(x => x.PartNumber == data.PartNumber);
                 if (!isexists)
                 {
@@ -27,95 +34,204 @@ namespace SaadiaInventorySystem.Service
                     data.DateUpdate = DateTime.Now;
                                     
                     await context.OldParts.AddAsync(data);
-                    return await context.SaveChangesAsync() > 0;
+                 saved = await context.SaveChangesAsync() > 0;
+
+                    if (saved)
+                    {
+                        _logger.LogDebug("Insert operation successful");
+                    }
+                    else
+                    {
+                        _logger.LogDebug("Insert operation failed");
+                    }
+                    return saved;
                 }
+                _logger.LogDebug("Insert operation failed. Record already exists");
                 return false;
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                throw ex;
+                _logger.LogError("An exception occured: {ex}", ex.ToString());
+                _logger.LogError("Stack Trace: {trace}", ex.StackTrace);
+                return false;
+
             }
         }
         public async Task<bool> UpdateAsync(OldPart data)
         {
             try
             {
+                var saved = false;
                 OldPart part = (OldPart)context.OldParts
                             .Where(part => part.Id.Equals(data.Id)).FirstOrDefault();
+                if(part == null)
+                {
+                    _logger.LogDebug("Update operation failed.Part not found");
+                    return false;
+                }
+                _logger.LogDebug("Part found");
                 part.Description = data.Description;
                 part.Location = data.Location;
                 part.PartNumber = data.PartNumber;
                 part.Rem = data.Rem;
                 part.DateUpdate = DateTime.Now;
-                return await context.SaveChangesAsync() > 0;
+                saved = await context.SaveChangesAsync() > 0;
+                if (saved)
+                {
+                    _logger.LogDebug("Update operation successful");
+                }
+                else
+                {
+                    _logger.LogDebug("Update operation failed");
+                }
+                return saved;
 
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                throw new Exception(ex.Message);
+                _logger.LogError("An exception occured: {ex}", ex.ToString());
+                _logger.LogError("Stack Trace: {trace}", ex.StackTrace);
+                return false;
+
             }
         }
         public async Task<bool> DeleteAsync(string id)
         {
             try
             {
+                bool saved = false;
+                _logger.LogDebug("Disabling Old Part");
                 OldPart part = (OldPart)context.OldParts
                             .Where(part => part.Id.Equals(id)).FirstOrDefault();
+                if(part == null)
+                {
+                    _logger.LogDebug("Part not found");
+                    return false;
+                }
+                _logger.LogDebug("Part found");
                 part.IsActive = 0;
-                return await context.SaveChangesAsync() > 0;
+                saved = await context.SaveChangesAsync() > 0;
+                if (!saved)
+                {
+                    _logger.LogDebug("Disable operation failed");
+                    return saved;
+                }
+                _logger.LogDebug("Disable operation successful");
+                return saved;
+
 
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                throw ex;
+                _logger.LogError("An exception occured: {ex}", ex.ToString());
+                _logger.LogError("Stack Trace: {trace}", ex.StackTrace);
+                return false;
+
             }
         }
         public async Task<bool> AdminDeleteAsync(string id)
         {
             try
             {
+                bool saved = false;
+                _logger.LogDebug("Deleting Old Part");
                 OldPart part = (OldPart)context.OldParts
                             .Where(part => part.Id.Equals(id)).FirstOrDefault();
+                if (part == null)
+                {
+                    _logger.LogDebug("Delete operation failed. Record not found");
+                    return false;
+                }
+                _logger.LogDebug("Record found");
                 context.Remove<OldPart>(part);
-                await context.SaveChangesAsync();
-                return true;
+                saved = await context.SaveChangesAsync() > 0;
+                if (!saved)
+                {
+                    _logger.LogDebug("Delete operation failed.");
+                }
+                else
+                {
+                    _logger.LogDebug("Delete operation success.");
+                }
+                return saved;
 
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError("An exception occured: {ex}", ex.ToString());
+                _logger.LogError("Stack Trace: {trace}", ex.StackTrace);
+                return false;
 
             }
-            return false;
         }
         public OldPart Get(string id)
         {
-            return (OldPart)context.OldParts
+            try
+            {
+                _logger.LogDebug("Fetching Old part by id");
+                var parts =  (OldPart)context.OldParts
                             .Where(part => part.Id.Equals(id)).FirstOrDefault();
+                if (parts == null)
+                {
+                    _logger.LogDebug("Fetch operation failed. No records found");
+                    return parts;
+                }
+                _logger.LogDebug("Parts found");
+                return parts;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An exception occured: {ex}", ex.ToString());
+                _logger.LogError("Stack Trace: {trace}", ex.StackTrace);
+                return null;
+
+            }
         }
         public List<OldPart> GetAll()
         {
+            try
+            {
+                _logger.LogDebug("Fetching all Old parts");
+                var parts = context.OldParts.Where(i => i.IsActive == 1).ToList();
+                if (parts.Count < 1)
+                {
+                    _logger.LogDebug("Fetch operation failed. No records found");
+                    return parts;
+                }
+                _logger.LogDebug("Parts found");
+                return parts;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An exception occured: {ex}", ex.ToString());
+                _logger.LogError("Stack Trace: {trace}", ex.StackTrace);
+                return null;
 
-            /*var query = from photo in context.Set<PersonPhoto>()
-                        join person in context.Set<Person>()
-                            on photo.PersonPhotoId equals person.PhotoId
-                        select new { person, photo };*/
-            var oldPart = context.OldParts.Where(i => i.IsActive == 1).ToList();
-            return oldPart;
+            }
         }
         public List<OldPart> AdminGetAll()
         {
 
-            /*var query = from photo in context.Set<PersonPhoto>()
-                        join person in context.Set<Person>()
-                            on photo.PersonPhotoId equals person.PhotoId
-                        select new { person, photo };*/
-            var oldPart = context.OldParts.ToList();
-            return oldPart;
+            try
+            {
+                _logger.LogDebug("Adming Fetching all old parts");
+                var parts = context.OldParts.ToList();
+                if (parts.Count < 1)
+                {
+                    _logger.LogDebug("Fetch operation failed. No records found");
+                    return parts;
+                }
+                _logger.LogDebug("Parts found");
+                return parts;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("An exception occured: {ex}", ex.ToString());
+                _logger.LogError("Stack Trace: {trace}", ex.StackTrace);
+                return null;
+
+            }
         }
     }
 }

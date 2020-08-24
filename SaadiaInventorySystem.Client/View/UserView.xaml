@@ -45,7 +45,7 @@
                                     Binding="{Binding FirstName}" />
                     <DataGridTextColumn Header="Last Name"
                                     Binding="{Binding LastName}" />
-                    <DataGridTextColumn Header="ComapnyName"
+                    <DataGridTextColumn Header="Phone number"
                                     Binding="{Binding PhoneNumber}" />
                     <DataGridTextColumn Header="EmailAddress"
                                     Binding="{Binding EmailAddress}" />

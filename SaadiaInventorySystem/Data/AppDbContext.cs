@@ -111,6 +111,7 @@ namespace SaadiaInventorySystem.Data
             SeedDataOrder(modelBuilder);
             SeedDataOrderItems(modelBuilder);
             SeedDataQuotation(modelBuilder);
+            SeedDataInvoice(modelBuilder);
             //Seed Master data.
 
         }
@@ -347,7 +348,29 @@ namespace SaadiaInventorySystem.Data
             });
         }
         public void SeedDataOldPart(ModelBuilder modelBuilder) { }
-        public void SeedDataInvoice(ModelBuilder modelBuilder) { }
+        public void SeedDataInvoice(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Invoice>().HasData(new List<Invoice>()
+            {
+                new Invoice()
+                {
+                    Id = 1,
+                    QuotationId = 1,
+                    CustomerId = 2,
+                    OrderPurchaseNumber = "1903447049",
+                    OrderId = 1,
+                    OfferedDiscount = 0.20,
+                    IsActive =1,
+                    VAT = 5.00,
+                    Confirmation = true,                    
+                    DateCreated = DateTime.Now,
+                    DateUpdated = DateTime.Now,
+
+                }
+
+            });
+
+        }
         public void SeedDataInvoiceItem(ModelBuilder modelBuilder) { }
         public void SeedDataQuotation(ModelBuilder modelBuilder)
         {

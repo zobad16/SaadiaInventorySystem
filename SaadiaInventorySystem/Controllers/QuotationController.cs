@@ -57,12 +57,12 @@ namespace SaadiaInventorySystem.Controllers
                 List<Quotation> quotes = _quotationService.AdminGetAll();
                 if (quotes != null)
                 {
-                    _logger.LogDebug("Invoice fetch operation success.");
+                    _logger.LogDebug("Quotations fetch operation success.");
                     return Ok(quotes);
                 }
                 else
                 {
-                    _logger.LogDebug("Invoices fetch operation failed. No invoices found");
+                    _logger.LogDebug("Quotations fetch operation failed. No invoices found");
                     return Conflict("No Invoices Found");
 
                 }
@@ -84,7 +84,7 @@ namespace SaadiaInventorySystem.Controllers
                 Quotation quote = _quotationService.Get(id);
                 if (quote != null)
                 {
-                    _logger.LogDebug("Quoatation fetch operation success.");
+                    _logger.LogDebug("Quotation fetch operation success.");
                     return (Ok(quote));
                 }
                 else

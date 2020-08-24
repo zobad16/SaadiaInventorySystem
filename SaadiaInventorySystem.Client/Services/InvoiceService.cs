@@ -16,9 +16,7 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                var _invoice = JsonConvert.SerializeObject(invoice);
-
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/invoice/add", _invoice);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/invoice/add", invoice);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -27,6 +25,34 @@ namespace SaadiaInventorySystem.Client.Services
                 }
                 else return false;
 
+            }
+        }
+        public async Task<bool> CallBulkInsert(List<Invoice> quotations)
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/invoice/add/bulk", quotations);
+
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else return false;
+            }
+        }
+        public async Task<bool> CallBulkUpdate(List<Invoice> quotations)
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/invoice/update/bulk", quotations);
+
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else return false;
             }
         }
 
@@ -62,13 +88,27 @@ namespace SaadiaInventorySystem.Client.Services
                 return data;
             }
         }
+        public async Task<List<Invoice>> CallAdminGetAllService()
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.GetAsync("api/invoice/invoices/admin");
+                List<Invoice> data = new List<Invoice>();
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    Task<List<Invoice>> responseData = result.ReadAsAsync<List<Invoice>>();
+                    data = responseData.Result;
+                    return data;
+                }
+                return data;
+            }
+        }
         public async Task<bool> CallUpdateService(Invoice invoice)
         {
             using (var client = GetClient())
             {
-                var _invoice = JsonConvert.SerializeObject(invoice);
-
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/invoice/update", _invoice);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/invoice/update", invoice);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -79,7 +119,8 @@ namespace SaadiaInventorySystem.Client.Services
 
             }
         }
-        public async Task<bool> CallDeleteService(string id)
+
+        public async Task<bool> CallDeleteService(int id)
         {
             using (var client = GetClient())
             {
@@ -94,11 +135,26 @@ namespace SaadiaInventorySystem.Client.Services
 
             }
         }
-        public async Task<bool> CallAdminDeleteService(string id)
+        public async Task<bool> CallAdminDeleteService(int id)
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.PostAsJsonAsync("api/invoice/admindelete", id);
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/invoice/delete/admin", id);
+
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else return false;
+
+            }
+        }
+        public async Task<bool> CallActivateService(int id)
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/invoice/activate", id);
 
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)

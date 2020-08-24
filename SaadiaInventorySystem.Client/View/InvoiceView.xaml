@@ -10,13 +10,57 @@
              FontSize="12">
     <Grid>
         <StackPanel Orientation="Vertical" Margin="10,5">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,10">
-                <local:FileBrowseView 
-                    Height="25" 
-                    Margin="0,0,5,0"/>
+            <StackPanel Orientation="Horizontal" 
+                        HorizontalAlignment="Right" 
+                        Margin="0,5,0,10"
+                        >
+                <Button Content="Import"
+                        Width="60"
+                        Height="20"
+                        Margin="5,0,5,0"
+                        Command="{Binding ImportCommand}"
+                        />
                 <local:ButtonControlsView/>
+                <Button Content="Disable"
+                        Width="100"
+                        Height="20"
+                        Margin="5,0,5,0"
+                        Command="{Binding DisableCommand}"
+                        >
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAdmin}" Value="true">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsAdmin}" Value="false">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="Activate"
+                        Width="100"
+                        Height="20"
+                        Margin="0,0,5,0"
+                        Command="{Binding ActivateCommand}"
+                        >
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAdmin}" Value="true">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsAdmin}" Value="false">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
             </StackPanel>
-            <DataGrid ItemsSource="{Binding InvoicesList}" SelectedItem="{Binding SelectedExchange}"    
+            <DataGrid ItemsSource="{Binding Invoices}" SelectedItem="{Binding SelectedInvoice}"    
                   AutoGenerateColumns="False" 
                   Grid.Row="0"  IsReadOnly="True"
                   ColumnWidth="*"
@@ -24,18 +68,32 @@
                   >
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID"
-                                    Binding="{Binding ID}" />
-                    <DataGridTextColumn Header="Invoice Number"
-                                    Binding="{Binding PartNumber}" />
+                                    Binding="{Binding Id}" />
+                    <DataGridTextColumn Header="Quotation #"
+                                    Binding="{Binding QuotationId}" />
+
+                    <DataGridTextColumn Header="Order Purchase #"
+                                    Binding="{Binding OrderPurchaseNumber}" />
                     <DataGridTextColumn Header="Date"
-                                    Binding="{Binding Description}" />
-                    <DataGridTextColumn Header="Order Number"
-                                    Binding="{Binding Location}" />
+                                    Binding="{Binding DateCreated}" />
+                    <DataGridTemplateColumn Header="Customer Name">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Customer.FirstName}"/>
+                                    <TextBlock Text=" "/>
+                                    <TextBlock Text="{Binding Customer.LastName}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="VAT%"
+                                    Binding="{Binding VAT}" />
                     <DataGridTextColumn Header="Total"
-                                    Binding="{Binding UnitPrice}" />
+                                    Binding="{Binding NetTotal}" />
                 </DataGrid.Columns>
             </DataGrid>
-            <DataGrid ItemsSource="{Binding InvoicesList}" SelectedItem="{Binding SelectedExchange}"    
+            <DataGrid ItemsSource="{Binding SelectedInvoice.Order.OrderItems}" SelectedItem="{Binding SelectedOrder}"    
                   AutoGenerateColumns="False" 
                   Grid.Row="0"  IsReadOnly="True"
                   ColumnWidth="*"
@@ -44,27 +102,84 @@
                   >
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Part Number"
-                                    Binding="{Binding ID}" />
-                    <DataGridTextColumn Header="Description"
-                                    Binding="{Binding PartNumber}" />
-                    <DataGridTextColumn Header="Quantity"
-                                    Binding="{Binding Description}" />
-                    <DataGridTextColumn Header="Units"
-                                    Binding="{Binding Location}" />
-                    <DataGridTextColumn Header="Unit Price"
-                                    Binding="{Binding UnitPrice}" />
-                   <DataGridTextColumn Header="Total Price"
-                                                    Binding="{Binding UnitPrice}" />
-               </DataGrid.Columns>
+                                    Binding="{Binding Inventory.PartNumber}" />
+                        <DataGridTextColumn Header="Description"
+                                    Binding="{Binding Inventory.Description}" />
+                        <DataGridTextColumn Header="Offered Quantity"
+                                    Binding="{Binding OrderQty}" />
+                        <DataGridTextColumn Header="ActualPrice"
+                                    Binding="{Binding Inventory.UnitPrice}" />
+                        <DataGridTextColumn Header="Offered Price"
+                                    Binding="{Binding OfferedPrice}" />
+                        <DataGridTextColumn Header="Total Price"
+                                    Binding="{Binding Total}" />
+                </DataGrid.Columns>
             </DataGrid>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
                 <TextBlock
                     Background="GhostWhite"
                     FontWeight="Bold"
-                    Text="Total"
-                    Width="200"/>
+                    Text="Total: "
+                    Width="50"/>
+                <TextBlock/>
+                <TextBox
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="{Binding SelectedInvoice.Order.TotalPrice}"
+                    Width="150"
+                    BorderThickness="0"
+                    IsEnabled="False"/>
                 <TextBlock/>
             </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                <TextBlock
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="VAT %: "
+                    Width="50"/>
+                <TextBlock/>
+                <TextBox
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="{Binding SelectedInvoice.VAT}"
+                    Width="150"
+                    BorderThickness="0"
+                    IsEnabled="False"/>
+                <TextBlock/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                <TextBlock
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="Discount %: "
+                    Width="80"/>
+                <TextBlock/>
+                <TextBox
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="{Binding SelectedInvoice.OfferedDiscount}"
+                    Width="150"
+                    BorderThickness="0"
+                    IsEnabled="False"/>
+                <TextBlock/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                <TextBlock
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="Net Total: "
+                    Width="50"/>
+                <TextBlock/>
+                <TextBox
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="{Binding SelectedInvoice.NetTotal}"
+                    Width="150"
+                    BorderThickness="0"
+                    IsEnabled="False"/>
+                <TextBlock/>
+            </StackPanel>
+
         </StackPanel>
     </Grid>
 </UserControl>

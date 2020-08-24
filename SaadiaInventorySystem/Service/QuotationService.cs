@@ -191,8 +191,16 @@ namespace SaadiaInventorySystem.Service
                     .ThenInclude(r => r.OrderItems)
                     .ThenInclude(r => r.Inventory)
                     .Where(q => q.Id.Equals(data.Id)).FirstOrDefault();
-                    
 
+                if (quote != null)
+                {
+                    _logger.LogDebug("quotation found");
+                }
+                else 
+                {
+                    _logger.LogDebug("Update operation failed. Quotation not found");
+                    return false;
+                }
                 quote.DateUpdated = DateTime.Now;
                 quote.OrderId = quote.OrderId;
                 
@@ -246,6 +254,7 @@ namespace SaadiaInventorySystem.Service
                 {
                     _logger.LogDebug("Delete quotation Failed. Records deleted{records}", results);
                 }
+                return success;
             }
             catch (Exception ex)
             {
@@ -261,6 +270,11 @@ namespace SaadiaInventorySystem.Service
                 _logger.LogDebug("Activating quotation");
                 Quotation quote = dao.Quotations.
                     Where(q => q.Id == id).FirstOrDefault();
+                if(quote == null)
+                {
+                    _logger.LogDebug("Activate operation failed. Record not found");
+                    return false;
+                }
                 quote.IsActive = 1;
                 int results = await dao.SaveChangesAsync();
                 bool success = results > 0;

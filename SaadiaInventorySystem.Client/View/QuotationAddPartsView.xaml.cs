@@ -14,5 +14,10 @@ namespace SaadiaInventorySystem.Client.View
             InitializeComponent();
             DataContext = vm;
         }
+        public QuotationAddPartsView(InvoiceViewModel vm)
+        {
+            InitializeComponent();
+            DataContext = vm;
+        }
     }
 }
