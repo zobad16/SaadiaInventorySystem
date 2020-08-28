@@ -61,7 +61,7 @@ namespace SaadiaInventorySystem.Service
                 _logger.LogDebug("Updating Customer");
                 bool saved = false;
                 Customer _customer = (Customer)_dao.Customers
-                            .Where(customer => customer.Id.Equals(customer.Id)).FirstOrDefault();
+                            .Where(customer => customer.Id == data.Id).FirstOrDefault();
                 if (_customer != null)
                 {
                     _logger.LogDebug("Customer found. Updating record");
@@ -73,6 +73,7 @@ namespace SaadiaInventorySystem.Service
                     _customer.PhoneNumber = data.PhoneNumber;
                     _customer.Postcode = data.Postcode;
                     _customer.Trn = data.Trn;
+                    _customer.CompanyName = data.CompanyName;
                     _customer.DateUpdated = DateTime.Now;
                     int records = await _dao.SaveChangesAsync();
                     saved = records > 0;

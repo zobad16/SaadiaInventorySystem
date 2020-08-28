@@ -14,9 +14,10 @@ namespace SaadiaInventorySystem.Service
         private readonly AppDbContext context;
         private readonly ILogger<OldPartService> _logger;
 
-        public OldPartService(AppDbContext db)
+        public OldPartService(AppDbContext db, ILogger<OldPartService> logger)
         {
             context = db;
+            _logger = logger;
         }
         
         

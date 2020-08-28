@@ -227,13 +227,13 @@
                   VerticalScrollBarVisibility="Auto"                      
                   >
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Part Number"
+                    <DataGridTextColumn Header="Part ID"
                                     Binding="{Binding Inventory.Id}" />
-                    <DataGridTextColumn Header="Description"
+                    <DataGridTextColumn Header="Part Number"
                                     Binding="{Binding Inventory.PartNumber}" />
-                    <DataGridTextColumn Header="Quantity"
+                    <DataGridTextColumn Header="Description"
                                     Binding="{Binding Inventory.Description}" />
-                    <DataGridTextColumn Header="Units"
+                    <DataGridTextColumn Header="Location"
                                     Binding="{Binding Inventory.Location}" />
                     <DataGridTextColumn Header="Order Quantity"
                                     Binding="{Binding OrderQty}" />

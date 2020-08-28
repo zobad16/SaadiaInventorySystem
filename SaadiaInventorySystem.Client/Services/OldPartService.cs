@@ -43,7 +43,7 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.GetAsync("api/oldParts/oldparts");
+                HttpResponseMessage response = await client.GetAsync("api/oldparts/oldparts");
                 List<OldPart> data = new List<OldPart>();
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)

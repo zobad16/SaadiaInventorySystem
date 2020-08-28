@@ -35,7 +35,7 @@ namespace SaadiaInventorySystem.Service
                 data.Order.DateUpdated = DateTime.Now;
                 foreach(var item in data.Order.OrderItems)
                 {
-                    if (item.Inventory.Id == 0) 
+                    if (item.Inventory != null) 
                     {
                         item.Inventory.DateCreated = DateTime.Now;
                         item.Inventory.DateUpdate = DateTime.Now;

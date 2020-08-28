@@ -181,8 +181,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 item.IsActive = 1;
                 item.OrderId = NewQuotation.OrderId;
             }
-            NewQuotation.CustomerId = NewQuotation.Customer.Id;
-            NewQuotation.Customer = null;
+            if( NewQuotation.Customer.Id > 0)
+            {
+                NewQuotation.CustomerId = NewQuotation.Customer.Id;
+                NewQuotation.Customer = null;
+
+            }
 
             if (!isEdit)
             {
