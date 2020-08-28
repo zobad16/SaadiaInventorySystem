@@ -1,4 +1,7 @@
 ﻿using ExcelDataReader;
+using OfficeOpenXml;
+using OfficeOpenXml.Drawing;
+using OfficeOpenXml.Style;
 using SaadiaInventorySystem.Client.Model;
 using SaadiaInventorySystem.Client.Services;
 using SaadiaInventorySystem.Client.Util;
@@ -6,12 +9,14 @@ using SaadiaInventorySystem.Client.View;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Humanizer;
 
 namespace SaadiaInventorySystem.Client.ViewModel
 {
@@ -32,6 +37,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             DisableCommand = new RelayCommand(i => DisableAsync(), (a) => SelectedQuotation != null);
             DeleteCommand = new RelayCommand(i => Delete(), (a) => SelectedQuotation != null);
             ImportCommand = new RelayCommand(i => ImportQuotation(), i=> true);
+            ExportCommand = new RelayCommand(i => ExportQuotation(), i=> true);
             UploadCommand = new RelayCommand<IClosable>(i => Upload(i), i=> true);
             SelectCustomerCommand = new RelayCommand<IClosable>(i => SelectCustomersCommand(i),i=> true);
             SelectPartCommand = new RelayCommand<IClosable>(i => SelectPartsCommand(i),i=> true);
@@ -78,6 +84,10 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private RelayCommand _disableCommand;
         private RelayCommand _deleteCommand;
         private RelayCommand _importCommand;
+        private RelayCommand _exportCommand;
+
+       
+
         private RelayCommand _duplicateCommand;
         private RelayCommand<IClosable> _uploadCommand;
 
@@ -120,6 +130,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public RelayCommand DisableCommand { get => _disableCommand; set { _disableCommand = value; RaisePropertyChanged(); } }
         public RelayCommand DeleteCommand { get => _deleteCommand; set { _deleteCommand = value; RaisePropertyChanged(); } }
         public RelayCommand ImportCommand { get => _importCommand; set { _importCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand ExportCommand{ get { return _exportCommand; } set { _exportCommand = value; RaisePropertyChanged(); }}
         public RelayCommand DuplicateCommand { get => _duplicateCommand; set { _duplicateCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> UploadCommand { get => _uploadCommand; set { _uploadCommand = value; RaisePropertyChanged(); } }
 
@@ -145,6 +156,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         public string FilePath { get => _filePath; set { _filePath = value; RaisePropertyChanged(); } }
 
+        public IEnumerable<object> Articles { get; private set; }
+
         private async void CancelClose(IClosable p)
         {
             //p.Close();
@@ -158,9 +171,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private async void Save(IClosable p)
         {
             //Data Checks
-            //Check if it is create or update mode
-            //if create mode
-            //Check if inventory id > 0 then set inventory to null
+           
             foreach (var item in NewQuotation.Order.OrderItems)
             {
                 if (item.InventoryId > 0)
@@ -282,6 +293,391 @@ namespace SaadiaInventorySystem.Client.ViewModel
             window.DataContext = this;
             window.ShowDialog();
             
+        }
+        private void ExportQuotation()
+        {
+            /*FilePath = "";
+            DuplicateState = "";
+            var window = new ImportFileView();
+            window.DataContext = this;
+            window.ShowDialog();
+            */
+            string filepath = "C:\\Users\\zobad\\Desktop\\Hamza\\ExcelTest\\test.xlsx";
+            WriteFileExcel(filepath);
+        }
+        private void ExportFile(IClosable i)
+        {
+            if (IsIgnoreCheck) {  WriteFileExcel(FilePath); }
+            else if (IsUpdateCheck) { WriteFileExcel(FilePath); }
+            i.Close();
+        }
+        private void WriteFileExcel(string path)
+        {
+           ExcelPackage excel = new ExcelPackage();
+
+            // name of the sheet 
+            if (SelectedQuotation == null)
+            {
+                MessageBox.Show("Error. Exporting file. No Quotation was selected. Please select a quotation and try again");
+                return;
+            }
+            var workSheet = excel.Workbook.Worksheets.Add($"{SelectedQuotation.Id}");
+            //Header
+            ExcelHeader(workSheet);
+            
+            workSheet.Cells["A4"].Value = "REF: ";
+            workSheet.Cells["A4"].Style.Font.Bold = true;
+
+            workSheet.Cells["B4:C4"].Merge= true;
+            workSheet.Cells["B4"].Value = $"{SelectedQuotation.ReferenceNumber}";
+
+            workSheet.Cells["D4"].Value = "DATE: ";
+            workSheet.Cells["D4"].Style.Font.Bold= true;
+
+            workSheet.Cells["E4"].Value = $"{SelectedQuotation.DateCreated.ToShortDateString()}";
+
+            workSheet.Cells["A5"].Value = "To: ";
+            workSheet.Cells["A5"].Style.Font.Bold = true;
+            workSheet.Cells["B5"].Value = $"MR. {SelectedQuotation.Customer.FirstName.ToUpper() } {SelectedQuotation.Customer.LastName.ToUpper()}";
+
+            workSheet.Cells["A6"].Value = "ATTN: ";
+            workSheet.Cells["A6"].Style.Font.Bold = true;
+            workSheet.Cells["B6"].Value = $"{SelectedQuotation.Attn}";
+
+            workSheet.Cells["A7"].Value = "M/S";
+            workSheet.Cells["A7"].Style.Font.Bold = true;
+            workSheet.Cells["B7"].Value = $"{SelectedQuotation.MS}";
+            workSheet.Row(4).Style.Font.Size = 9;
+            workSheet.Row(5).Style.Font.Size = 9;
+            workSheet.Row(6).Style.Font.Size = 9;
+            workSheet.Row(7).Style.Font.Size = 9;
+            workSheet.Cells["A8:G8"].Merge = true;
+            workSheet.Cells["A8:G8"].Value = "QUOTATION";
+            workSheet.Cells["A8:G8"].Style.Font.Bold = true;
+            workSheet.Cells["A8:G8"].Style.Font.Italic = true;
+            workSheet.Cells["A8:G8"].Style.Font.UnderLine = true;
+            workSheet.Row(8).Style.Font.Color.SetColor(Color.White) ;
+            workSheet.Cells["A8:G8"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            workSheet.Cells["A8:G8"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells["A8:G8"].Style.Fill.BackgroundColor.SetColor(Color.DarkBlue); 
+            
+            workSheet.Cells["A9"].Value = "Dear Sir."; 
+            workSheet.Cells["A10"].Value = "Thank you for your inquiry."; 
+            workSheet.Cells["A11"].Value = "We are pleased to quote our best prices as follows:";
+            workSheet.Row(9).Style.Font.Size = 9;
+            workSheet.Row(10).Style.Font.Size = 9;
+            workSheet.Row(11).Style.Font.Size = 9;
+
+            workSheet.Cells["A12"].Value = "S.No"; 
+            
+            workSheet.Cells["B12"].Value = "Part No."; 
+            workSheet.Cells["C12"].Value = "Description"; 
+            workSheet.Cells["D12"].Value = "Qty"; 
+            
+            workSheet.Cells["E12"].Value = "Units"; 
+            workSheet.Cells["F12"].Value = "Unit Price"; 
+            workSheet.Cells["G12"].Value = "Total Price";
+            workSheet.Cells["A12:G12"].Style.Font.Bold = true;
+
+            workSheet.Cells["A12:G12"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells["A12:G12"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells["A12:G12"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells["A12:G12"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+
+            int i = 13;
+            int count = 1;
+            foreach(var items in SelectedQuotation.Order.OrderItems)
+            {
+                workSheet.Cells[$"A{i}"].Value = $"{count}";
+                workSheet.Cells[$"B{i}"].Value = $"{items.Inventory.PartNumber.ToUpper()}";
+                workSheet.Cells[$"C{i}"].Value = $"{items.Inventory.Description.ToUpper()}";
+                workSheet.Cells[$"D{i}"].Value = $"{items.OrderQty}";
+                workSheet.Cells[$"E{i}"].Value = $"Ea";
+                if (items.OfferedPrice > 0)
+                {
+                    workSheet.Cells[$"F{i}"].Value = $"{items.OfferedPrice}";
+                }
+                else 
+                {
+                    workSheet.Cells[$"F{i}"].Value = $"{items.Inventory.UnitPrice}";
+                }
+                
+                workSheet.Cells[$"G{i}"].Value = $"{items.Total}";
+                
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                i++;
+                count++;
+            }
+            double total = SelectedQuotation.Order.TotalPrice;
+
+            //Gross Total
+            workSheet.Cells[$"A{i}:F{i}"].Merge = true;
+            workSheet.Cells[$"A{i}:F{i}"].Value = "Gross Total";
+            workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
+            workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            workSheet.Cells[$"G{i}"].Value = $"{SelectedQuotation.Order.TotalPrice}";
+            workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
+            workSheet.Cells[$"A{i}:G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+            i++;
+            //Vat
+            workSheet.Cells[$"A{i}:F{i}"].Merge = true;
+            workSheet.Cells[$"A{i}:F{i}"].Value = $"{SelectedQuotation.VAT}% Vat";
+            workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
+            double vatCal = (SelectedQuotation.VAT / 100 * total);
+            workSheet.Cells[$"G{i}"].Value = $"{vatCal}";
+            workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
+            workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+
+            i++;
+            //Discount
+            workSheet.Cells[$"A{i}:F{i}"].Merge = true;
+            workSheet.Cells[$"A{i}:F{i}"].Value = $"{SelectedQuotation.OfferedDiscount}% Discount";
+            workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
+            workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            double discount = SelectedQuotation.OfferedDiscount > 0?(SelectedQuotation.OfferedDiscount / 100 * total):0;
+            workSheet.Cells[$"G{i}"].Value = $"{discount}";
+            workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
+            workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+
+            i++;
+            //Net Total
+            workSheet.Cells[$"A{i}"].Value = "Total".ToUpper();
+            workSheet.Cells[$"A{i}"].Style.Font.Bold = true;
+            workSheet.Cells[$"B{i}:F{i}"].Merge = true;
+            workSheet.Cells[$"A{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            double net = SelectedQuotation.NetTotal;
+            string netword = Convert.ToInt32(net).ToWords();
+            string fills ="";
+            if (net % 1 != 0)
+            {
+                int fls = (int)(((double)net % 1) * 100);
+                fills = $"& Fils {fls.ToWords()}/100 only";
+            }
+            else 
+            {
+                fills = "only";
+            }
+            workSheet.Cells[$"B{i}:F{i}"].Value = $"AED. {netword.ToUpper()} {fills.ToUpper()}" ;
+            workSheet.Cells[$"B{i}:F{i}"].Style.Font.Bold = true;
+            workSheet.Cells[$"G{i}"].Value = $"{net}";
+            workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
+            workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+
+            i++;
+            ExcelFooter(workSheet, i);
+
+            workSheet.Column(1).Width = 7.33;
+            workSheet.Column(2).Width = 14;
+            workSheet.Column(3).Width = 41;
+            workSheet.Column(4).AutoFit();
+            workSheet.Column(5).AutoFit();
+            workSheet.Column(7).AutoFit();
+
+            // file name with .xlsx extension  
+            string p_strPath = "C:\\Users\\zobad\\Desktop\\Hamza\\ExcelTest\\test.xlsx";
+
+            if (File.Exists(path))
+                File.Delete(path);
+
+            // Create excel file on physical disk  
+            FileStream objFileStrm = File.Create(path);
+            objFileStrm.Close();
+
+            // Write content to excel file  
+            File.WriteAllBytes(path, excel.GetAsByteArray());
+            //Close Excel package 
+            excel.Dispose();
+            MessageBox.Show("Excel successfully exported");
+
+
+        }
+        private void ExcelHeader(ExcelWorksheet workSheet)
+        {
+            string arabic_txt = "شركة سعدية للتجارة ذ.م.م";
+            string address = "TEL: 03-7210885, FAX: 03-7219155, P.O.BOX: 80362. Email: saadia@eim.ae, Al-Ain-U.A.E";
+            string emailAddress = "www.saadiatrading.com";
+            string TRN = "TRN:100394617300003";
+
+            workSheet.Cells["A1:G1"].Merge = true;
+            workSheet.Cells["A2:G2"].Merge = true;
+            workSheet.Cells["A3:G3"].Merge = true;
+
+            workSheet.Row(1).Height = 31.20;
+            workSheet.Row(1).Style.Font.Size = 20;
+            workSheet.Row(1).Style.Font.Name = "Trebuchet MS";
+
+            // workSheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            workSheet.Row(1).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+            workSheet.Row(1).Style.Font.Bold = true;
+            workSheet.Row(1).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+            workSheet.Row(2).Height = 14.7;
+            workSheet.Row(2).Style.Font.Size = 9;
+            workSheet.Row(2).Style.Font.Name = "Trebuchet MS";
+            workSheet.Row(2).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            // workSheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            workSheet.Row(2).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+            workSheet.Row(2).Style.VerticalAlignment = ExcelVerticalAlignment.Bottom;
+
+            workSheet.Row(3).Height = 14.7;
+            workSheet.Row(3).Style.Font.Size = 9;
+            workSheet.Row(3).Style.Font.Name = "Trebuchet MS";
+            workSheet.Row(3).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            // workSheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            workSheet.Row(3).Style.VerticalAlignment = ExcelVerticalAlignment.Bottom;
+
+
+            // Header of the Excel sheet 
+            var titleCell = workSheet.Cells[1, 1];
+            titleCell.IsRichText = true;
+            var emailCell = workSheet.Cells[3, 1];
+            emailCell.IsRichText = true;
+
+            var title = titleCell.RichText.Add("SAADIA TRADING CO.");
+            var subtitle = titleCell.RichText.Add("LLC\t\t");
+            title.FontName = "Trebuchet MS             ";
+            title.Size = 20;
+            subtitle.FontName = "Trebuchet MS";
+            subtitle.Size = 11;
+
+            var arabicTitle = titleCell.RichText.Add($"  \t{arabic_txt}");
+            arabicTitle.FontName = "Traditional Arabic";
+            arabicTitle.Size = 28;
+            int PixelTop = 0;
+            int PixelLeft = 50 * 3;
+            //Title logo
+            Image logo = Image.FromFile(@"C:\Users\zobad\Desktop\Hamza\ExcelTest\logo.jpg");
+            ExcelPicture pic = workSheet.Drawings.AddPicture("Logo", logo);
+            pic.SetSize(4);
+            pic.SetPosition(0, 0, 1, 110);
+            // pic.SetPosition(PixelTop, PixelLeft);
+
+            workSheet.Cells["A2:G2"].Value = address;
+            var rich_email = emailCell.RichText.Add($"{emailAddress}, ");
+            var rich_TRN = emailCell.RichText.Add($" {TRN} ");
+            rich_email.Bold = true;
+            rich_email.Italic = true;
+            rich_email.UnderLine = true;
+
+            rich_TRN.Bold = true;
+            rich_TRN.Italic = true;
+            rich_TRN.UnderLine = true;
+            rich_TRN.Color = System.Drawing.Color.Red;
+
+            //workSheet.Cells["A3:G3"].Style.Border.Bottom.Style = ExcelBorderStyle.Thick;
+            //workSheet.Cells["A3:G3"].Style.Border.Top.Style = ExcelBorderStyle.None;
+            //workSheet.Cells["A3:G3"].Style.Border.Right.Style = ExcelBorderStyle.None;
+            //workSheet.Cells["A3:G3"].Style.Border.Left.Style = ExcelBorderStyle.None;
+
+            ExcelShape shape = workSheet.Drawings.AddShape("Line1", eShapeStyle.Line);
+            shape.SetPosition(3, 0, 0, 0);
+            shape.SetSize(440, 1);
+            shape.Border.Fill.Color = Color.Black;
+
+
+        }
+        private void ExcelFooter(ExcelWorksheet workSheet, int i)
+        {
+
+            //Note
+            workSheet.Cells[$"A{i}"].Value = "Note";
+            workSheet.Cells[$"A{i}"].Style.Font.Bold = true;
+            workSheet.Cells[$"A{i}"].Style.Font.Italic = true;
+            workSheet.Cells[$"A{i}"].Style.Font.UnderLine = true;
+            i++;
+            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            workSheet.Cells[$"A{ i}:G{i}"].Value = "Delivery: 5 days on order confirmation., ";
+            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+
+            i++;
+            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            workSheet.Cells[$"A{ i}:G{i}"].Value = "Price quoted Net in UAE Dirhams, ex-warehouse. ";
+            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+
+            i++;
+            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            workSheet.Cells[$"A{ i}:G{i}"].Value = "Make: Genuine Part";
+            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+            i++;
+            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            workSheet.Cells[$"A{ i}:G{i}"].Value = "Validity: 1 week";
+            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+            i++;
+            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            workSheet.Cells[$"A{ i}:G{i}"].Value = "Payment: 100% cash on order confirmation.";
+            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+            i++;
+            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            workSheet.Cells[$"A{ i}:G{i}"].Value = "Awaiting your valued order & assuring you of our best services always.";
+            workSheet.Row(i).Height = 27;
+            i++; i++;
+            workSheet.Cells[$"A{ i}:B{i}"].Merge = true;
+            workSheet.Cells[$"A{ i}:B{i}"].Value = "Thanks & Regards,";
+            i++;
+            //Name of the user
+            i++;
+            //Company Name
+            workSheet.Cells[$"A{ i}:B{i}"].Merge = true;
+            workSheet.Cells[$"A{ i}:B{i}"].Value = "For Saadia Trading Co.";
         }
         private async Task ReadQuotationFileExcel(string path)
         {
