@@ -37,7 +37,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             DisableCommand = new RelayCommand(i => DisableAsync(), (a) => SelectedQuotation != null);
             DeleteCommand = new RelayCommand(i => Delete(), (a) => SelectedQuotation != null);
             ImportCommand = new RelayCommand(i => ImportQuotation(), i=> true);
-            ExportCommand = new RelayCommand(i => ExportQuotation(), i=> true);
+            ExportCommand = new RelayCommand(i => ExportQuotation(), (i)=> SelectedQuotation != null);
             UploadCommand = new RelayCommand<IClosable>(i => Upload(i), i=> true);
             SelectCustomerCommand = new RelayCommand<IClosable>(i => SelectCustomersCommand(i),i=> true);
             SelectPartCommand = new RelayCommand<IClosable>(i => SelectPartsCommand(i),i=> true);
@@ -296,14 +296,22 @@ namespace SaadiaInventorySystem.Client.ViewModel
         }
         private void ExportQuotation()
         {
-            /*FilePath = "";
-            DuplicateState = "";
-            var window = new ImportFileView();
-            window.DataContext = this;
-            window.ShowDialog();
-            */
-            string filepath = "C:\\Users\\zobad\\Desktop\\Hamza\\ExcelTest\\test.xlsx";
-            WriteFileExcel(filepath);
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.FileName = "Quotation"; // Default file name
+            dlg.DefaultExt = ".xlsx"; // Default file extension
+            dlg.Filter = "Excel(.xlsx)|*.xls"; // Filter files by extension
+
+            // Show save file dialog box
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Process save file dialog box results
+            if (result == true)
+            {
+                // Save document
+                string filename = dlg.FileName;
+                WriteFileExcel(filename);
+            }
+            
         }
         private void ExportFile(IClosable i)
         {

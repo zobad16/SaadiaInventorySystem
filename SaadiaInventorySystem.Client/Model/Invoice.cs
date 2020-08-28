@@ -22,6 +22,10 @@ namespace SaadiaInventorySystem.Client.Model
         private double vat;
         private int isActive;
         private double netTotal;
+        private string ms;
+        private string attn;
+        private string note;
+        private string message;
         private DateTime dateCreated;
         private string date;
 
@@ -34,6 +38,10 @@ namespace SaadiaInventorySystem.Client.Model
         public Order Order { get => order; set { order = value; RaisePropertyChanged(); } }
         public double OfferedDiscount { get => offeredDiscount; set { offeredDiscount = value; RaisePropertyChanged(); } }
         public double VAT { get => vat; set { vat = value; RaisePropertyChanged(); } }
+        public string MS { get => ms; set { ms = value; RaisePropertyChanged(); } }
+        public string Attn { get => attn; set { attn = value; RaisePropertyChanged(); } }
+        public string Note { get => note; set { note = value; RaisePropertyChanged(); } }
+        public string Message { get => message; set { message = value; RaisePropertyChanged(); } }
         public int IsActive { get => isActive; set { isActive = value; RaisePropertyChanged(); } }
 
         public double NetTotal

@@ -148,6 +148,9 @@
     <Compile Include="View\EditUserPasswordView.cs">
       <DependentUpon>EditUserPasswordView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\ExportFileView.xaml.cs">
+      <DependentUpon>ExportFileView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\FileBrowseView.xaml.cs">
       <DependentUpon>FileBrowseView.xaml</DependentUpon>
     </Compile>
@@ -230,6 +233,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\EditUserPasswordView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ExportFileView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

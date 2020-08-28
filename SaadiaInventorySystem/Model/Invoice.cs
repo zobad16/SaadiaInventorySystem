@@ -16,6 +16,10 @@ namespace SaadiaInventorySystem.Model
         public Order Order { get; set; }
         public double OfferedDiscount { get; set; }
         public double VAT { get; set; }
+        public string MS { get; set; }
+        public string Attn { get; set; }
+        public string Note { get; set; }
+        public string Message { get; set; }
         public int IsActive { get; set; }
 
         [NotMapped]
