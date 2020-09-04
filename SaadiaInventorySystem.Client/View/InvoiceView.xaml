@@ -111,6 +111,8 @@
                                     Binding="{Binding Inventory.UnitPrice}" />
                         <DataGridTextColumn Header="Offered Price"
                                     Binding="{Binding OfferedPrice}" />
+                        <DataGridTextColumn Header="VAT"
+                                    Binding="{Binding Vat}" />
                         <DataGridTextColumn Header="Total Price"
                                     Binding="{Binding Total}" />
                 </DataGrid.Columns>

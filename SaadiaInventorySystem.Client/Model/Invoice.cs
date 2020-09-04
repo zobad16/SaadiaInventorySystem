@@ -14,7 +14,7 @@ namespace SaadiaInventorySystem.Client.Model
         private int id;
         private int quotationId;
         private string _orderPurchaseNumber;
-        private int customerId;
+        private int ? customerId;
         private Customer customer;
         private int orderId;
         private Order order;
@@ -32,7 +32,7 @@ namespace SaadiaInventorySystem.Client.Model
         public int Id { get => id; set { id = value; RaisePropertyChanged(); } }
         public int QuotationId { get => quotationId; set { quotationId = value; RaisePropertyChanged(); } }
         public string OrderPurchaseNumber { get => _orderPurchaseNumber; set { _orderPurchaseNumber = value; RaisePropertyChanged(); } }
-        public int CustomerId { get => customerId; set { customerId = value; RaisePropertyChanged(); } }
+        public int ? CustomerId { get => customerId; set { customerId = value; RaisePropertyChanged(); } }
         public Customer Customer { get => customer; set { customer = value; RaisePropertyChanged(); }}
         public int OrderId { get => orderId; set { orderId = value; RaisePropertyChanged(); } }
         public Order Order { get => order; set { order = value; RaisePropertyChanged(); } }

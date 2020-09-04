@@ -1031,6 +1031,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
                     foreach (var item in Quotations)
                     {
                         item.CalculateNetTotal();
+                        foreach (var _item in item.Order.OrderItems)
+                        {
+                            _item.VatPercent = item.VAT;
+                            _item.CalculateVAT();
+                        }
                     }
                     Message = Quotations[0].Message;
                     Note = Quotations[0].Note;
@@ -1043,6 +1048,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
                     foreach (var item in Quotations)
                     {
                         item.CalculateNetTotal();
+                        foreach (var _item in item.Order.OrderItems)
+                        {
+                            _item.VatPercent = item.VAT;
+                            _item.CalculateVAT();
+                        }
                     }
                     Message = Quotations[0].Message;
                     Note = Quotations[0].Note;
@@ -1062,6 +1072,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
             {
                 await service.CallGetService(SelectedQuotation.Id);
                 SelectedQuotation.CalculateNetTotal();
+                foreach(var item in SelectedQuotation.Order.OrderItems)
+                {
+                    item.VatPercent = SelectedQuotation.VAT;
+                    item.CalculateVAT();
+                }
             }
             catch (Exception ex)
             {

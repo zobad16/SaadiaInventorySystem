@@ -194,6 +194,9 @@ namespace SaadiaInventorySystem.Service
                 invoice.OfferedDiscount = data.OfferedDiscount;
                 invoice.VAT = data.VAT;
                 invoice.IsActive = data.IsActive;
+                invoice.Message = data.Message;
+                invoice.MS = data.MS;
+                invoice.Note = data.Note;
                 bool success = await dao.SaveChangesAsync() > 0;
                 if (success)
                 {

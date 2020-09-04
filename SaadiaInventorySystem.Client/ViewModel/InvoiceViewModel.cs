@@ -1,6 +1,5 @@
 ﻿using ExcelDataReader;
 using Humanizer;
-using Microsoft.Office.Core;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing;
 using OfficeOpenXml.Style;
@@ -13,9 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -409,8 +406,38 @@ namespace SaadiaInventorySystem.Client.ViewModel
             workSheet.Cells[$"A{i}"].Style.Font.Italic = true;
             workSheet.Cells[$"A{i}"].Style.Font.UnderLine = true;
             i++;
-            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            workSheet.Cells[$"A{ i}:G{i}"].Value = "Delivery: 5 days on order confirmation., ";
+            workSheet.Cells[i, 1, i + 4, 7].Merge = true;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Font.Italic = true;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            workSheet.Cells[i, 1, i + 4, 7].Style.Border.Left.Style = ExcelBorderStyle.None;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Border.Right.Style = ExcelBorderStyle.None;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Border.Top.Style = ExcelBorderStyle.None;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            workSheet.Cells[$"A{ i}"].Value = SelectedInvoice.Note;
+            /*workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+            */
+            i++;
+            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            //workSheet.Cells[$"A{ i}:G{i}"].Value = "Price quoted Net in UAE Dirhams, ex-warehouse. ";
+            /*workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+            */
+            i++;
+            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            /*workSheet.Cells[$"A{ i}:G{i}"].Value = "Make: Genuine Part";
             workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
             workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
             workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
@@ -418,10 +445,10 @@ namespace SaadiaInventorySystem.Client.ViewModel
             workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
             workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
             workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-
+            */
             i++;
-            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            workSheet.Cells[$"A{ i}:G{i}"].Value = "Price quoted Net in UAE Dirhams, ex-warehouse. ";
+            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            /*workSheet.Cells[$"A{ i}:G{i}"].Value = "Validity: 1 week";
             workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
             workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
             workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
@@ -429,10 +456,9 @@ namespace SaadiaInventorySystem.Client.ViewModel
             workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
             workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
             workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-
-            i++;
-            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            workSheet.Cells[$"A{ i}:G{i}"].Value = "Make: Genuine Part";
+            */i++;
+            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            /*workSheet.Cells[$"A{ i}:G{i}"].Value = "Payment: 100% cash on order confirmation.";
             workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
             workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
             workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
@@ -440,27 +466,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
             workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
             workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            i++;
-            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            workSheet.Cells[$"A{ i}:G{i}"].Value = "Validity: 1 week";
-            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            i++;
-            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            workSheet.Cells[$"A{ i}:G{i}"].Value = "Payment: 100% cash on order confirmation.";
-            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            i++;
+            */i++;
             workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
             workSheet.Cells[$"A{ i}:G{i}"].Value = "Awaiting your valued order & assuring you of our best services always.";
             workSheet.Row(i).Height = 27;
@@ -797,7 +803,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
             dlg.FileName = "Invoice"; // Default file name
             dlg.DefaultExt = ".xlsx"; // Default file extension
-            dlg.Filter = "Excel(.xlsx)|*.xls"; // Filter files by extension
+            dlg.Filter = "Excel(.xlsx)|*.xlsx|Excel(.xls)|*.xls"; // Filter files by extension
 
             // Show save file dialog box
             Nullable<bool> result = dlg.ShowDialog();
@@ -813,210 +819,236 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private void WriteFileExcel(string path)
         {
             ExcelPackage excel = new ExcelPackage();
-
-            // name of the sheet 
-            if (SelectedInvoice == null)
+            try
             {
-                MessageBox.Show("Error. Exporting file. No Invoice was selected. Please select an Invoice and try again");
-                return;
-            }
-            var workSheet = excel.Workbook.Worksheets.Add($"{SelectedInvoice.Id}");
-            //Header
-            ExcelHeader(workSheet);
-
-            workSheet.Cells["A4"].Value = "ORDER NO:. ";
-            workSheet.Cells["A4"].Style.Font.Bold = true;
-
-            workSheet.Cells["B4:C4"].Merge = true;
-            workSheet.Cells["B4"].Value = $"{SelectedInvoice.OrderPurchaseNumber}";
-
-            workSheet.Cells["D4"].Value = "DATE: ";
-            workSheet.Cells["D4"].Style.Font.Bold = true;
-
-            workSheet.Cells["E4"].Value = $"{SelectedInvoice.DateCreated.ToShortDateString()}";
-
-            workSheet.Cells["A5"].Value = "To: ";
-            workSheet.Cells["A5"].Style.Font.Bold = true;
-            workSheet.Cells["B5"].Value = $"MR. {SelectedInvoice.Customer.FirstName.ToUpper() } {SelectedInvoice.Customer.LastName.ToUpper()}";
-
-            workSheet.Cells["A6"].Value = "ATTN: ";
-            workSheet.Cells["A6"].Style.Font.Bold = true;
-            workSheet.Cells["B6"].Value = $"{SelectedInvoice.Attn}";
-
-            workSheet.Cells["A7"].Value = "M/S";
-            workSheet.Cells["A7"].Style.Font.Bold = true;
-            workSheet.Cells["B7"].Value = $"{SelectedInvoice.MS}";
-            workSheet.Row(4).Style.Font.Size = 9;
-            workSheet.Row(5).Style.Font.Size = 9;
-            workSheet.Row(6).Style.Font.Size = 9;
-            workSheet.Row(7).Style.Font.Size = 9;
-            workSheet.Cells["A8:G8"].Merge = true;
-            workSheet.Cells["A8:G8"].Value = "QUOTATION";
-            workSheet.Cells["A8:G8"].Style.Font.Bold = true;
-            workSheet.Cells["A8:G8"].Style.Font.Italic = true;
-            workSheet.Cells["A8:G8"].Style.Font.UnderLine = true;
-            workSheet.Row(8).Style.Font.Color.SetColor(Color.White);
-            workSheet.Cells["A8:G8"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-            workSheet.Cells["A8:G8"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells["A8:G8"].Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
-
-            workSheet.Cells["A9"].Value = "Dear Sir.";
-            workSheet.Cells["A10"].Value = "Thank you for your inquiry.";
-            workSheet.Cells["A11"].Value = "We are pleased to quote our best prices as follows:";
-            workSheet.Row(9).Style.Font.Size = 9;
-            workSheet.Row(10).Style.Font.Size = 9;
-            workSheet.Row(11).Style.Font.Size = 9;
-
-            workSheet.Cells["A12"].Value = "S.No";
-
-            workSheet.Cells["B12"].Value = "Part No.";
-            workSheet.Cells["C12"].Value = "Description";
-            workSheet.Cells["D12"].Value = "Qty";
-
-            workSheet.Cells["E12"].Value = "Units";
-            workSheet.Cells["F12"].Value = "Unit Price";
-            workSheet.Cells["G12"].Value = "Total Price";
-            workSheet.Cells["A12:G12"].Style.Font.Bold = true;
-
-            workSheet.Cells["A12:G12"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells["A12:G12"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells["A12:G12"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells["A12:G12"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-
-
-            int i = 13;
-            int count = 1;
-            foreach (var items in SelectedInvoice.Order.OrderItems)
-            {
-                workSheet.Cells[$"A{i}"].Value = $"{count}";
-                workSheet.Cells[$"B{i}"].Value = $"{items.Inventory.PartNumber.ToUpper()}";
-                workSheet.Cells[$"C{i}"].Value = $"{items.Inventory.Description.ToUpper()}";
-                workSheet.Cells[$"D{i}"].Value = $"{items.OrderQty}";
-                workSheet.Cells[$"E{i}"].Value = $"Ea";
-                if (items.OfferedPrice > 0)
+                // name of the sheet 
+                if (SelectedInvoice == null)
                 {
-                    workSheet.Cells[$"F{i}"].Value = $"{items.OfferedPrice}";
+                    MessageBox.Show("Error. Exporting file. No Invoice was selected. Please select an Invoice and try again");
+                    return;
                 }
-                else
+                var workSheet = excel.Workbook.Worksheets.Add($"{SelectedInvoice.Id}");
+                //Header
+                ExcelHeader(workSheet);
+
+                workSheet.Cells["A5"].Value = "Customer:. ";
+                workSheet.Cells["A5"].Style.Font.Bold = true;
+                workSheet.Cells["D5"].Value = "TAX INVOICE: ";
+                workSheet.Cells["D5:E5"].Merge = true;
+
+
+                workSheet.Cells["A6"].Value = "TRN: ";
+                workSheet.Cells["A6"].Style.Font.Bold = true;
+                workSheet.Cells["B6"].Value = $"{SelectedInvoice.Customer.Trn }";
+                workSheet.Cells["D6"].Value = "DATE: ";
+                workSheet.Cells["D6"].Style.Font.Bold = true;
+                workSheet.Cells["E6"].Value = $"{SelectedInvoice.DateCreated.ToShortDateString()}";
+
+                workSheet.Cells["A7"].Value = "Company: ";
+                workSheet.Cells["A7"].Style.Font.Bold = true;
+                workSheet.Cells["B7"].Value = $"{SelectedInvoice.Customer.CompanyName.ToUpper()}";
+                workSheet.Cells["D7"].Value = "Invoice No: ";
+                workSheet.Cells["D7"].Style.Font.Bold = true;
+                workSheet.Cells["E7"].Value = $"{SelectedInvoice.Id}";
+
+                workSheet.Cells["A8"].Value = "Address: ";
+                workSheet.Cells["A8"].Style.Font.Bold = true;
+                workSheet.Cells["B8"].Value = $"{SelectedInvoice.Customer.Address.ToUpper()}";
+                workSheet.Cells["D8"].Value = "Quotation No: ";
+                workSheet.Cells["D8"].Style.Font.Bold = true;
+                string qno = "-";
+                if (!String.IsNullOrEmpty(qno))
+                    qno = $"{SelectedInvoice.QuotationId}";
+                workSheet.Cells["E8"].Value = $"{qno}";
+
+                workSheet.Cells["A9"].Value = "TEL: ";
+                workSheet.Cells["A8"].Style.Font.Bold = true;
+                workSheet.Cells["B9"].Value = $"{SelectedInvoice.Customer.PhoneNumber}";
+                workSheet.Cells["D9"].Value = "Order Purchase No: ";
+                workSheet.Cells["D9"].Style.Font.Bold = true;
+                workSheet.Cells["E9"].Value = $"{SelectedInvoice.OrderPurchaseNumber}";
+
+                workSheet.Row(5).Style.Font.Size = 9;
+                workSheet.Row(6).Style.Font.Size = 9;
+                workSheet.Row(7).Style.Font.Size = 9;
+                workSheet.Row(8).Style.Font.Size = 9;
+                workSheet.Row(9).Style.Font.Size = 9;
+                
+                workSheet.Cells["A11:G11"].Merge = true;
+                workSheet.Cells["A11:G11"].Value = "INVOICE";
+                workSheet.Cells["A11:G11"].Style.Font.Bold = true;
+                workSheet.Cells["A11:G11"].Style.Font.Italic = true;
+                workSheet.Cells["A11:G11"].Style.Font.UnderLine = true;
+                workSheet.Row(11).Style.Font.Color.SetColor(Color.White);
+                workSheet.Cells["A11:G11"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                workSheet.Cells["A11:G11"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                workSheet.Cells["A11:G11"].Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
+
+                workSheet.Cells["A12"].Value = SelectedInvoice.Message;
+                workSheet.Cells[12,1,13,7].Merge = true;
+                //workSheet.Cells["A11"].Value = "Thank you for your inquiry.";
+                //workSheet.Cells["A12"].Value = "We are pleased to quote our best prices as follows:";
+                workSheet.Row(9).Style.Font.Size = 9;
+                workSheet.Row(10).Style.Font.Size = 9;
+                workSheet.Row(11).Style.Font.Size = 9;
+                workSheet.Row(12).Style.Font.Size = 9;
+
+                workSheet.Cells["A15"].Value = "S.No";
+
+                workSheet.Cells["B15"].Value = "Part No.";
+                workSheet.Cells["C15"].Value = "Description";
+                workSheet.Cells["D15"].Value = "Qty";
+
+                workSheet.Cells["E15"].Value = "Units";
+                workSheet.Cells["F15"].Value = "Unit Price";
+                workSheet.Cells["G15"].Value = "Total Price";
+                workSheet.Cells["A15:G15"].Style.Font.Bold = true;
+
+                workSheet.Cells["A15:G15"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells["A15:G15"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells["A15:G15"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells["A15:G15"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+
+                int i = 16;
+                int count = 1;
+                foreach (var items in SelectedInvoice.Order.OrderItems)
                 {
-                    workSheet.Cells[$"F{i}"].Value = $"{items.Inventory.UnitPrice}";
+                    workSheet.Cells[$"A{i}"].Value = $"{count}";
+                    workSheet.Cells[$"B{i}"].Value = $"{items.Inventory.PartNumber.ToUpper()}";
+                    workSheet.Cells[$"C{i}"].Value = $"{items.Inventory.Description.ToUpper()}";
+                    workSheet.Cells[$"D{i}"].Value = $"{items.OrderQty}";
+                    workSheet.Cells[$"E{i}"].Value = $"Ea";
+                    if (items.OfferedPrice > 0)
+                    {
+                        workSheet.Cells[$"F{i}"].Value = $"{items.OfferedPrice}";
+                    }
+                    else
+                    {
+                        workSheet.Cells[$"F{i}"].Value = $"{items.Inventory.UnitPrice}";
+                    }
+
+                    workSheet.Cells[$"G{i}"].Value = $"{items.Total}";
+
+                    workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    i++;
+                    count++;
                 }
+                double total = SelectedInvoice.Order.TotalPrice;
 
-                workSheet.Cells[$"G{i}"].Value = $"{items.Total}";
-
+                //Gross Total
+                workSheet.Cells[$"A{i}:F{i}"].Merge = true;
+                workSheet.Cells[$"A{i}:F{i}"].Value = "Gross Total";
+                workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                workSheet.Cells[$"G{i}"].Value = $"{SelectedInvoice.Order.TotalPrice}";
+                workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"A{i}:G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                 workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
                 workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
                 i++;
-                count++;
+                //Vat
+                workSheet.Cells[$"A{i}:F{i}"].Merge = true;
+                workSheet.Cells[$"A{i}:F{i}"].Value = $"{SelectedInvoice.VAT}% Vat";
+                workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
+                double vatCal = (SelectedInvoice.VAT / 100 * total);
+                workSheet.Cells[$"G{i}"].Value = $"{vatCal}";
+                workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+
+                i++;
+                //Discount
+                workSheet.Cells[$"A{i}:F{i}"].Merge = true;
+                workSheet.Cells[$"A{i}:F{i}"].Value = $"{SelectedInvoice.OfferedDiscount}% Discount";
+                workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                double discount = SelectedInvoice.OfferedDiscount > 0 ? (SelectedInvoice.OfferedDiscount / 100 * total) : 0;
+                workSheet.Cells[$"G{i}"].Value = $"{discount}";
+                workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+
+                i++;
+                //Net Total
+                workSheet.Cells[$"A{i}"].Value = "Total".ToUpper();
+                workSheet.Cells[$"A{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"B{i}:F{i}"].Merge = true;
+                workSheet.Cells[$"A{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                double net = SelectedInvoice.NetTotal;
+                string netword = Convert.ToInt32(net).ToWords();
+                string fills = "";
+                if (net % 1 != 0)
+                {
+                    int fls = (int)(((double)net % 1) * 100);
+                    fills = $"& Fils {fls.ToWords()}/100 only";
+                }
+                else
+                {
+                    fills = "only";
+                }
+                workSheet.Cells[$"B{i}:F{i}"].Value = $"AED. {netword.ToUpper()} {fills.ToUpper()}";
+                workSheet.Cells[$"B{i}:F{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"G{i}"].Value = $"{net}";
+                workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+
+                i++;
+                i++;
+                ExcelFooter(workSheet, i);
+
+                workSheet.Column(1).Width = 7.33;
+                workSheet.Column(2).Width = 14;
+                workSheet.Column(3).Width = 41;
+                workSheet.Column(4).AutoFit();
+                workSheet.Column(5).AutoFit();
+                workSheet.Column(7).AutoFit();
+
+                // file name with .xlsx extension  
+                string p_strPath = "C:\\Users\\zobad\\Desktop\\Hamza\\ExcelTest\\test.xlsx";
+
+                if (File.Exists(path))
+                    File.Delete(path);
+
+                // Create excel file on physical disk  
+                FileStream objFileStrm = File.Create(path);
+                objFileStrm.Close();
+
+                // Write content to excel file  
+                File.WriteAllBytes(path, excel.GetAsByteArray());
+                //Close Excel package 
+                excel.Dispose();
+                MessageBox.Show("Excel successfully exported");
             }
-            double total = SelectedInvoice.Order.TotalPrice;
-
-            //Gross Total
-            workSheet.Cells[$"A{i}:F{i}"].Merge = true;
-            workSheet.Cells[$"A{i}:F{i}"].Value = "Gross Total";
-            workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
-            workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-            workSheet.Cells[$"G{i}"].Value = $"{SelectedInvoice.Order.TotalPrice}";
-            workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
-            workSheet.Cells[$"A{i}:G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-            i++;
-            //Vat
-            workSheet.Cells[$"A{i}:F{i}"].Merge = true;
-            workSheet.Cells[$"A{i}:F{i}"].Value = $"{SelectedInvoice.VAT}% Vat";
-            workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-            workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
-            double vatCal = (SelectedInvoice.VAT / 100 * total);
-            workSheet.Cells[$"G{i}"].Value = $"{vatCal}";
-            workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
-            workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-
-            i++;
-            //Discount
-            workSheet.Cells[$"A{i}:F{i}"].Merge = true;
-            workSheet.Cells[$"A{i}:F{i}"].Value = $"{SelectedInvoice.OfferedDiscount}% Discount";
-            workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
-            workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-            double discount = SelectedInvoice.OfferedDiscount > 0 ? (SelectedInvoice.OfferedDiscount / 100 * total) : 0;
-            workSheet.Cells[$"G{i}"].Value = $"{discount}";
-            workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
-            workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-
-            i++;
-            //Net Total
-            workSheet.Cells[$"A{i}"].Value = "Total".ToUpper();
-            workSheet.Cells[$"A{i}"].Style.Font.Bold = true;
-            workSheet.Cells[$"B{i}:F{i}"].Merge = true;
-            workSheet.Cells[$"A{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-            double net = SelectedInvoice.NetTotal;
-            string netword = Convert.ToInt32(net).ToWords();
-            string fills = "";
-            if (net % 1 != 0)
+            catch (Exception ex)
             {
-                int fls = (int)(((double)net % 1) * 100);
-                fills = $"& Fils {fls.ToWords()}/100 only";
+                MessageBox.Show($"File export failed. An error occured while exporting the file. \nError details: {ex.Message}");
+                excel.Dispose();
             }
-            else
-            {
-                fills = "only";
-            }
-            workSheet.Cells[$"B{i}:F{i}"].Value = $"AED. {netword.ToUpper()} {fills.ToUpper()}";
-            workSheet.Cells[$"B{i}:F{i}"].Style.Font.Bold = true;
-            workSheet.Cells[$"G{i}"].Value = $"{net}";
-            workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
-            workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-
-            i++;
-            ExcelFooter(workSheet, i);
-
-            workSheet.Column(1).Width = 7.33;
-            workSheet.Column(2).Width = 14;
-            workSheet.Column(3).Width = 41;
-            workSheet.Column(4).AutoFit();
-            workSheet.Column(5).AutoFit();
-            workSheet.Column(7).AutoFit();
-
-            // file name with .xlsx extension  
-            string p_strPath = "C:\\Users\\zobad\\Desktop\\Hamza\\ExcelTest\\test.xlsx";
-
-            if (File.Exists(path))
-                File.Delete(path);
-
-            // Create excel file on physical disk  
-            FileStream objFileStrm = File.Create(path);
-            objFileStrm.Close();
-
-            // Write content to excel file  
-            File.WriteAllBytes(path, excel.GetAsByteArray());
-            //Close Excel package 
-            excel.Dispose();
-            MessageBox.Show("Excel successfully exported");
-
 
         }
 
@@ -1036,6 +1068,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
                     foreach (var item in Invoices)
                     {
                         item.CalculateNetTotal();
+                        foreach(var parts in item.Order.OrderItems)
+                        {
+                            parts.VatPercent = item.VAT;
+                            parts.CalculateVAT();
+                        }
                     }
                     IsAdmin = true;
                 }
@@ -1045,6 +1082,10 @@ namespace SaadiaInventorySystem.Client.ViewModel
                     foreach (var item in Invoices)
                     {
                         item.CalculateNetTotal();
+                        foreach (var parts in item.Order.OrderItems)
+                        {
+                            parts.CalculateVAT();
+                        }
                     }
                     IsAdmin = false;
                 }
@@ -1061,6 +1102,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
             try
             {
                 SelectedInvoice =  await service.CallGetService(SelectedInvoice.Id.ToString());
+                foreach (var parts in SelectedInvoice.Order.OrderItems)
+                {
+                    parts.VatPercent = SelectedInvoice.VAT;
+                    parts.CalculateVAT();
+                }
             }
             catch (Exception ex)
             {

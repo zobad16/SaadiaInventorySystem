@@ -97,8 +97,7 @@ namespace SaadiaInventorySystem.Client.Services
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
                 {
-                    Task<List<Invoice>> responseData = result.ReadAsAsync<List<Invoice>>();
-                    data = responseData.Result;
+                    data = await result.ReadAsAsync<List<Invoice>>();
                     return data;
                 }
                 return data;
