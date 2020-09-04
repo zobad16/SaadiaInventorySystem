@@ -994,18 +994,22 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Cells[$"B{i}:F{i}"].Merge = true;
                 workSheet.Cells[$"A{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 double net = SelectedInvoice.NetTotal;
-                string netword = Convert.ToInt32(net).ToWords();
-                string fills = "";
-                if (net % 1 != 0)
+                string nettotal = net.ToString();
+                string whole = "", decimalVal = "";
+                int dp = nettotal.IndexOf(".");
+                if (dp > 0)
                 {
-                    int fls = (int)(((double)net % 1) * 100);
-                    fills = $"& Fils {fls.ToWords()}/100 only";
+                    whole = nettotal.Substring(0, dp);
+                    decimalVal = nettotal.Substring(dp + 1);
                 }
-                else
-                {
-                    fills = "only";
-                }
-                workSheet.Cells[$"B{i}:F{i}"].Value = $"AED. {netword.ToUpper()} {fills.ToUpper()}";
+                int _whole = Int32.Parse(whole);
+                int _fills = Int32.Parse(decimalVal);
+                if (decimalVal.Length == 1)
+                    _fills = _fills * 10;
+                string netword = _whole.ToWords();
+                string fills = $"& Fils  {_fills.ToWords().ToUpper()}/100 only";
+
+                workSheet.Cells[$"B{i}:F{i}"].Value = $"AED. {netword.ToUpper()} {fills}";
                 workSheet.Cells[$"B{i}:F{i}"].Style.Font.Bold = true;
                 workSheet.Cells[$"G{i}"].Value = $"{net}";
                 workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
