@@ -1,0 +1,391 @@
+﻿<Window x:Class="SaadiaInventorySystem.Client.View.QuotationImportDisplayView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SaadiaInventorySystem.Client.View"
+        mc:Ignorable="d"
+        Height="500" Width="900"
+        x:Name="_ImportQuotationWindow"
+        xmlns:z="http://schemas.microsoft.com/expression/2010/interactivity"
+        ResizeMode="CanMinimize"
+        >
+    <z:Interaction.Triggers>
+        <z:EventTrigger EventName="Closing">
+            <z:InvokeCommandAction Command="{Binding CancelCloseCommand}"
+                    CommandParameter="{Binding ElementName=_ImportQuotationWindow}"
+                     />
+        </z:EventTrigger>
+    </z:Interaction.Triggers>
+    <Grid Background="WhiteSmoke">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="Quotation Number"
+                     Grid.Column="1"
+                     Grid.Row="1"
+                     VerticalAlignment="Center"
+                     Margin="10,0,0,0"/>
+        <TextBox Text="{Binding Path=SelectedBulkQuotation.QuotationNumber, Mode=TwoWay}"
+                     Grid.Column="2"
+                     Grid.Row="1"
+                     HorizontalAlignment="Stretch"
+                     Height="25"
+                     VerticalAlignment="Center"
+                     VerticalContentAlignment="Center"/>
+        <TextBlock Text="Reference Number"
+                     Grid.Column="3"
+                     Grid.Row="1" 
+                     HorizontalAlignment="Left"
+                     VerticalAlignment="Center"
+                     Margin="10,0,0,0"/>
+        <TextBox Text="{Binding Path=SelectedBulkQuotation.ReferenceNumber}"
+                     Height="25"
+                     HorizontalAlignment="Stretch"
+                     Grid.Column="4"
+                     Grid.Row="1"
+                     VerticalAlignment="Center"
+                     VerticalContentAlignment="Center"/>
+        <TextBlock Text="First Name"
+                     Grid.Column="1"
+                     Grid.Row="2"
+                     VerticalAlignment="Center"
+                     Margin="10,0,0,0"/>
+        <TextBox Text="{Binding Path=SelectedBulkQuotation.Customer.FirstName}"
+                     Grid.Column="2"
+                     Grid.Row="2"
+                     HorizontalAlignment="Stretch"
+                     Height="25"
+                     VerticalAlignment="Center"
+                     VerticalContentAlignment="Center"/>
+        <TextBlock Text="LastName"
+                     Grid.Column="3"
+                     Grid.Row="2" 
+                     HorizontalAlignment="Left"
+                     VerticalAlignment="Center"
+                     Margin="10,0,0,0"/>
+        <TextBox Text="{Binding Path=SelectedBulkQuotation.Customer.LastName}"
+                     Height="25"
+                     HorizontalAlignment="Stretch"
+                     Grid.Column="4"
+                     Grid.Row="2"
+                     VerticalAlignment="Center"
+                     VerticalContentAlignment="Center"/>
+        <TextBlock Text="Company Name"
+                     Grid.Column="1"
+                     Grid.Row="3"
+                     VerticalAlignment="Center"
+                     Margin="10,0,0,0"/>
+        <TextBox Text="{Binding Path=SelectedBulkQuotation.Customer.CompanyName}"
+                     Grid.Column="2"
+                     Grid.Row="3"
+                     HorizontalAlignment="Stretch"
+                     Height="25"
+                     VerticalAlignment="Center"
+                     VerticalContentAlignment="Center"/>
+        <TextBlock Text="Address"
+                     Grid.Column="3"
+                     Grid.Row="3" 
+                     HorizontalAlignment="Left"
+                     VerticalAlignment="Center"
+                     Margin="10,0,0,0"/>
+        <TextBox Text="{Binding Path=SelectedBulkQuotation.Customer.Address}"
+                     Height="25"
+                     HorizontalAlignment="Stretch"
+                     Grid.Column="4"
+                     Grid.Row="3"
+                     VerticalAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     />
+        <TextBlock Text="TRN"
+                     Grid.Column="1"
+                     Grid.Row="4" 
+                     HorizontalAlignment="Left"
+                     VerticalAlignment="Center"
+                     Margin="10,0,0,0"/>
+        <TextBox Text="{Binding Path=SelectedBulkQuotation.Customer.Trn}"
+                 Height="25"
+                 HorizontalAlignment="Stretch"
+                 Grid.Column="2"
+                 Grid.Row="4"
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center"/>
+        <TextBlock Text="Phone Number"
+                     Grid.Column="3"
+                     Grid.Row="4" 
+                     HorizontalAlignment="Left"
+                     VerticalAlignment="Center"
+                     Margin="10,0,0,0"/>
+        <TextBox Text="{Binding Path=SelectedBulkQuotation.Customer.PhoneNumber}" 
+                Height="25"
+                HorizontalAlignment="Stretch"
+                Grid.Column="4"
+                Grid.Row="4"
+                VerticalAlignment="Center"
+                VerticalContentAlignment="Center"/>
+        <TextBlock Text="Email"
+                   Grid.Column="1"
+                   Grid.Row="5" 
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Center"
+                   Margin="10,0,0,0"/>
+        <TextBox Text="{Binding Path=SelectedBulkQuotation.Customer.EmailAddress}"
+                 Height="25"
+                 HorizontalAlignment="Stretch"
+                 Grid.Column="2"
+                 Grid.Row="5"
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center"/>
+        <TextBlock Text="Postcode"
+                   Grid.Column="3"
+                   Grid.Row="5" 
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Center"
+                   Margin="10,0,0,0"/>
+        <TextBox Text="{Binding Path=SelectedBulkQuotation.Customer.Postcode}"
+                 Height="25"
+                 HorizontalAlignment="Stretch"
+                 Grid.Column="4"
+                 Grid.Row="5"
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center"/>
+        <Button  Height="25"                 
+                 HorizontalAlignment="Stretch"
+                 Grid.Column="5"
+                 Grid.Row="1"
+                 Grid.RowSpan="1"
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center"
+                 Margin="10,0,0,0"
+                 Command="{Binding NextRecordCommand}">
+            <TextBlock Text="Next Record" 
+                       TextWrapping="Wrap"/>
+        </Button>
+        <Button  Height="25"                 
+                 HorizontalAlignment="Stretch"
+                 Grid.Column="5"
+                 Grid.Row="2"
+                 Grid.RowSpan="1"
+                 VerticalAlignment="Top"
+                 VerticalContentAlignment="Center"
+                 Margin="10,0,0,0"
+                 Command="{Binding PreviousRecordCommand}">
+            <TextBlock Text="Previous Record" 
+                       TextWrapping="Wrap"/>
+        </Button>
+        <Button  Height="25"                 
+                 HorizontalAlignment="Stretch"
+                 Grid.Column="5"
+                 Grid.Row="3"
+                 Grid.RowSpan="1"
+                 VerticalAlignment="Top"
+                 VerticalContentAlignment="Center"
+                 Margin="10,0,0,0"
+                 Command="{Binding AddPartImportCommand}">
+            <TextBlock Text="Add Part" 
+                       TextWrapping="Wrap"/>
+        </Button>
+        <Button  Height="25"                 
+                 HorizontalAlignment="Stretch"
+                 Grid.Column="5"
+                 Grid.Row="4"
+                 Grid.RowSpan="1"
+                 VerticalAlignment="Top"
+                 VerticalContentAlignment="Center"
+                 Margin="10,0,0,0"
+                 Command="{Binding EditPartImportCommand}">
+            <TextBlock Text="Edit Part" 
+                       TextWrapping="Wrap"/>
+        </Button>
+        <Button  Height="25"                 
+                 HorizontalAlignment="Stretch"
+                 Grid.Column="5"
+                 Grid.Row="5"
+                 Grid.RowSpan="1"
+                 VerticalAlignment="Top"
+                 VerticalContentAlignment="Center"
+                 Margin="10,0,0,0"
+                 Command="{Binding RemovePartImportCommand}">
+            <TextBlock Text="Remove Part" 
+                       TextWrapping="Wrap"/>
+        </Button>
+        <Button  Height="25"                 
+                 HorizontalAlignment="Stretch"
+                 Grid.Column="5"
+                 Grid.Row="7"
+                 Grid.RowSpan="1"
+                 VerticalAlignment="Top"
+                 VerticalContentAlignment="Center"
+                 Margin="10,0,0,0"
+                 Command="{Binding RemoveRecordCommand}">
+            <TextBlock Text="Remove Record" 
+                       TextWrapping="Wrap"/>
+        </Button>
+        
+        <StackPanel Orientation="Vertical"
+                    HorizontalAlignment="Stretch"
+                    Grid.Row="6"
+                    Grid.Column="1" 
+                    Grid.ColumnSpan="4"
+                    Grid.RowSpan="2">
+            <TextBlock Text="Order Items:" Margin="10,0"/>
+            <DataGrid ItemsSource="{Binding SelectedBulkQuotation.Order.OrderItems}" SelectedItem="{Binding RemoveSelectedOrderItem}"    
+                  AutoGenerateColumns="False" 
+                  IsReadOnly="True"
+                  Margin="0,4"
+                  Height="110"                      
+                  HorizontalAlignment="Stretch" 
+                  HorizontalContentAlignment="Stretch" 
+                  ColumnWidth="*"
+                  VerticalScrollBarVisibility="Auto"                      
+                  >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Part ID"
+                                    Binding="{Binding Inventory.Id}" />
+                    <DataGridTextColumn Header="Part Number"
+                                    Binding="{Binding Inventory.PartNumber}" />
+                    <DataGridTextColumn Header="Description"
+                                    Binding="{Binding Inventory.Description}" />
+                    <DataGridTextColumn Header="Location"
+                                    Binding="{Binding Inventory.Location}" />
+                    <DataGridTextColumn Header="Order Quantity"
+                                    Binding="{Binding OrderQty}" />
+                    <DataGridTextColumn Header="Unit Price"
+                                    Binding="{Binding Inventory.UnitPrice}" />
+                    <DataGridTextColumn Header="Offered Price"
+                                    Binding="{Binding OfferedPrice}" />
+                    <DataGridTextColumn Header="VAT"
+                                    Binding="{Binding Vat}" />
+
+                    <DataGridTextColumn Header="Total Price"
+                                    Binding="{Binding Total}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+        <TextBlock Text="Discount" Margin="10,0,0,0"
+                 Grid.Row="8"
+                 Grid.Column="1"/>
+        <TextBox Text="{Binding SelectedBulkQuotation.OfferedDiscount}" 
+                 Grid.Row="8"
+                 Grid.Column="2"
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center"
+                 Height="25"/>
+        <TextBlock Text="Total" Margin="10,0,0,0"
+                 Grid.Row="8"
+                 Grid.Column="3"/>
+        <TextBox Text="{Binding SelectedBulkQuotation.Order.TotalPrice}" 
+                 Grid.Row="8"
+                 Grid.Column="4"
+                 HorizontalAlignment="Stretch" 
+                 VerticalAlignment="Center" 
+                 VerticalContentAlignment="Center" 
+                 Height="25"/>
+
+        <TextBlock Text="VAT" Margin="10,0,0,0"
+                 Grid.Row="9"
+                 Grid.Column="1"/>
+        <TextBox Text="{Binding SelectedBulkQuotation.VAT}" 
+                 Grid.Row="9"
+                 Grid.Column="2"
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center"
+                 Height="25"/>
+        <TextBlock Text="Net Total" Margin="10,0,0,0"
+                 Grid.Row="9"
+                 Grid.Column="3"/>
+        <TextBox Text="{Binding SelectedBulkQuotation.NetTotal}"
+                 Grid.Row="9"
+                 Grid.Column="4"
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center"
+                 Height="25"/>
+        <TextBlock Text="M/S" Margin="10,0,0,0"
+                 Grid.Row="10"
+                 Grid.Column="1"/>
+        <TextBox Text="{Binding SelectedBulkQuotation.MS}"
+                 Grid.Row="10"
+                 Grid.Column="2"
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center"
+                 Height="25"/>
+        <TextBlock Text="Attn" Margin="10,0,0,0"
+                 Grid.Row="10"
+                 Grid.Column="3"/>
+        <TextBox Text="{Binding SelectedBulkQuotation.Attn}"
+                 Grid.Row="10"
+                 Grid.Column="4"
+                 HorizontalAlignment="Stretch"
+                 VerticalAlignment="Center"
+                 VerticalContentAlignment="Center"
+                 Height="25"/>
+        <TextBlock Text="Message" Margin="10,0,0,0"
+                 Grid.Row="11"
+                 Grid.Column="1" 
+                 VerticalAlignment="Stretch"  />
+        <TextBox Text="{Binding SelectedBulkQuotation.Message}"
+                 Grid.Row="11"
+                 Grid.Column="2"
+                 HorizontalAlignment="Stretch"
+                 Grid.RowSpan="2"
+                 TextWrapping="Wrap"
+                 VerticalContentAlignment="Center"/>
+        <TextBlock Text="Note" Margin="10,0,0,0"
+                 Grid.Row="11"
+                 Grid.Column="3"/>
+        <TextBox Text="{Binding SelectedBulkQuotation.Note}"
+                 Grid.Row="11"
+                 Grid.Column="4"
+                 Grid.RowSpan="2"
+                 HorizontalAlignment="Stretch"
+                 VerticalContentAlignment="Center"
+                 TextWrapping="Wrap"/>
+        <Button Content="Save" 
+                VerticalAlignment="Stretch" 
+                HorizontalAlignment="Right"
+                Margin="5,5,0,0"
+                Width="100"
+                Grid.Row="13"
+                Grid.Column="2"
+                Command="{Binding SaveCommand}"
+                CommandParameter="{Binding ElementName=_ImportQuotationWindow}"/>
+        <Button Content="Cancel"
+                Width="100"                 
+                Grid.Column="3"
+                Grid.Row="13"
+                Margin="5,5,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Center"
+                Command="{Binding CancelCommand}"
+                CommandParameter="{Binding ElementName=_ImportQuotationWindow}"/>
+
+    </Grid>
+</Window>

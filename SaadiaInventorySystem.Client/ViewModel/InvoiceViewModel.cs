@@ -20,7 +20,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace SaadiaInventorySystem.Client.ViewModel
 {
-    public class InvoiceViewModel : BaseViewModel,IViewModel
+    public class InvoiceViewModel : BaseViewModel, IViewModel
     {
         string arabic_txt = "شركة سعدية للتجارة ذ.م.م";
         private string _name;
@@ -50,7 +50,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private RelayCommand _duplicateCommand;
         private RelayCommand _exportCommand;
 
-        
+
         private RelayCommand<IClosable> _uploadCommand;
 
         private ICommand _openAddCustomerWindowCommand;
@@ -71,7 +71,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public bool IsUpdateCheck { get => _isUpdateCheck; set { _isUpdateCheck = value; RaisePropertyChanged(); } }
         public bool IsIgnoreCheck { get => _isIgnoreCheck; set { _isIgnoreCheck = value; RaisePropertyChanged(); } }
         public bool IsAdmin { get => isAdmin; set { isAdmin = value; RaisePropertyChanged(); } }
-        
+
 
         public ICommand AddWindowCommand { get => _addWindowCommand; set { _addWindowCommand = value; RaisePropertyChanged(); } }
         public ICommand RemovePartCommand { get => _removePartCommand; set { _removePartCommand = value; RaisePropertyChanged(); } }
@@ -81,7 +81,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public RelayCommand ImportCommand { get => _importCommand; set { _importCommand = value; RaisePropertyChanged(); } }
         public RelayCommand DuplicateCommand { get => _duplicateCommand; set { _duplicateCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> UploadCommand { get => _uploadCommand; set { _uploadCommand = value; RaisePropertyChanged(); } }
-        public RelayCommand ExportCommand{ get { return _exportCommand; } set { _exportCommand = value; RaisePropertyChanged(); }}
+        public RelayCommand ExportCommand { get { return _exportCommand; } set { _exportCommand = value; RaisePropertyChanged(); } }
 
         public ICommand OpenAddCustomerWindowCommand { get => _openAddCustomerWindowCommand; set { _openAddCustomerWindowCommand = value; RaisePropertyChanged(); } }
         public ICommand OpenAddPartsWindowCommand { get => _openAddPartsWindowCommand; set { _openAddPartsWindowCommand = value; RaisePropertyChanged(); } }
@@ -192,7 +192,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public int Active { get => active; set { active = value; RaisePropertyChanged(); } }
 
         private int active;
-        
+
         public bool Activate()
         {
             Active = 1;
@@ -295,7 +295,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             else if (IsUpdateCheck) { await ReadInvoiceFileExcel(FilePath); }
             i.Close();*/
             //ReadIvoiceExcelCom(FilePath);
-            ReadIvoiceExcelEpp(FilePath);
+            await ReadInvoiceExcel(FilePath);
         }
         private void ExportExcel(string path)
         {
@@ -327,7 +327,6 @@ namespace SaadiaInventorySystem.Client.ViewModel
             workSheet.Row(1).Style.Font.Size = 20;
             workSheet.Row(1).Style.Font.Name = "Trebuchet MS";
 
-            // workSheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             workSheet.Row(1).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
             workSheet.Row(1).Style.Font.Bold = true;
             workSheet.Row(1).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
@@ -336,7 +335,6 @@ namespace SaadiaInventorySystem.Client.ViewModel
             workSheet.Row(2).Style.Font.Size = 9;
             workSheet.Row(2).Style.Font.Name = "Trebuchet MS";
             workSheet.Row(2).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-            // workSheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             workSheet.Row(2).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
             workSheet.Row(2).Style.VerticalAlignment = ExcelVerticalAlignment.Bottom;
 
@@ -344,7 +342,6 @@ namespace SaadiaInventorySystem.Client.ViewModel
             workSheet.Row(3).Style.Font.Size = 9;
             workSheet.Row(3).Style.Font.Name = "Trebuchet MS";
             workSheet.Row(3).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-            // workSheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             workSheet.Row(3).Style.VerticalAlignment = ExcelVerticalAlignment.Bottom;
 
 
@@ -384,12 +381,6 @@ namespace SaadiaInventorySystem.Client.ViewModel
             rich_TRN.Italic = true;
             rich_TRN.UnderLine = true;
             rich_TRN.Color = System.Drawing.Color.Red;
-
-            //workSheet.Cells["A3:G3"].Style.Border.Bottom.Style = ExcelBorderStyle.Thick;
-            //workSheet.Cells["A3:G3"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            //workSheet.Cells["A3:G3"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            //workSheet.Cells["A3:G3"].Style.Border.Left.Style = ExcelBorderStyle.None;
-
             ExcelShape shape = workSheet.Drawings.AddShape("Line1", eShapeStyle.Line);
             shape.SetPosition(3, 0, 0, 0);
             shape.SetSize(440, 1);
@@ -414,59 +405,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
             workSheet.Cells[i, 1, i + 4, 7].Style.Border.Right.Style = ExcelBorderStyle.None;
             workSheet.Cells[i, 1, i + 4, 7].Style.Border.Top.Style = ExcelBorderStyle.None;
             workSheet.Cells[i, 1, i + 4, 7].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
             workSheet.Cells[$"A{ i}"].Value = SelectedInvoice.Note;
-            /*workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            */
             i++;
-            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            //workSheet.Cells[$"A{ i}:G{i}"].Value = "Price quoted Net in UAE Dirhams, ex-warehouse. ";
-            /*workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            */
             i++;
-            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            /*workSheet.Cells[$"A{ i}:G{i}"].Value = "Make: Genuine Part";
-            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            */
             i++;
-            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            /*workSheet.Cells[$"A{ i}:G{i}"].Value = "Validity: 1 week";
-            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            */i++;
-            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            /*workSheet.Cells[$"A{ i}:G{i}"].Value = "Payment: 100% cash on order confirmation.";
-            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            */i++;
+            i++;
+            i++;
             workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
             workSheet.Cells[$"A{ i}:G{i}"].Value = "Awaiting your valued order & assuring you of our best services always.";
             workSheet.Row(i).Height = 27;
@@ -491,8 +435,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 //get the first worksheet in the workbook
                 ExcelWorksheet worksheet = package.Workbook.Worksheets[1];
                 ExcelWorkbook workbook = package.Workbook;
-               
-                foreach(var sheet in workbook.Worksheets)
+
+                foreach (var sheet in workbook.Worksheets)
                 {
                     int colCount = sheet.Dimension.End.Column;  //get Column Count
                     int rowCount = sheet.Dimension.End.Row;     //get row count
@@ -507,20 +451,20 @@ namespace SaadiaInventorySystem.Client.ViewModel
                             {
                                 Console.WriteLine(" Row:" + row + " column:" + col + " Value:" + value);
                             }
-                            
+
                         }
                     }
-                    
+
                     foreach (var drawing in sheet.Drawings)
                     {
-                              
+
                         var type = drawing.GetType().FullName;
-                        var data = Convert.ToString( drawing);
+                        var data = Convert.ToString(drawing);
                         Console.WriteLine("Drawing Type:" + type + " Data: " + data);
                     }
 
                 }
-                
+
             }
 
 
@@ -534,7 +478,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             int sheets = xlWorkbook.Sheets.Count;
             Excel._Worksheet xlWorksheet = xlWorkbook.Sheets[1];
             Excel.Range xlRange = xlWorksheet.UsedRange;
-            for (int sheet = 1; sheet <= sheets;sheet++)
+            for (int sheet = 1; sheet <= sheets; sheet++)
             {
                 xlWorksheet = xlWorkbook.Sheets[sheet];
 
@@ -562,7 +506,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 for (int i = 1; i <= shapes.Count; i++)
                 {
                     Excel.Shape shape = shapes.Item(i);
-                    
+
                     var type = shape.Type;
                     var title = shape.Title;
                     var tb1 = shape.TextFrame;
@@ -584,7 +528,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
 
             }
-            
+
             //cleanup
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -602,9 +546,9 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
 
         }
-        private async Task ReadInvoiceFileExcel(string path)
+        private async Task ReadInvoiceExcel(string path)
         {
-            if (path.IndexOf("invoice", StringComparison.OrdinalIgnoreCase) >= 0)
+            try
             {
                 using (var stream = File.Open(path, FileMode.Open, FileAccess.Read))
                 {
@@ -614,7 +558,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                     using (var reader = ExcelReaderFactory.CreateReader(stream))
                     {
                         var result = reader.AsDataSet();
-                        var invoice = new List<Invoice>();
+                        var invoices = new List<Invoice>();
                         var updateinvoice = new List<Quotation>();
                         var addquotes = new List<Quotation>();
                         int tabs = result.Tables.Count;
@@ -633,26 +577,26 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
                                     var data = result.Tables[tab];
                                     var current = data.Rows[row][col].ToString();
-                                   /* if (current.Contains("ATTN"))
-                                    {
-                                        string input = current;
-                                        string res2 = input.Split(':')[1];
-                                        string pattern = @"\bATTN:\b";
-                                        string replace = " ";
-                                        string res = Regex.Replace(input, pattern, replace, RegexOptions.IgnoreCase);
-                                        q.Attn = res2.Trim();
+                                    /* if (current.Contains("ATTN"))
+                                     {
+                                         string input = current;
+                                         string res2 = input.Split(':')[1];
+                                         string pattern = @"\bATTN:\b";
+                                         string replace = " ";
+                                         string res = Regex.Replace(input, pattern, replace, RegexOptions.IgnoreCase);
+                                         q.Attn = res2.Trim();
 
-                                    }
-                                    if (current.Contains("Dear"))
-                                        noteflag = true;
-                                    if (noteflag)
-                                    {
-                                        if (String.IsNullOrEmpty(current)) continue;
-                                        if (!current.Contains("S.No"))
-                                        {
-                                            q.Note += current;
-                                        }
-                                    }
+                                     }
+                                     if (current.Contains("Dear"))
+                                         noteflag = true;
+                                     if (noteflag)
+                                     {
+                                         if (String.IsNullOrEmpty(current)) continue;
+                                         if (!current.Contains("S.No"))
+                                         {
+                                             q.Note += current;
+                                         }
+                                     }*/
                                     if (current.Contains("S.No"))
                                     {
                                         noteflag = false;
@@ -694,7 +638,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                                         q.CalculateNetTotal();
                                         break;
                                     }
-                                    if (col > 0)
+                                    /*if (col > 0)
                                     {
                                         if (String.IsNullOrEmpty(current)) continue;
                                         var prev = data.Rows[row][col - 1].ToString();
@@ -729,7 +673,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                                             if (prevM1.Contains("REF"))
                                                 q.ReferenceNumber += current.Trim();
                                         }
-                                    }*/
+                                    }*
                                 }
                             }
                             invoice.Add(q);
@@ -764,16 +708,19 @@ namespace SaadiaInventorySystem.Client.ViewModel
                         {
                             MessageBox.Show("Nothing to insert.Records Already uptodate");
                         }*/
-                        await GetAll();
-                        // The result of each spreadsheet is in result.Tables
+                                    // await GetAll();
+                                    // The result of each spreadsheet is in result.Tables
+                                }
+                            }
+                            invoices.Add(q);
+                        }
                     }
                 }
             }
-            else
+            catch  (Exception ex)
             {
-                MessageBox.Show("Error Reading File. Make sure the file path contains quotation");
+                MessageBox.Show($"Failed to import file. An error occured. Error details: {ex.Message}");
             }
-
         }
 
         public async void Delete()
@@ -873,7 +820,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Row(7).Style.Font.Size = 9;
                 workSheet.Row(8).Style.Font.Size = 9;
                 workSheet.Row(9).Style.Font.Size = 9;
-                
+
                 workSheet.Cells["A11:G11"].Merge = true;
                 workSheet.Cells["A11:G11"].Value = "INVOICE";
                 workSheet.Cells["A11:G11"].Style.Font.Bold = true;
@@ -885,7 +832,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Cells["A11:G11"].Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
 
                 workSheet.Cells["A12"].Value = SelectedInvoice.Message;
-                workSheet.Cells[12,1,13,7].Merge = true;
+                workSheet.Cells[12, 1, 13, 7].Merge = true;
                 //workSheet.Cells["A11"].Value = "Thank you for your inquiry.";
                 //workSheet.Cells["A12"].Value = "We are pleased to quote our best prices as follows:";
                 workSheet.Row(9).Style.Font.Size = 9;
@@ -1072,7 +1019,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                     foreach (var item in Invoices)
                     {
                         item.CalculateNetTotal();
-                        foreach(var parts in item.Order.OrderItems)
+                        foreach (var parts in item.Order.OrderItems)
                         {
                             parts.VatPercent = item.VAT;
                             parts.CalculateVAT();
@@ -1105,7 +1052,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             try
             {
-                SelectedInvoice =  await service.CallGetService(SelectedInvoice.Id.ToString());
+                SelectedInvoice = await service.CallGetService(SelectedInvoice.Id.ToString());
                 foreach (var parts in SelectedInvoice.Order.OrderItems)
                 {
                     parts.VatPercent = SelectedInvoice.VAT;
@@ -1179,7 +1126,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 {
                     return await service.CallAdminDeleteService(SelectedInvoice.Id);
                 }
-                else 
+                else
                 {
                     return await service.CallDeleteService(SelectedInvoice.Id);
                 }

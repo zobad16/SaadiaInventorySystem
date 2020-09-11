@@ -26,6 +26,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             Name = "Quotation";
             service = new QuotationService();
+            SelectedBulkQuotation = new Quotation();
             AddWindowCommand = new RelayCommand(i => OpenAddWindow(), i => true);
             RemovePartCommand = new RelayCommand(i=> RemovePart(), i =>  RemoveSelectedOrderItem != null );
             EditWindowCommand = new RelayCommand(i => OpenEditWindow(), i => SelectedQuotation != null);
@@ -33,10 +34,13 @@ namespace SaadiaInventorySystem.Client.ViewModel
             OpenAddPartsWindowCommand = new RelayCommand(i => OpenAddPartsWindow(), i => true);
             CancelCommand = new RelayCommand<IClosable>(i => Cancel(i), i => true);
             SaveCommand = new RelayCommand<IClosable>(i => Save(i), i => true);
+            BulkSaveCommand = new RelayCommand<IClosable>(i => BulkSave(i), i => true);
             ActivateCommand = new RelayCommand(i => ActivateAsync(), (a) => SelectedQuotation != null);
             DisableCommand = new RelayCommand(i => DisableAsync(), (a) => SelectedQuotation != null);
             DeleteCommand = new RelayCommand(i => Delete(), (a) => SelectedQuotation != null);
             ImportCommand = new RelayCommand(i => ImportQuotation(), i=> true);
+            NextRecordCommand = new RelayCommand(i => NextRecord());
+            PreviousRecordCommand = new RelayCommand(i => PreviousRecord());
             ExportCommand = new RelayCommand(i => ExportQuotation(), (i)=> SelectedQuotation != null);
             UploadCommand = new RelayCommand<IClosable>(i => Upload(i), i=> true);
             SelectCustomerCommand = new RelayCommand<IClosable>(i => SelectCustomersCommand(i),i=> true);
@@ -59,6 +63,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private readonly QuotationService service;
         private Quotation _quotation;
         private Quotation _selectedQuotation;
+        private Quotation _selectedBulkQuotation;
         private Quotation _newQuotation;
         private double _netTotal;
         private string message;
@@ -72,6 +77,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public bool IsUpdateCheck { get => _isUpdateCheck; set { _isUpdateCheck = value; RaisePropertyChanged(); } }
         public bool IsIgnoreCheck { get => _isIgnoreCheck; set { _isIgnoreCheck = value; RaisePropertyChanged(); } }
         private ObservableCollection<Quotation> _quotations;
+        private ObservableCollection<Quotation> _bulkQuotations;
         private ObservableCollection<Customer> _customersList;
         private Customer _selectedCustomer;
         private ObservableCollection<Inventory> _partsList;
@@ -80,6 +86,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
         
         private ICommand _addWindowCommand;
         private ICommand _removePartCommand;
+        private RelayCommand _nextRecordCommand;
+        private RelayCommand _previousRecordCommand;
         private RelayCommand _activateCommand;
         private RelayCommand _disableCommand;
         private RelayCommand _deleteCommand;
@@ -96,6 +104,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private ICommand _editWindowCommand;
         private RelayCommand<IClosable> _cancelCommand;
         private RelayCommand<IClosable> _saveCommand;
+        private RelayCommand<IClosable> _bulkSaveCommand;
 
         private RelayCommand<IClosable> _selectCustomerCommand;
         private RelayCommand<IClosable> _selectPartCommand;
@@ -119,13 +128,17 @@ namespace SaadiaInventorySystem.Client.ViewModel
         }
         public Quotation Quotation { get => _quotation; set { _quotation = value; RaisePropertyChanged(); } }
         public ObservableCollection<Quotation> Quotations { get => _quotations; set { _quotations = value; RaisePropertyChanged(); } }
+        public ObservableCollection<Quotation> BulkQuotations { get => _bulkQuotations; set { _bulkQuotations = value; RaisePropertyChanged(); } }
         public Quotation SelectedQuotation { get => _selectedQuotation; set { _selectedQuotation = value; RaisePropertyChanged(); } }
+        public Quotation SelectedBulkQuotation { get => _selectedBulkQuotation; set { _selectedBulkQuotation = value; RaisePropertyChanged(); } }
         public Quotation NewQuotation { get => _newQuotation; set { _newQuotation = value; RaisePropertyChanged(); } }
         public int Active { get => active; set { active = value; RaisePropertyChanged(); } }
         public bool IsAdmin { get => isAdmin; set { isAdmin = value; RaisePropertyChanged(); } }
 
         public ICommand AddWindowCommand { get => _addWindowCommand; set { _addWindowCommand = value; RaisePropertyChanged(); } }
         public ICommand RemovePartCommand { get => _removePartCommand; set { _removePartCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand NextRecordCommand { get => _nextRecordCommand; set { _nextRecordCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand PreviousRecordCommand { get => _previousRecordCommand; set { _previousRecordCommand = value; RaisePropertyChanged(); } }
         public RelayCommand ActivateCommand { get => _activateCommand; set { _activateCommand = value; RaisePropertyChanged(); } }
         public RelayCommand DisableCommand { get => _disableCommand; set { _disableCommand = value; RaisePropertyChanged(); } }
         public RelayCommand DeleteCommand { get => _deleteCommand; set { _deleteCommand = value; RaisePropertyChanged(); } }
@@ -140,6 +153,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         
         public RelayCommand<IClosable> CancelCommand { get => _cancelCommand; set { _cancelCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> SaveCommand { get => _saveCommand; set { _saveCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand<IClosable> BulkSaveCommand { get => _bulkSaveCommand; set { _bulkSaveCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> SelectCustomerCommand { get => _selectCustomerCommand; set { _selectCustomerCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> SelectPartCommand { get => _selectPartCommand; set { _selectPartCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> AddOrderItemCommand { get => _addOrderItemCommand; set { _addOrderItemCommand = value; RaisePropertyChanged(); } }
@@ -200,6 +214,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             p.Close();
             await GetAll();
         }
+        
 
         private async void OpenAddPartsWindow()
         {
@@ -285,9 +300,60 @@ namespace SaadiaInventorySystem.Client.ViewModel
         }
         private async Task Upload(IClosable i)
         {
-            if (IsIgnoreCheck) { await ReadQuotationFileExcel(FilePath); }
-            else if (IsUpdateCheck) { await ReadQuotationFileExcel(FilePath); }
-            i.Close();            
+            if (IsIgnoreCheck) 
+            {
+                await ReadQuotationFileExcel(FilePath);
+                var window = new QuotationImportDisplayView(this);
+                i.Close();
+                //Instead of the whole of BulkQuotation use SelectedBulkQuotaion
+                SelectedBulkQuotation = BulkQuotations[0];
+                window.ShowDialog();
+
+            }
+            else if (IsUpdateCheck) 
+            {
+                await ReadQuotationFileExcel(FilePath);
+                var window = new QuotationImportDisplayView(this);
+                i.Close();
+                SelectedBulkQuotation = BulkQuotations[0];
+                window.ShowDialog();
+
+            }
+            
+        }
+        private void NextRecord()
+        {
+            int length = BulkQuotations.Count;
+            if(length > 0)
+            {
+                int index = BulkQuotations.IndexOf(SelectedBulkQuotation);
+                if(index < length)
+                {
+                    SelectedBulkQuotation = BulkQuotations[index + 1];
+                }
+
+            }
+            else 
+            {
+                MessageBox.Show("No More records to display");
+            }
+        }
+        private void PreviousRecord()
+        {
+            int length = BulkQuotations.Count;
+            if(length > 0)
+            {
+                int index = BulkQuotations.IndexOf(SelectedBulkQuotation);
+                if(index > 0)
+                {
+                    SelectedBulkQuotation = BulkQuotations[index - 1];
+                }
+
+            }
+            else 
+            {
+                MessageBox.Show("No More records to display");
+            }
         }
         private void ImportQuotation()
         {
@@ -701,6 +767,33 @@ namespace SaadiaInventorySystem.Client.ViewModel
             workSheet.Cells[$"A{ i}:B{i}"].Merge = true;
             workSheet.Cells[$"A{ i}:B{i}"].Value = "For Saadia Trading Co.";
         }
+        private async Task BulkInsert()
+        {
+
+            // The result of each spreadsheet is in result.Tables
+
+        }
+        private async void BulkSave(IClosable p)
+        {
+            //Data Checks
+            //Close the window and call the bulk insert service
+
+            if (BulkQuotations.Count > 0)
+            {
+                if (await service.CallBulkInsert(BulkQuotations.ToList()))
+                {
+                    MessageBox.Show("Bulk Insert Success");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Nothing to insert.Records Already uptodate");
+            }
+
+            p.Close();
+            await GetAll();
+
+        }
         private async Task ReadQuotationFileExcel(string path)
         {
             if (path.IndexOf("quotation", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -833,38 +926,38 @@ namespace SaadiaInventorySystem.Client.ViewModel
                             }
                             quotes.Add(q);
                         }
-                        quotes = await DuplicateChecks(quotes);
-
+                        //quotes = await DuplicateChecks(quotes);
+                        BulkQuotations = new ObservableCollection<Quotation>();
                         foreach (var item in quotes)
                         {
                             if (item.Id > 0)
                             {
-                                updatequotes.Add(item);
+                                BulkQuotations.Add(item);
                             }
                             else if (item.Id == 0)
                             {
-                                addquotes.Add(item);
+                                BulkQuotations.Add(item);
                             }
                         }
-
-                        if (addquotes.Count > 0)
-                        {
-                            if (await service.CallBulkInsert(addquotes))
-                            {
-                                MessageBox.Show("Bulk Insert Success");
-                            }
-                        }
-                        else if (updatequotes.Count > 0)
-                        {
-                            await service.CallBulkUpdate(updatequotes);
-                            MessageBox.Show("Bulk Insert Success. Duplicates records updated");
-                        }
-                        else
-                        {
-                            MessageBox.Show("Nothing to insert.Records Already uptodate");
-                        }
-                        await GetAll();
-                        // The result of each spreadsheet is in result.Tables
+                        
+                        //if (addquotes.Count > 0)
+                        //{
+                        //    if (await service.CallBulkInsert(addquotes))
+                        //    {
+                        //        MessageBox.Show("Bulk Insert Success");
+                        //    }
+                        //}
+                        //else if (updatequotes.Count > 0)
+                        //{
+                        //    await service.CallBulkUpdate(updatequotes);
+                        //    MessageBox.Show("Bulk Insert Success. Duplicates records updated");
+                        //}
+                        //else
+                        //{
+                        //    MessageBox.Show("Nothing to insert.Records Already uptodate");
+                        //}
+                        //await GetAll();
+                        //// The result of each spreadsheet is in result.Tables
                     }
                 }
             }

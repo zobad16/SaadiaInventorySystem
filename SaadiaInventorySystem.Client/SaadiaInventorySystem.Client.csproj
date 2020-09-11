@@ -169,6 +169,9 @@
     <Compile Include="View\InvoiceAddPartsView.xaml.cs">
       <DependentUpon>InvoiceAddPartsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\InvoiceImportDisplayView.xaml.cs">
+      <DependentUpon>InvoiceImportDisplayView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\InvoiceView.xaml.cs">
       <DependentUpon>InvoiceView.xaml</DependentUpon>
     </Compile>
@@ -187,6 +190,9 @@
     </Compile>
     <Compile Include="View\QuotationAddPartsView.xaml.cs">
       <DependentUpon>QuotationAddPartsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\QuotationImportDisplayView.xaml.cs">
+      <DependentUpon>QuotationImportDisplayView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\QuotationView.xaml.cs">
       <DependentUpon>QuotationView.xaml</DependentUpon>
@@ -264,6 +270,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\InvoiceImportDisplayView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\InvoiceView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -281,6 +291,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\QuotationAddPartsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\QuotationImportDisplayView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
