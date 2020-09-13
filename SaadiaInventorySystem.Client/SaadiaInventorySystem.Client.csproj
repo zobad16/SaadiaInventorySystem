@@ -191,6 +191,9 @@
     <Compile Include="View\QuotationAddPartsView.xaml.cs">
       <DependentUpon>QuotationAddPartsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\QuotationImportAddOrderItemView.xaml.cs">
+      <DependentUpon>QuotationImportAddOrderItemView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\QuotationImportDisplayView.xaml.cs">
       <DependentUpon>QuotationImportDisplayView.xaml</DependentUpon>
     </Compile>
@@ -291,6 +294,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\QuotationAddPartsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\QuotationImportAddOrderItemView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

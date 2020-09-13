@@ -252,7 +252,7 @@
                     Grid.ColumnSpan="4"
                     Grid.RowSpan="2">
             <TextBlock Text="Order Items:" Margin="10,0"/>
-            <DataGrid ItemsSource="{Binding SelectedBulkQuotation.Order.OrderItems}" SelectedItem="{Binding RemoveSelectedOrderItem}"    
+            <DataGrid ItemsSource="{Binding SelectedBulkQuotation.Order.OrderItems}" SelectedItem="{Binding SelectedImportOrderItem}"    
                   AutoGenerateColumns="False" 
                   IsReadOnly="True"
                   Margin="0,4"

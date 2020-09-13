@@ -64,6 +64,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private Quotation _quotation;
         private Quotation _selectedQuotation;
         private Quotation _selectedBulkQuotation;
+        private OrderItem _selectedImportOrderItem;
         private Quotation _newQuotation;
         private double _netTotal;
         private string message;
@@ -131,6 +132,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public ObservableCollection<Quotation> BulkQuotations { get => _bulkQuotations; set { _bulkQuotations = value; RaisePropertyChanged(); } }
         public Quotation SelectedQuotation { get => _selectedQuotation; set { _selectedQuotation = value; RaisePropertyChanged(); } }
         public Quotation SelectedBulkQuotation { get => _selectedBulkQuotation; set { _selectedBulkQuotation = value; RaisePropertyChanged(); } }
+        public OrderItem SelectedImportOrderItem { get => _selectedImportOrderItem; set { _selectedImportOrderItem = value; RaisePropertyChanged(); } }
         public Quotation NewQuotation { get => _newQuotation; set { _newQuotation = value; RaisePropertyChanged(); } }
         public int Active { get => active; set { active = value; RaisePropertyChanged(); } }
         public bool IsAdmin { get => isAdmin; set { isAdmin = value; RaisePropertyChanged(); } }
