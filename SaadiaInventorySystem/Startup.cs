@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,6 +25,7 @@ namespace SaadiaInventorySystem
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddControllers();
+            var constring = Configuration.GetConnectionString("DefaultConnection");
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddMvc();
             services.AddTransient(typeof(LoginService));
@@ -35,8 +37,9 @@ namespace SaadiaInventorySystem
             services.AddTransient(typeof(QuotationService));
             services.AddTransient(typeof(OrderService));
             services.AddTransient(typeof(InvoiceService));
-
-            services.AddScoped(typeof(AppDbContext));
+            services.AddDbContext<AppDbContext>(
+                options => options.UseMySql(constring));
+            //services.AddScoped(typeof(AppDbContext));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

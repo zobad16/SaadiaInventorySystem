@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SaadiaInventorySystem.Model;
 using System;
@@ -8,6 +9,16 @@ namespace SaadiaInventorySystem.Data
 {
     public class AppDbContext : DbContext
     {
+        private readonly ILogger<AppDbContext> _logger;
+        private readonly string _connectionString;
+        private readonly IConfiguration _configuration;
+        public AppDbContext(IConfiguration configuration,
+                ILogger<AppDbContext> logger, DbContextOptions<AppDbContext> options) : base(options)
+        {
+            _logger = logger;
+            _configuration = configuration;
+        }
+
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Customer> Customers { get; set; }
@@ -19,20 +30,11 @@ namespace SaadiaInventorySystem.Data
         public DbSet<Quotation> Quotations { get; set; }
         //public DbSet<QuotationItem> QuotationItems { get; set; }
         
-        public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder =>
-        {
-            builder
-                .AddFilter((category, level) =>
-                    category == DbLoggerCategory.Database.Command.Name
-                    && level == LogLevel.Information)
-                .AddConsole();
-        });
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseLoggerFactory(MyLoggerFactory);
-            optionsBuilder.UseMySql("server=localhost;database=saadiatrading;user=root;password=Gtlfx125;TreatTinyAsBoolean=true");
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    //optionsBuilder.UseLoggerFactory(logger);
+        //    optionsBuilder.UseMySql(optionsBuilder.);
+        //}
         protected override void OnModelCreating(ModelBuilder modelBuilder) 
         {
             modelBuilder.Entity<Inventory>()
