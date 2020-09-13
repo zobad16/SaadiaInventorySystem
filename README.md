@@ -18,7 +18,7 @@ Once the App is opened, Right click on the application name from the Solution Ex
 Inside this file, change the Connection String to the following to connect to database:
 
 "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=TaskDB;Trusted_Connection=True;MultipleActiveResultSets=true"
+    "DefaultConnection": "server=localhost;database=saadiatrading;user=root;password=;TreatTinyAsBoolean=true"
 }
 
 Click Tools -> NuGet Package Manager -> Package Manager Console then run the following commands in the console.
