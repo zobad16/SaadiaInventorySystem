@@ -783,24 +783,36 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Cells["D5"].Value = "TAX INVOICE: ";
                 workSheet.Cells["D5:E5"].Merge = true;
 
+                if (SelectedInvoice.Customer == null)
+                    SelectedInvoice.Customer = new Customer();
+                if (SelectedInvoice.Order == null)
+                    SelectedInvoice.Order = new Order();
+                if (SelectedInvoice.Order.OrderItems == null)
+                    SelectedInvoice.Order.OrderItems = new ObservableCollection<OrderItem>();
+
+                string companyName = SelectedInvoice.Customer.CompanyName;
+                companyName = !String.IsNullOrEmpty(companyName) ? companyName.ToUpper() : "";
+                string address = (!string.IsNullOrEmpty(SelectedInvoice.Customer.Address)) ? SelectedInvoice.Customer.Address : "";
+                DateTime date = SelectedInvoice.DateCreated;
+                string _sdate = (date != null) ? date.ToShortDateString():"";
+                string trn = (!string.IsNullOrEmpty(SelectedInvoice.Customer.Trn)) ? SelectedInvoice.Customer.Trn : "";
 
                 workSheet.Cells["A6"].Value = "TRN: ";
                 workSheet.Cells["A6"].Style.Font.Bold = true;
-                workSheet.Cells["B6"].Value = $"{SelectedInvoice.Customer.Trn }";
+                workSheet.Cells["B6"].Value = $"{trn}";
                 workSheet.Cells["D6"].Value = "DATE: ";
                 workSheet.Cells["D6"].Style.Font.Bold = true;
-                workSheet.Cells["E6"].Value = $"{SelectedInvoice.DateCreated.ToShortDateString()}";
-
+                workSheet.Cells["E6"].Value = $"{_sdate}";
                 workSheet.Cells["A7"].Value = "Company: ";
                 workSheet.Cells["A7"].Style.Font.Bold = true;
-                workSheet.Cells["B7"].Value = $"{SelectedInvoice.Customer.CompanyName.ToUpper()}";
+                workSheet.Cells["B7"].Value = $"{companyName}";
                 workSheet.Cells["D7"].Value = "Invoice No: ";
                 workSheet.Cells["D7"].Style.Font.Bold = true;
                 workSheet.Cells["E7"].Value = $"{SelectedInvoice.Id}";
 
                 workSheet.Cells["A8"].Value = "Address: ";
                 workSheet.Cells["A8"].Style.Font.Bold = true;
-                workSheet.Cells["B8"].Value = $"{SelectedInvoice.Customer.Address.ToUpper()}";
+                workSheet.Cells["B8"].Value = $"{address}";
                 workSheet.Cells["D8"].Value = "Quotation No: ";
                 workSheet.Cells["D8"].Style.Font.Bold = true;
                 string qno = "-";

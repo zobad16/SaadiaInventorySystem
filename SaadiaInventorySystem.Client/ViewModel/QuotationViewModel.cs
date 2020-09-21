@@ -29,11 +29,16 @@ namespace SaadiaInventorySystem.Client.ViewModel
             SelectedBulkQuotation = new Quotation();
             AddWindowCommand = new RelayCommand(i => OpenAddWindow(), i => true);
             RemovePartCommand = new RelayCommand(i=> RemovePart(), i =>  RemoveSelectedOrderItem != null );
+            RemovePartImportCommand = new RelayCommand(i=> RemoveImportPart(), i => SelectedImportOrderItem != null );
             EditWindowCommand = new RelayCommand(i => OpenEditWindow(), i => SelectedQuotation != null);
             OpenAddCustomerWindowCommand = new RelayCommand(i => OpenAddCustomerWindow(), i => true);
+            //OpenAddCustomerImportWindowCommand = new RelayCommand(i => OpenAddCustomerWindow(), i => true);
             OpenAddPartsWindowCommand = new RelayCommand(i => OpenAddPartsWindow(), i => true);
+            AddImportPartOpenCommand = new RelayCommand(i => OpenImportAddPartsWindow(), i => true);
+            EditImportPartOpenCommand = new RelayCommand(i => OpenImportEditWindow(), (i )=> SelectedImportOrderItem != null);
             CancelCommand = new RelayCommand<IClosable>(i => Cancel(i), i => true);
             SaveCommand = new RelayCommand<IClosable>(i => Save(i), i => true);
+            SaveImportCommand = new RelayCommand<IClosable>(i => SaveImport(i), i => true);
             BulkSaveCommand = new RelayCommand<IClosable>(i => BulkSave(i), i => true);
             ActivateCommand = new RelayCommand(i => ActivateAsync(), (a) => SelectedQuotation != null);
             DisableCommand = new RelayCommand(i => DisableAsync(), (a) => SelectedQuotation != null);
@@ -46,6 +51,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             SelectCustomerCommand = new RelayCommand<IClosable>(i => SelectCustomersCommand(i),i=> true);
             SelectPartCommand = new RelayCommand<IClosable>(i => SelectPartsCommand(i),i=> true);
             AddOrderItemCommand = new RelayCommand<IClosable>(i => AddOrderItem(i), i => true);
+            AddOrderItemImportCommand = new RelayCommand<IClosable>(i => AddOrderItemsImport(i), i => true);
             DuplicateCommand = new RelayCommand(i => SetDuplicateSet(i), i => true);
             isEdit = false;
             isAdmin = false;
@@ -87,6 +93,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         
         private ICommand _addWindowCommand;
         private ICommand _removePartCommand;
+        private ICommand _removePartImportCommand;
         private RelayCommand _nextRecordCommand;
         private RelayCommand _previousRecordCommand;
         private RelayCommand _activateCommand;
@@ -101,15 +108,20 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private RelayCommand<IClosable> _uploadCommand;
 
         private ICommand _openAddCustomerWindowCommand;
+        private ICommand _openAddCustomerImportWindowCommand;
         private ICommand _openAddPartsWindowCommand;
+        private ICommand _editImportPartOpenCommand;
+        private ICommand _addImportPartOpenCommand;
         private ICommand _editWindowCommand;
         private RelayCommand<IClosable> _cancelCommand;
         private RelayCommand<IClosable> _saveCommand;
+        private RelayCommand<IClosable> _saveImportCommand;
         private RelayCommand<IClosable> _bulkSaveCommand;
 
         private RelayCommand<IClosable> _selectCustomerCommand;
         private RelayCommand<IClosable> _selectPartCommand;
         private RelayCommand<IClosable> _addOrderItemCommand;
+        private RelayCommand<IClosable> _addOrderItemImportCommand;
         public string Name { get => _name; set { _name = value; RaisePropertyChanged(); } }
 
         public double NetTotal
@@ -139,6 +151,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         public ICommand AddWindowCommand { get => _addWindowCommand; set { _addWindowCommand = value; RaisePropertyChanged(); } }
         public ICommand RemovePartCommand { get => _removePartCommand; set { _removePartCommand = value; RaisePropertyChanged(); } }
+        public ICommand RemovePartImportCommand { get => _removePartImportCommand; set { _removePartImportCommand = value; RaisePropertyChanged(); } }
         public RelayCommand NextRecordCommand { get => _nextRecordCommand; set { _nextRecordCommand = value; RaisePropertyChanged(); } }
         public RelayCommand PreviousRecordCommand { get => _previousRecordCommand; set { _previousRecordCommand = value; RaisePropertyChanged(); } }
         public RelayCommand ActivateCommand { get => _activateCommand; set { _activateCommand = value; RaisePropertyChanged(); } }
@@ -150,15 +163,20 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public RelayCommand<IClosable> UploadCommand { get => _uploadCommand; set { _uploadCommand = value; RaisePropertyChanged(); } }
 
         public ICommand OpenAddCustomerWindowCommand { get => _openAddCustomerWindowCommand; set { _openAddCustomerWindowCommand = value; RaisePropertyChanged(); } }
-        public ICommand OpenAddPartsWindowCommand { get => _openAddPartsWindowCommand; set { _openAddPartsWindowCommand = value; RaisePropertyChanged(); } }
+        public ICommand OpenAddCustomerImportWindowCommand { get => _openAddCustomerImportWindowCommand; set { _openAddCustomerImportWindowCommand = value; RaisePropertyChanged(); } }
+        public ICommand OpenAddPartsWindowCommand { get => _addImportPartOpenCommand; set { _addImportPartOpenCommand = value; RaisePropertyChanged(); } }
+        public ICommand AddImportPartOpenCommand { get => _openAddPartsWindowCommand; set { _openAddPartsWindowCommand = value; RaisePropertyChanged(); } }
+        public ICommand EditImportPartOpenCommand { get => _editImportPartOpenCommand; set { _editImportPartOpenCommand = value; RaisePropertyChanged(); } }
         public ICommand EditWindowCommand { get => _editWindowCommand; set { _editWindowCommand = value; RaisePropertyChanged(); } }
         
         public RelayCommand<IClosable> CancelCommand { get => _cancelCommand; set { _cancelCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> SaveCommand { get => _saveCommand; set { _saveCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand<IClosable> SaveImportCommand { get => _saveImportCommand; set { _saveImportCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> BulkSaveCommand { get => _bulkSaveCommand; set { _bulkSaveCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> SelectCustomerCommand { get => _selectCustomerCommand; set { _selectCustomerCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> SelectPartCommand { get => _selectPartCommand; set { _selectPartCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> AddOrderItemCommand { get => _addOrderItemCommand; set { _addOrderItemCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand<IClosable> AddOrderItemImportCommand { get => _addOrderItemImportCommand; set { _addOrderItemImportCommand = value; RaisePropertyChanged(); } }
 
         public ObservableCollection<Customer> CustomersList { get => _customersList; set { _customersList = value; RaisePropertyChanged(); } }
         public Customer SelectedCustomer { get => _selectedCustomer; set { _selectedCustomer = value; RaisePropertyChanged(); } }
@@ -172,7 +190,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         public string FilePath { get => _filePath; set { _filePath = value; RaisePropertyChanged(); } }
 
-        public IEnumerable<object> Articles { get; private set; }
+        //public IEnumerable<object> Articles { get; private set; }
 
         private async void CancelClose(IClosable p)
         {
@@ -217,6 +235,53 @@ namespace SaadiaInventorySystem.Client.ViewModel
             await GetAll();
         }
         
+        private async void SaveImport(IClosable p)
+        {
+            //Data Checks
+            var list = await DuplicateChecks(BulkQuotations.ToList());
+            BulkQuotations = new ObservableCollection<Quotation>(list);
+            foreach (var quotes in BulkQuotations)
+            {
+                if(quotes.Order != null)
+                {
+                    if (quotes.Order.OrderItems != null)
+                    {
+                        foreach (var item in quotes.Order.OrderItems)
+                        {
+                            if (item.InventoryId > 0)
+                            {
+                                item.Inventory = null;
+                            }
+                            item.IsActive = 1;
+                            item.OrderId = quotes.OrderId;
+                        }
+                    }
+
+                }
+                if (quotes.Customer != null) {
+                    if (quotes.Customer.Id > 0)
+                    {
+                        quotes.CustomerId = quotes.Customer.Id;
+                        quotes.Customer = null;
+                    }
+                }
+                
+
+            }
+
+            if (IsIgnoreCheck)
+            {
+                BulkSave(p);
+            }
+            else if (IsUpdateCheck)
+            {
+                BulkUpdate(p);
+            }
+
+            p.Close();
+            await GetAll();
+        }
+        
 
         private async void OpenAddPartsWindow()
         {
@@ -226,7 +291,32 @@ namespace SaadiaInventorySystem.Client.ViewModel
             var window = new QuotationAddPartsView(this);
             window.ShowDialog();
         }
+        private async void OpenImportAddPartsWindow()
+        {
+            var _service = new InventoryService();
+            PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            SelectedImportOrderItem = new OrderItem() { Inventory = new Inventory()};
+            var window = new QuotationImportAddOrderItemView(this);
+            isEdit = false;
+            window.ShowDialog();
+        }
+        private async void OpenImportEditWindow()
+        {
+            var _service = new InventoryService();
+            PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            isEdit = true;
+            var window = new QuotationImportAddOrderItemView(this);
+            window.ShowDialog();
 
+        }
+        private async void OpenAddImportCustomerWindow()
+        {
+            //load customer data
+            var _service = new CustomerService();
+            CustomersList = new ObservableCollection<Customer>(await _service.CallGetAllService());
+            var window = new QuotationAddCustomerView(this);
+            window.ShowDialog();
+        }
         private async void OpenAddCustomerWindow()
         {
             //load customer data
@@ -287,10 +377,67 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
             
         }
+        private void AddOrderItemsImport(IClosable i)
+        {
+            //Add new Order Item
+            if (!isEdit)
+            {
+                if (SelectedImportOrderItem.Inventory.PartNumber != "")
+                {
+                    SelectedImportOrderItem.Inventory.IsActive = 1;
+                    SelectedImportOrderItem.CalculateTotal();
+                    if (SelectedBulkQuotation.Order.OrderItems.Count == 0)
+                    {
+                        SelectedBulkQuotation.Order.OrderItems = new ObservableCollection<OrderItem>();
+                    }
+                    SelectedBulkQuotation.Order.OrderItems.Add(new OrderItem()
+                    {
+                        Inventory = SelectedImportOrderItem.Inventory,
+                        InventoryId = SelectedImportOrderItem.Inventory.Id,
+                        OfferedPrice = SelectedImportOrderItem.OfferedPrice,
+                        Order = SelectedImportOrderItem.Order,
+                        OrderId = SelectedImportOrderItem.OrderId,
+                        OrderQty = SelectedImportOrderItem.OrderQty,
+                        Total = SelectedImportOrderItem.Total,
+                        IsActive = 1
+
+                    });
+                    SelectedBulkQuotation.CalculateNetTotal();
+
+                    i.Close();
+
+                }
+            }
+
+            //Edit Order Item
+            else
+            {
+                if (SelectedImportOrderItem.Inventory.PartNumber != "")
+                {
+                    SelectedImportOrderItem.CalculateTotal();
+                    SelectedImportOrderItem.CalculateVAT();
+                    var part = SelectedBulkQuotation.Order.OrderItems.Where(item =>
+                        (item.Inventory.PartNumber == SelectedImportOrderItem.Inventory.PartNumber)).FirstOrDefault();
+                    
+                    part = SelectedImportOrderItem;                    
+                    SelectedBulkQuotation.CalculateNetTotal();
+                    i.Close();
+                }
+            }
+            
+            
+            
+        }
         private void RemovePart()
         {
             NewQuotation.Order.OrderItems.Remove(RemoveSelectedOrderItem);
             NewQuotation.CalculateNetTotal();
+            
+        }
+        private void RemoveImportPart()
+        {
+            SelectedBulkQuotation.Order.OrderItems.Remove(SelectedImportOrderItem);
+            SelectedBulkQuotation.CalculateNetTotal();
             
         }
         
@@ -306,9 +453,22 @@ namespace SaadiaInventorySystem.Client.ViewModel
             {
                 await ReadQuotationFileExcel(FilePath);
                 var window = new QuotationImportDisplayView(this);
-                i.Close();
+                
                 //Instead of the whole of BulkQuotation use SelectedBulkQuotaion
+                if(BulkQuotations == null)
+                {
+                    return;
+                }
+                foreach (var quote in BulkQuotations)
+                {
+                    foreach(var part in quote.Order.OrderItems)
+                    {
+                        part.CalculateTotal();
+                        part.CalculateVAT();
+                    }
+                }
                 SelectedBulkQuotation = BulkQuotations[0];
+                i.Close();
                 window.ShowDialog();
 
             }
@@ -316,7 +476,19 @@ namespace SaadiaInventorySystem.Client.ViewModel
             {
                 await ReadQuotationFileExcel(FilePath);
                 var window = new QuotationImportDisplayView(this);
+                if (BulkQuotations == null)
+                {
+                    return;
+                }
                 i.Close();
+                foreach (var quote in BulkQuotations)
+                {
+                    foreach (var part in quote.Order.OrderItems)
+                    {
+                        part.CalculateTotal();
+                        part.CalculateVAT();
+                    }
+                }
                 SelectedBulkQuotation = BulkQuotations[0];
                 window.ShowDialog();
 
@@ -326,33 +498,26 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private void NextRecord()
         {
             int length = BulkQuotations.Count;
-            if(length > 0)
+            try
             {
                 int index = BulkQuotations.IndexOf(SelectedBulkQuotation);
-                if(index < length)
-                {
-                    SelectedBulkQuotation = BulkQuotations[index + 1];
-                }
-
+                SelectedBulkQuotation = BulkQuotations[index + 1];
+                
             }
-            else 
+            catch(Exception ex) 
             {
                 MessageBox.Show("No More records to display");
             }
         }
         private void PreviousRecord()
         {
-            int length = BulkQuotations.Count;
-            if(length > 0)
+            try
             {
                 int index = BulkQuotations.IndexOf(SelectedBulkQuotation);
-                if(index > 0)
-                {
-                    SelectedBulkQuotation = BulkQuotations[index - 1];
-                }
+                SelectedBulkQuotation = BulkQuotations[index - 1];
 
             }
-            else 
+            catch (Exception ex ) 
             {
                 MessageBox.Show("No More records to display");
             }
@@ -783,6 +948,27 @@ namespace SaadiaInventorySystem.Client.ViewModel
             if (BulkQuotations.Count > 0)
             {
                 if (await service.CallBulkInsert(BulkQuotations.ToList()))
+                {
+                    MessageBox.Show("Bulk Insert Success");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Nothing to insert.Records Already uptodate");
+            }
+
+            p.Close();
+            await GetAll();
+
+        }
+        private async void BulkUpdate(IClosable p)
+        {
+            //Data Checks
+            //Close the window and call the bulk insert service
+
+            if (BulkQuotations.Count > 0)
+            {
+                if (await service.CallBulkUpdate(BulkQuotations.ToList()))
                 {
                     MessageBox.Show("Bulk Insert Success");
                 }

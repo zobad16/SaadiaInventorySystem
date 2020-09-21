@@ -204,7 +204,7 @@
                  VerticalAlignment="Top"
                  VerticalContentAlignment="Center"
                  Margin="10,0,0,0"
-                 Command="{Binding AddPartImportCommand}">
+                 Command="{Binding AddImportPartOpenCommand}">
             <TextBlock Text="Add Part" 
                        TextWrapping="Wrap"/>
         </Button>
@@ -216,7 +216,7 @@
                  VerticalAlignment="Top"
                  VerticalContentAlignment="Center"
                  Margin="10,0,0,0"
-                 Command="{Binding EditPartImportCommand}">
+                 Command="{Binding EditImportPartOpenCommand}">
             <TextBlock Text="Edit Part" 
                        TextWrapping="Wrap"/>
         </Button>
@@ -374,7 +374,7 @@
                 Width="100"
                 Grid.Row="13"
                 Grid.Column="2"
-                Command="{Binding SaveCommand}"
+                Command="{Binding SaveImportCommand}"
                 CommandParameter="{Binding ElementName=_ImportQuotationWindow}"/>
         <Button Content="Cancel"
                 Width="100"                 
