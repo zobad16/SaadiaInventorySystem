@@ -38,7 +38,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             EditImportPartOpenCommand = new RelayCommand(i => OpenImportEditWindow(), (i )=> SelectedImportOrderItem != null);
             CancelCommand = new RelayCommand<IClosable>(i => Cancel(i), i => true);
             SaveCommand = new RelayCommand<IClosable>(i => Save(i), i => true);
-            SaveImportCommand = new RelayCommand<IClosable>(i => SaveImport(i), i => true);
+            SaveImportCommand = new RelayCommand<IClosable>(i => SaveImport(i), i => BulkQuotations.Count<=1);
             BulkSaveCommand = new RelayCommand<IClosable>(i => BulkSave(i), i => true);
             ActivateCommand = new RelayCommand(i => ActivateAsync(), (a) => SelectedQuotation != null);
             DisableCommand = new RelayCommand(i => DisableAsync(), (a) => SelectedQuotation != null);
@@ -46,6 +46,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             ImportCommand = new RelayCommand(i => ImportQuotation(), i=> true);
             NextRecordCommand = new RelayCommand(i => NextRecord());
             PreviousRecordCommand = new RelayCommand(i => PreviousRecord());
+            RemoveRecordCommand = new RelayCommand(i => RemoveImportRecord(), i => BulkQuotations.Count>=1);
             ExportCommand = new RelayCommand(i => ExportQuotation(), (i)=> SelectedQuotation != null);
             UploadCommand = new RelayCommand<IClosable>(i => Upload(i), i=> true);
             SelectCustomerCommand = new RelayCommand<IClosable>(i => SelectCustomersCommand(i),i=> true);
@@ -93,6 +94,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         
         private ICommand _addWindowCommand;
         private ICommand _removePartCommand;
+        private ICommand _removeRecordCommand;
         private ICommand _removePartImportCommand;
         private RelayCommand _nextRecordCommand;
         private RelayCommand _previousRecordCommand;
@@ -152,6 +154,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public ICommand AddWindowCommand { get => _addWindowCommand; set { _addWindowCommand = value; RaisePropertyChanged(); } }
         public ICommand RemovePartCommand { get => _removePartCommand; set { _removePartCommand = value; RaisePropertyChanged(); } }
         public ICommand RemovePartImportCommand { get => _removePartImportCommand; set { _removePartImportCommand = value; RaisePropertyChanged(); } }
+        public ICommand RemoveRecordCommand { get => _removeRecordCommand; set { _removeRecordCommand = value; RaisePropertyChanged(); } }
         public RelayCommand NextRecordCommand { get => _nextRecordCommand; set { _nextRecordCommand = value; RaisePropertyChanged(); } }
         public RelayCommand PreviousRecordCommand { get => _previousRecordCommand; set { _previousRecordCommand = value; RaisePropertyChanged(); } }
         public RelayCommand ActivateCommand { get => _activateCommand; set { _activateCommand = value; RaisePropertyChanged(); } }
@@ -440,6 +443,20 @@ namespace SaadiaInventorySystem.Client.ViewModel
             SelectedBulkQuotation.CalculateNetTotal();
             
         }
+        private void RemoveImportRecord()
+        {
+            if (BulkQuotations.Count > 1)
+            {
+                BulkQuotations.Remove(SelectedBulkQuotation);
+                NextRecord();
+            }
+            else if(BulkQuotations.Count == 1)
+            {
+                BulkQuotations.Remove(SelectedBulkQuotation);
+                SelectedBulkQuotation = new Quotation();
+            }
+            
+        }
         
         
         private void SelectCustomersCommand(IClosable i)
@@ -449,50 +466,60 @@ namespace SaadiaInventorySystem.Client.ViewModel
         }
         private async Task Upload(IClosable i)
         {
-            if (IsIgnoreCheck) 
+            if(FilePath.IndexOf("quotation", StringComparison.OrdinalIgnoreCase) >= 0 && !string.IsNullOrWhiteSpace(FilePath))
             {
-                await ReadQuotationFileExcel(FilePath);
-                var window = new QuotationImportDisplayView(this);
-                
-                //Instead of the whole of BulkQuotation use SelectedBulkQuotaion
-                if(BulkQuotations == null)
+                if (IsIgnoreCheck)
                 {
-                    return;
-                }
-                foreach (var quote in BulkQuotations)
-                {
-                    foreach(var part in quote.Order.OrderItems)
+                    await ReadQuotationFileExcel(FilePath);
+                    var window = new QuotationImportDisplayView(this);
+
+                    //Instead of the whole of BulkQuotation use SelectedBulkQuotaion
+                    if (BulkQuotations == null)
                     {
-                        part.CalculateTotal();
-                        part.CalculateVAT();
+                        return;
                     }
+                    foreach (var quote in BulkQuotations)
+                    {
+                        foreach (var part in quote.Order.OrderItems)
+                        {
+                            part.CalculateTotal();
+                            part.CalculateVAT();
+                        }
+                    }
+                    SelectedBulkQuotation = BulkQuotations[0];
+                    i.Close();
+                    window.ShowDialog();
+
                 }
-                SelectedBulkQuotation = BulkQuotations[0];
-                i.Close();
-                window.ShowDialog();
+                else if (IsUpdateCheck)
+                {
+                    await ReadQuotationFileExcel(FilePath);
+                    var window = new QuotationImportDisplayView(this);
+                    if (BulkQuotations == null)
+                    {
+                        return;
+                    }
+                    i.Close();
+                    foreach (var quote in BulkQuotations)
+                    {
+                        foreach (var part in quote.Order.OrderItems)
+                        {
+                            part.CalculateTotal();
+                            part.CalculateVAT();
+                        }
+                    }
+                    SelectedBulkQuotation = BulkQuotations[0];
+                    window.ShowDialog();
+
+                }
 
             }
-            else if (IsUpdateCheck) 
+            else
             {
-                await ReadQuotationFileExcel(FilePath);
-                var window = new QuotationImportDisplayView(this);
-                if (BulkQuotations == null)
-                {
-                    return;
-                }
-                i.Close();
-                foreach (var quote in BulkQuotations)
-                {
-                    foreach (var part in quote.Order.OrderItems)
-                    {
-                        part.CalculateTotal();
-                        part.CalculateVAT();
-                    }
-                }
-                SelectedBulkQuotation = BulkQuotations[0];
-                window.ShowDialog();
-
+                MessageBox.Show("Error: Invalid file path");
+                return;
             }
+            
             
         }
         private void NextRecord()
@@ -940,6 +967,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
             // The result of each spreadsheet is in result.Tables
 
         }
+
+        /// <summary>
+        /// Calls Bulk Save service and then closes the window
+        /// </summary>
+        /// <param name="p"></param>
         private async void BulkSave(IClosable p)
         {
             //Data Checks
@@ -984,9 +1016,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         }
         private async Task ReadQuotationFileExcel(string path)
         {
-            if (path.IndexOf("quotation", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                using (var stream = File.Open(path, FileMode.Open, FileAccess.Read))
+            using (var stream = File.Open(path, FileMode.Open, FileAccess.Read))
                 {
                     // Auto-detect format, supports:
                     //  - Binary Excel files (2.0-2003 format; *.xls)
@@ -1148,12 +1178,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                         //// The result of each spreadsheet is in result.Tables
                     }
                 }
-            }
-            else 
-            {
-                MessageBox.Show("Error Reading File. Make sure the file path contains quotation");
-            }
-
+            
         }
         private async Task< List<Quotation>>  DuplicateChecks(List<Quotation> quotes )
         {
