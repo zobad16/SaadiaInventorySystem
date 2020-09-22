@@ -88,6 +88,7 @@
     <Compile Include="Backend\RestClient.cs" />
     <Compile Include="Backend\RestClientHandler.cs" />
     <Compile Include="Model\Customer.cs" />
+    <Compile Include="Model\Inquiry.cs" />
     <Compile Include="Model\Inventory.cs" />
     <Compile Include="Model\Invoice.cs" />
     <Compile Include="Model\OldPart.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Model\User.cs" />
     <Compile Include="Services\CustomerService.cs" />
     <Compile Include="Services\InitializeService.cs" />
+    <Compile Include="Services\InquiryService.cs" />
     <Compile Include="Services\InventoryService.cs" />
     <Compile Include="Services\InvoiceService.cs" />
     <Compile Include="Services\LoginService.cs" />
@@ -113,6 +115,7 @@
     <Compile Include="Util\RelayCommand.cs" />
     <Compile Include="ViewModel\CustomerViewModel.cs" />
     <Compile Include="ViewModel\HomeViewModel.cs" />
+    <Compile Include="ViewModel\InquiryViewModel.cs" />
     <Compile Include="ViewModel\InventoryViewModel.cs" />
     <Compile Include="ViewModel\InvoiceViewModel.cs" />
     <Compile Include="ViewModel\IViewModel.cs" />
