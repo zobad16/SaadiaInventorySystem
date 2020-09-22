@@ -5,7 +5,7 @@ namespace SaadiaInventorySystem.Model
     public class InquiryItem
     {
         public int InquiryId { get; set; }
-        public int InventoryItem { get; set; }
+        public int InventoryId { get; set; }
         public double OfferedPrice { get; set; }
         public int OfferedQty { get; set; }
         public double Total { get; set; }

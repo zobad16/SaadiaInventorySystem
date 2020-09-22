@@ -16,7 +16,7 @@ namespace SaadiaInventorySystem.Model
         public DateTime DateCreated { get; set; }
         public DateTime DateEdited { get; set; }
         public List<InquiryItem> Items { get; set; } 
-
+        public int IsActive { get; set; }
 
     }
 }
