@@ -339,6 +339,7 @@ namespace SaadiaInventorySystem.Service
                 if (quotation != null)
                 {
                     _logger.LogDebug("Quotation found");
+                    return quotation;
                 }
                 else 
                 {

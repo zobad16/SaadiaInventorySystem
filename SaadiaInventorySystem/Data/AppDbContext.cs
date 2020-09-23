@@ -10,7 +10,6 @@ namespace SaadiaInventorySystem.Data
     public class AppDbContext : DbContext
     {
         private readonly ILogger<AppDbContext> _logger;
-        private readonly string _connectionString;
         private readonly IConfiguration _configuration;
         public AppDbContext(IConfiguration configuration,
                 ILogger<AppDbContext> logger, DbContextOptions<AppDbContext> options) : base(options)
@@ -29,14 +28,20 @@ namespace SaadiaInventorySystem.Data
         //public DbSet<InvoiceItem> InvoiceItems { get; set; }
         public DbSet<Quotation> Quotations { get; set; }
         //public DbSet<QuotationItem> QuotationItems { get; set; }
+        public DbSet<Inquiry> Inquirys { get; set; }
+        public DbSet<InquiryItem> InquiryItems { get; set; }
         
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    //optionsBuilder.UseLoggerFactory(logger);
-        //    optionsBuilder.UseMySql(optionsBuilder.);
-        //}
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder) 
         {
+            modelBuilder.Entity<Inquiry>()
+                .HasMany<InquiryItem>(i => i.Items)
+                .WithOne(q => q.Inquiry)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<InquiryItem>()
+                .HasKey(a => new { a.InquiryId, a.InventoryId });
+            
+                
             modelBuilder.Entity<Inventory>()
                 .HasOne(o => o.OldPart)
                 .WithOne()
@@ -114,6 +119,8 @@ namespace SaadiaInventorySystem.Data
             SeedDataOrderItems(modelBuilder);
             SeedDataQuotation(modelBuilder);
             SeedDataInvoice(modelBuilder);
+            SeedDataInquiry(modelBuilder);
+            SeedDataInquiryItems(modelBuilder);
             //Seed Master data.
 
         }
@@ -462,6 +469,49 @@ namespace SaadiaInventorySystem.Data
             });
 
 
+        }
+        public void SeedDataInquiry(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Inquiry>().HasData(new List<Inquiry>() 
+            {
+                new Inquiry(){ 
+                    Id = 1,
+                    Attn="",
+                    Ms ="",
+                    IsActive = 1,
+                    InquiryNumber="REQ-01-2020",
+                    Discount = 0,
+                    DateIssued = DateTime.Now,
+                    DateCreated = DateTime.Now,
+                    DateUpdated = DateTime.Now
+                }
+            });
+        }
+        public void SeedDataInquiryItems(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<InquiryItem>().HasData(new List<InquiryItem>()
+            {
+                new InquiryItem()
+                {
+                    InquiryId = 1,
+                    InventoryId=1,
+                    OfferedQty = 3,
+                    IsActive = 1,
+                    OfferedPrice= 200,
+                    Total = 600.00,
+
+                },
+                new InquiryItem()
+                {
+                    InquiryId = 1,
+                    InventoryId=2,
+                    IsActive = 1,
+                    OfferedPrice= 200,
+                    OfferedQty = 3,
+                    Total = 600.00,
+
+                }
+            });
         }
 
 

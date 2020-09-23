@@ -14,7 +14,7 @@ namespace SaadiaInventorySystem.Model
         public double Discount { get; set; }
         public DateTime DateIssued { get; set; }
         public DateTime DateCreated { get; set; }
-        public DateTime DateEdited { get; set; }
+        public DateTime DateUpdated { get; set; }
         public List<InquiryItem> Items { get; set; } 
         public int IsActive { get; set; }
 

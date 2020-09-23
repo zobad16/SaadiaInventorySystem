@@ -13,6 +13,14 @@
     <Compile Remove="Migrations\20200614205054_Initial_Migration.Designer.cs" />
     <Compile Remove="Migrations\20200617081701_rolechanges.cs" />
     <Compile Remove="Migrations\20200617081701_rolechanges.Designer.cs" />
+    <Compile Remove="Migrations\20200923172537_Inquiry.cs" />
+    <Compile Remove="Migrations\20200923172537_Inquiry.Designer.cs" />
+    <Compile Remove="Migrations\20200923173019_Inquiry.cs" />
+    <Compile Remove="Migrations\20200923173019_Inquiry.Designer.cs" />
+    <Compile Remove="Migrations\20200923173933_Inquiry.cs" />
+    <Compile Remove="Migrations\20200923173933_Inquiry.Designer.cs" />
+    <Compile Remove="Migrations\20200923174616_Inquiry.cs" />
+    <Compile Remove="Migrations\20200923174616_Inquiry.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
