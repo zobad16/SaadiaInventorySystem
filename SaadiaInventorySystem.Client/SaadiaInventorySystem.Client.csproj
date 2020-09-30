@@ -128,6 +128,9 @@
     <Compile Include="View\AddEditCustomerView.xaml.cs">
       <DependentUpon>AddEditCustomerView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\AddInquiryView.xaml.cs">
+      <DependentUpon>AddInquiryView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\AddInventoryView.xaml.cs">
       <DependentUpon>AddInventoryView.xaml</DependentUpon>
     </Compile>
@@ -163,6 +166,9 @@
     </Compile>
     <Compile Include="View\ImportFileView.xaml.cs">
       <DependentUpon>ImportFileView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\InquiryView.xaml.cs">
+      <DependentUpon>InquiryView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\InventoryView.xaml.cs">
       <DependentUpon>InventoryView.xaml</DependentUpon>
@@ -220,6 +226,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\AddInquiryView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\AddInventoryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -265,6 +275,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ImportFileView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InquiryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

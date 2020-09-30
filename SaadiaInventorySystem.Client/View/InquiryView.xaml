@@ -1,0 +1,177 @@
+﻿<UserControl x:Class="SaadiaInventorySystem.Client.View.InquiryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SaadiaInventorySystem.Client.View"
+             mc:Ignorable="d" 
+              d:DesignHeight="480" d:DesignWidth="800"
+             FontFamily="Calibri"
+             FontSize="12">
+    <Grid>
+        <StackPanel Orientation="Vertical" Margin="10,10">
+            <StackPanel Orientation="Horizontal" 
+                        HorizontalAlignment="Right" 
+                        Margin="0,5,0,10"
+                        >
+                <Button Content="Import"
+                        Width="60"
+                        Height="20"
+                        Margin="5,0,5,0"
+                        Command="{Binding ImportCommand}"
+                        />
+                <local:ButtonControlsView/>
+                <Button Content="Disable"
+                        Width="100"
+                        Height="20"
+                        Margin="5,0,5,0"
+                        Command="{Binding DisableCommand}"
+                        >
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAdmin}" Value="true">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsAdmin}" Value="false">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="Activate"
+                        Width="100"
+                        Height="20"
+                        Margin="0,0,5,0"
+                        Command="{Binding ActivateCommand}"
+                        >
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAdmin}" Value="true">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsAdmin}" Value="false">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+            <DataGrid ItemsSource="{Binding Inquirys}" SelectedItem="{Binding SelectedInquiry}"    
+                  AutoGenerateColumns="False" 
+                  Grid.Row="0"  IsReadOnly="True"
+                  ColumnWidth="*"
+                  Height="200"
+                  VerticalScrollBarVisibility="Auto"    
+                  HorizontalScrollBarVisibility="Auto"    
+                  >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Id"
+                                    Binding="{Binding Id}" />
+                    <DataGridTextColumn Header="M/S"
+                                    Binding="{Binding Ms}" />
+                    <DataGridTextColumn Header="ATTN"
+                                    Binding="{Binding Attn}" />
+                    <DataGridTextColumn Header="Inquiry#"
+                                    Binding="{Binding InquiryNumber}" />
+                    <DataGridTextColumn Header="Discount"
+                                    Binding="{Binding Discount}" />
+                    <DataGridTextColumn Header="Total"
+                                    Binding="{Binding NetTotal}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <DataGrid ItemsSource="{Binding SelectedInquiry.Items.Inventory}" SelectedItem="{Binding SelectedItem}"    
+                  AutoGenerateColumns="False" 
+                  Grid.Row="0"  IsReadOnly="True"
+                  ColumnWidth="*"
+                  Height="200"
+                  Margin="0,5"    
+                  VerticalScrollBarVisibility="Auto" 
+                 >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Part Number"
+                                    Binding="{Binding Inventory.PartNumber}" />
+                    <DataGridTextColumn Header="Description"
+                                    Binding="{Binding Inventory.Description}" />
+                    <DataGridTextColumn Header="Offered Quantity"
+                                    Binding="{Binding OrderQty}" />
+                    <DataGridTextColumn Header="ActualPrice"
+                                    Binding="{Binding Inventory.UnitPrice}" />
+                    <DataGridTextColumn Header="Offered Price"
+                                    Binding="{Binding OfferedPrice}" />
+                    <DataGridTextColumn Header="VAT"
+                                    Binding="{Binding Vat}" />
+                    <DataGridTextColumn Header="Total Price"
+                                    Binding="{Binding Total}" />
+                </DataGrid.Columns>
+            </DataGrid>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                <TextBlock
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="Total: "
+                    Width="50"/>
+                <TextBlock/>
+                <TextBox
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="{Binding SelectedInquiry.TotalPrice}"
+                    Width="150"
+                    BorderThickness="0"
+                    IsEnabled="False"/>
+                <TextBlock/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                <TextBlock
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="VAT %: "
+                    Width="50"/>
+                <TextBlock/>
+                <TextBox
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="{Binding SelectedQuotation.VAT}"
+                    Width="150"
+                    BorderThickness="0"
+                    IsEnabled="False"/>
+                <TextBlock/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                <TextBlock
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="Discount %: "
+                    Width="80"/>
+                <TextBlock/>
+                <TextBox
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="{Binding SelectedQuotation.OfferedDiscount}"
+                    Width="150"
+                    BorderThickness="0"
+                    IsEnabled="False"/>
+                <TextBlock/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                <TextBlock
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="Net Total: "
+                    Width="50"/>
+                <TextBlock/>
+                <TextBox
+                    Background="GhostWhite"
+                    FontWeight="Bold"
+                    Text="{Binding SelectedQuotation.NetTotal}"
+                    Width="150"
+                    BorderThickness="0"
+                    IsEnabled="False"/>
+                <TextBlock/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>
