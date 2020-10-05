@@ -24,7 +24,7 @@ namespace SaadiaInventorySystem.Controllers
             try
             {
                 _logger.LogDebug("Fetching Inquiries");
-                var inquiry = await _inquiryService.GetAll();
+                var inquiry = _inquiryService.GetAll();
                 if (inquiry != null)
                 {
                     _logger.LogDebug("Inquiries Found. Returning fetched Inquiries.");

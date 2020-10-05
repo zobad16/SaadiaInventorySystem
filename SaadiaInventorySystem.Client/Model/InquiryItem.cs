@@ -4,7 +4,7 @@ namespace SaadiaInventorySystem.Client.Model
     public class InquiryItem : BaseViewModel
     {
         private int _inquiryId;
-        private int _inventoryItem;
+        private int _inventoryId;
         private double _offeredPrice;
         private int _offeredQty;
         private double _total;
@@ -13,7 +13,7 @@ namespace SaadiaInventorySystem.Client.Model
         private Inventory _inventory;
 
         public int InquiryId { get => _inquiryId; set { _inquiryId = value; RaisePropertyChanged(); } }
-        public int InventoryItem { get => _inventoryItem; set { _inventoryItem = value; RaisePropertyChanged(); } }
+        public int InventoryId { get => _inventoryId; set { _inventoryId = value; RaisePropertyChanged(); } }
         public double OfferedPrice { get => _offeredPrice; set { _offeredPrice = value; RaisePropertyChanged();} }
         public int OfferedQty { get => _offeredQty; set { _offeredQty = value; RaisePropertyChanged(); } }
         public double Total { get => _total; set { _total = value; RaisePropertyChanged(); } }

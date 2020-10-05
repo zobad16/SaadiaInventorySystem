@@ -37,7 +37,7 @@ namespace SaadiaInventorySystem
             services.AddTransient(typeof(QuotationService));
             services.AddTransient(typeof(OrderService));
             services.AddTransient(typeof(InvoiceService));
-            services.AddTransient<IInquiryService,TestInquiryService>();
+            services.AddTransient<IInquiryService,InquiryService>();
             services.AddDbContext<AppDbContext>(
                 options => options.UseMySql(constring));
         }

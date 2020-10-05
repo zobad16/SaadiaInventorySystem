@@ -1,8 +1,12 @@
-﻿using SaadiaInventorySystem.Client.Backend;
+﻿using Newtonsoft.Json;
+using SaadiaInventorySystem.Client.Backend;
 using SaadiaInventorySystem.Client.Model;
+using SaadiaInventorySystem.Client.Util;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+
 
 namespace SaadiaInventorySystem.Client.Services
 {
@@ -51,6 +55,11 @@ namespace SaadiaInventorySystem.Client.Services
             }
         }
 
+        internal Task CallGetService(object id)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Inquiry> CallGetService(int id)
         {
             using (var client = GetClient())
@@ -71,7 +80,7 @@ namespace SaadiaInventorySystem.Client.Services
         {
             using (var client = GetClient())
             {
-                HttpResponseMessage response = await client.GetAsync("api/inquiry/inquirys");
+                HttpResponseMessage response = await client.GetAsync("api/inquiry/inquiry");
                 List<Inquiry> data = new List<Inquiry>();
                 HttpContent result = response.Content;
                 if (response.IsSuccessStatusCode)
@@ -85,19 +94,38 @@ namespace SaadiaInventorySystem.Client.Services
         }
         public async Task<List<Inquiry>> CallAdminGetAllService()
         {
-            using (var client = GetClient())
+            List<Inquiry> data = new List<Inquiry>();
+
+            try
             {
-                HttpResponseMessage response = await client.GetAsync("api/inquiry/inquirys/admin");
-                List<Inquiry> data = new List<Inquiry>();
-                HttpContent result = response.Content;
-                if (response.IsSuccessStatusCode)
+                using (var client = GetClient())
                 {
-                    Task<List<Inquiry>> responseData = result.ReadAsAsync<List<Inquiry>>();
-                    data = responseData.Result;
+                    HttpResponseMessage response = await client.GetAsync("api/inquiry/inquiry/admin");
+                    HttpContent result = response.Content;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        //var resString = result.ReadAsStringAsync();
+                        var responseData = result.ReadAsAsync<Inquiry[]>();
+                        string responseBody = response.Content.ReadAsStringAsync().Result;
+
+                        var inquiry = JsonConvert.DeserializeObject<List<Inquiry>>(responseBody);
+                        var items = responseData.Result;
+                        foreach (var item in items)
+                        {
+                            data.Add(item);
+                        }
+                        return data;
+                    }
                     return data;
                 }
+
+            }
+            catch (AggregateException ex)
+            {
+
                 return data;
             }
+            
         }
         public async Task<bool> CallUpdateService(Inquiry inquiry)
         {

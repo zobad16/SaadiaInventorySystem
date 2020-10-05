@@ -11,6 +11,8 @@ namespace SaadiaInventorySystem.Model
         public string Ms { get; set; }
         public string Attn { get; set; }
         public string InquiryNumber { get; set; }
+        public string Message { get; set; }
+        public string Note { get; set; }
         public double Discount { get; set; }
         public DateTime DateIssued { get; set; }
         public DateTime DateCreated { get; set; }

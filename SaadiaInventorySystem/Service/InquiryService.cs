@@ -196,7 +196,7 @@ namespace SaadiaInventorySystem.Service
             }
         }
 
-        public async Task<List<Inquiry>> GetAll()
+        public List<Inquiry> GetAll()
         {
             try
             {
@@ -218,7 +218,7 @@ namespace SaadiaInventorySystem.Service
             }
         }
 
-        public async Task<List<Inquiry>> AdminGetAll()
+        public List<Inquiry> AdminGetAll()
         {
             try
             {

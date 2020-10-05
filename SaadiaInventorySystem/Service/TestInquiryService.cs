@@ -197,5 +197,15 @@ namespace SaadiaInventorySystem.Service
             }
             catch { return false; }
         }
+
+        List<Inquiry> IInquiryService.GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        List<Inquiry> IInquiryService.AdminGetAll()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

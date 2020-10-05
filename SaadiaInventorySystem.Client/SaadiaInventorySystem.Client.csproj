@@ -111,6 +111,7 @@
     <Compile Include="Util\AppProperties.cs" />
     <Compile Include="Util\BaseResponse.cs" />
     <Compile Include="Util\BaseViewModel.cs" />
+    <Compile Include="Util\ByteConverter.cs" />
     <Compile Include="Util\ExceptionEntensions.cs" />
     <Compile Include="Util\IClosable.cs" />
     <Compile Include="Util\RelayCommand.cs" />
@@ -166,6 +167,9 @@
     </Compile>
     <Compile Include="View\ImportFileView.xaml.cs">
       <DependentUpon>ImportFileView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\InquiryAddPartsView.xaml.cs">
+      <DependentUpon>InquiryAddPartsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\InquiryView.xaml.cs">
       <DependentUpon>InquiryView.xaml</DependentUpon>
@@ -275,6 +279,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ImportFileView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InquiryAddPartsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

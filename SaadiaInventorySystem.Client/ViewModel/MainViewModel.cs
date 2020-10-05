@@ -127,6 +127,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 if (name == "Role") { PageViewModels.Remove(vm); }
                 if (name == "Quotation") { PageViewModels.Remove(vm); }
                 if (name == "Invoice") { PageViewModels.Remove(vm); }
+                if (name == "Inquiry") { PageViewModels.Remove(vm); }
             }
             
             if (AppProperties.RoleName == AppProperties.ROLE_ADMIN)
@@ -138,6 +139,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 PageViewModels.Add(new RoleViewModel());
                 PageViewModels.Add(new QuotationViewModel());
                 PageViewModels.Add(new InvoiceViewModel());
+                PageViewModels.Add(new InquiryViewModel());
                 // Set starting page
                 CurrentPageViewModel = PageViewModels[1];
                 CurrentPageViewModel.Activate();
@@ -149,6 +151,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 PageViewModels.Add(new InventoryViewModel());
                 PageViewModels.Add(new QuotationViewModel());
                 PageViewModels.Add(new InvoiceViewModel());
+                PageViewModels.Add(new InquiryViewModel());
                 // Set starting page
                 CurrentPageViewModel = PageViewModels[0];
                 CurrentPageViewModel.Activate();

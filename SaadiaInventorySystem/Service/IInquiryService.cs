@@ -14,8 +14,8 @@ namespace SaadiaInventorySystem.Service
         Task<bool> UpdateAsync(Inquiry inquiry);
         Task<bool> ActivateAsync(int id);
         Task<Inquiry> Get(int id);
-        Task<List<Inquiry>> GetAll();
-        Task<List<Inquiry>> AdminGetAll();
+        List<Inquiry> GetAll();
+        List<Inquiry> AdminGetAll();
         Task<bool> DeactivateAsync(int id);
         Task<bool> DeleteAsync(int id);
         Task<bool> AdminDeleteAsync(int id);
