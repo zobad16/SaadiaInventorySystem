@@ -69,7 +69,6 @@
                      Grid.Row="1"
                      HorizontalAlignment="Stretch"
                      Height="25"
-                         
                      Margin="10,0,0,0"
                      VerticalAlignment="Center"
                      VerticalContentAlignment="Center"/>
@@ -161,12 +160,12 @@
                          Margin="10,0,0,0"
                          VerticalAlignment="Center"
                          VerticalContentAlignment="Center"/>
-                <TextBlock Text="Order Qty"
+                <TextBlock Text="Offered Qty"
                            Grid.Column="3"
                            Grid.Row="4"
                            VerticalAlignment="Center"
                            Margin="10,0,0,0"/>
-                <TextBox Text="{Binding SelectedItem.OrderQty}"
+                <TextBox Text="{Binding SelectedItem.OfferedQty}"
                          Grid.Column="4"
                          Grid.Row="4"
                          HorizontalAlignment="Left"
@@ -180,7 +179,7 @@
                 <Button Content="Add"
                         Width="100"
                         Margin="5,5"
-                        Command="{Binding AddOrderItemCommand}"
+                        Command="{Binding AddInquiryItemCommand}"
                         CommandParameter="{Binding ElementName=_inquiryAddPartsView}"/>
                 <Button Content="Clear"
                         Width="100"

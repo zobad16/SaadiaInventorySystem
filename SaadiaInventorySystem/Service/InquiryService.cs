@@ -102,10 +102,18 @@ namespace SaadiaInventorySystem.Service
                     _logger.LogDebug("Update operation failed. Inquiry not found");
                     return false;
                 }
-                data.Id = inquiry.Id;
+                inquiry.InquiryNumber = data.InquiryNumber;
+                inquiry.Attn = data.Attn;
+                inquiry.IsActive = data.IsActive;
+                inquiry.Items = data.Items;
+                inquiry.Message = data.Message;
+                inquiry.Ms = data.Ms;
+                inquiry.Note = data.Note;
+                inquiry.Discount = data.Discount;
+                inquiry.Vat = data.Vat;
+                inquiry.VatPercent = data.VatPercent;
                 data.DateUpdated = DateTime.Now;
-                inquiry = data;
-
+                
                 int results = await db.SaveChangesAsync();
                 bool success = results > 0;
                 if (success)

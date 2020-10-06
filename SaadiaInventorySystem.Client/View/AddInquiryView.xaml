@@ -64,7 +64,7 @@
             <TextBlock Text="Add Parts" 
                        TextWrapping="Wrap"/>
         </Button>
-        <Button  Height="40"                 
+        <!--<Button  Height="40"                 
                  HorizontalAlignment="Stretch"
                  Grid.Column="5"
                  Grid.Row="4"
@@ -74,11 +74,11 @@
                  Command="{Binding OpenEditPartsWindowCommand}">
             <TextBlock Text="Edit Parts" 
                        TextWrapping="Wrap"/>
-        </Button>
+        </Button>-->
         <Button  Height="40"                 
                  HorizontalAlignment="Stretch"
                  Grid.Column="5"
-                 Grid.Row="5"
+                 Grid.Row="4"
                  Grid.RowSpan="2"
                  VerticalAlignment="Top"
                  VerticalContentAlignment="Center"
@@ -94,8 +94,8 @@
                     Grid.Column="1" 
                     Grid.ColumnSpan="4"
                     Grid.RowSpan="1">
-            <TextBlock Text="Order Items:" Margin="10,0"/>
-            <DataGrid ItemsSource="{Binding NewInquiry.Items}" SelectedItem="{Binding RemoveSelectedOrderItem}"    
+            <TextBlock Text="Inquiry Items:" Margin="10,0"/>
+            <DataGrid ItemsSource="{Binding NewInquiry.Items}" SelectedItem="{Binding RemoveSelectedItem}"    
                   AutoGenerateColumns="False" 
                   IsReadOnly="True"
                   Margin="0,4"
@@ -114,8 +114,8 @@
                                     Binding="{Binding Inventory.Description}" />
                     <DataGridTextColumn Header="Location"
                                     Binding="{Binding Inventory.Location}" />
-                    <DataGridTextColumn Header="Order Quantity"
-                                    Binding="{Binding OrderQty}" />
+                    <DataGridTextColumn Header="Offered Quantity"
+                                    Binding="{Binding OfferedQty}" />
                     <DataGridTextColumn Header="Unit Price"
                                     Binding="{Binding Inventory.UnitPrice}" />
                     <DataGridTextColumn Header="Offered Price"
@@ -131,7 +131,7 @@
         <TextBlock Text="Discount" Margin="10,0,0,0"
                  Grid.Row="4"
                  Grid.Column="1"/>
-        <TextBox Text="{Binding NewInquiry.OfferedDiscount}" 
+        <TextBox Text="{Binding NewInquiry.Discount}" 
                  Grid.Row="4"
                  Grid.Column="2"
                  HorizontalAlignment="Stretch"
@@ -141,7 +141,7 @@
         <TextBlock Text="Total" Margin="10,0,0,0"
                  Grid.Row="4"
                  Grid.Column="3"/>
-        <TextBox Text="{Binding NewInquiry.Order.TotalPrice}" 
+        <TextBox Text="{Binding NewInquiry.Total}" 
                  Grid.Row="4"
                  Grid.Column="4"
                  HorizontalAlignment="Stretch" 
@@ -152,7 +152,7 @@
         <TextBlock Text="VAT" Margin="10,0,0,0"
                  Grid.Row="5"
                  Grid.Column="1"/>
-        <TextBox Text="{Binding NewInquiry.VAT}" 
+        <TextBox Text="{Binding NewInquiry.VatPercent}" 
                  Grid.Row="5"
                  Grid.Column="2"
                  HorizontalAlignment="Stretch"
@@ -172,7 +172,7 @@
         <TextBlock Text="M/S" Margin="10,0,0,0"
                  Grid.Row="6"
                  Grid.Column="1"/>
-        <TextBox Text="{Binding NewInquiry.MS}"
+        <TextBox Text="{Binding NewInquiry.Ms}"
                  Grid.Row="6"
                  Grid.Column="2"
                  HorizontalAlignment="Stretch"

@@ -230,7 +230,7 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest();
             }
         }
-        [HttpPost("deactivate")]
+        [HttpPost("disable")]
         public async Task<IActionResult> DeactivateInquiryAsync([FromBody] int id)
         {
             try
