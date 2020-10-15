@@ -75,12 +75,134 @@ namespace SaadiaInventorySystem.Service
 
         public async Task<bool> BulkAddAsync(List<Inquiry> inquiry)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _logger.LogDebug("Bulk Inserting Inquirys");
+                using (var transaction = db.Database.BeginTransaction())
+                {
+                    foreach (var item in inquiry)
+                    {
+                        item.IsActive = 1;
+                        item.DateCreated = DateTime.Now;
+                        item.DateUpdated = DateTime.Now;
+
+                        foreach (var part in item.Items)
+                        {
+                            if (part.Inventory != null)
+                            {
+                                part.Inventory.IsActive = 1;
+                                part.Inventory.DateCreated = DateTime.Now;
+                                part.Inventory.DateUpdate = DateTime.Now;
+                            }
+                        }
+
+                    }
+                    db.Inquirys.AddRange(inquiry);
+                    db.SaveChanges();
+                    await transaction.CommitAsync();
+                    return true;
+                }    /*foreach (var item in inquiry)
+                    {
+                        item.IsActive = 1;
+                        item.DateCreated = DateTime.Now;
+                        item.DateUpdated = DateTime.Now;
+                        foreach (var part in item.Items)
+                        {
+                            if (item.Id == 0)
+                            {
+                                part.Inquiry = item;
+                            }
+                            if (part.Inventory != null)
+                            {
+                                part.Inventory.DateCreated = DateTime.Now;
+                                part.Inventory.IsActive = 1;
+                            }
+                        }
+                    }
+                    await db.Inquirys.AddRangeAsync(inquiry);
+                    int results = await db.SaveChangesAsync();
+                    bool success = results > 0;
+                    if (success)
+                    {
+                        _logger.LogDebug("Inquiry bulk insert success. Records inserted {records}", results);
+                    }
+                    else
+                    {
+                        _logger.LogDebug("Inquiry bulk insert failed. No records were saved");
+                    }
+                    return success;
+                    */
+                }
+            catch (Exception ex)
+            {
+                _logger.LogError("Inquiry Bulk Add: Error: {exception} ", ex.Message);
+                _logger.LogError("Exception Inner exception details: {exception} ", ex.InnerException.ToString());
+                return false;
+            }
+            
         }
 
         public async Task<bool> BulkUpdateAsync(List<Inquiry> inquiry)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _logger.LogDebug("Bulk Updating inquirys");
+                using (var transaction = db.Database.BeginTransaction())
+                {
+                    foreach (var item in inquiry) {
+                        var inq = db.Inquirys
+                                    .Include(r => r.Items)
+                                    .ThenInclude(r => r.Inventory)
+                                    .Where(q => q.Id.Equals(item.Id)).FirstOrDefault();
+                        inq = item;
+                        db.SaveChanges();
+
+                    }
+
+                    await transaction.CommitAsync();
+                    return true;
+                }
+                /*
+                foreach (var item in inquiry)
+                {
+                    item.IsActive = 1;
+                    item.DateUpdated = DateTime.Now;
+                    
+
+                    foreach (var part in item.Items)
+                    {
+                        if(item.Id == 0 )
+                        {
+                            part.Inquiry = item;
+                        }
+                        if (part.Inventory != null)
+                        {
+                            part.Inventory.IsActive = 1;
+                            part.Inventory.DateUpdate = DateTime.Now;
+                        }
+                    }
+                }
+                db.Inquirys.UpdateRange(inquiry);
+                int results = await db.SaveChangesAsync();
+                bool success = results > 0;
+                if (success)
+                {
+                    _logger.LogDebug("Inquiry Bulk Insert Success. Records updated {a}", results);
+                }
+                else
+                {
+                    _logger.LogDebug("Inquiry Bulk Insert Failed. Records updated {a}", results);
+                }
+                return success;*/
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Inquiry Bulk Update: Error:{exception} ", ex.Message);
+                _logger.LogError("Inner Exception details: {a}", ex.InnerException.ToString());
+                return false;
+
+            }
         }
 
         public async Task<bool> UpdateAsync(Inquiry data)
@@ -182,7 +304,7 @@ namespace SaadiaInventorySystem.Service
             {
                 _logger.LogDebug("Fetching Inquiry with id: {id}", id);
 
-                Inquiry inquiry = db.Inquirys
+                Inquiry inquiry = db.Inquirys.AsNoTracking()
                      .Include(r => r.Items)
                     .ThenInclude(r => r.Inventory)
                      .Where(q => q.Id.Equals(id)).FirstOrDefault();
@@ -210,7 +332,7 @@ namespace SaadiaInventorySystem.Service
             {
                 _logger.LogDebug("Fetching Inquiry");
 
-                var inquiry = db.Inquirys
+                var inquiry = db.Inquirys.AsNoTracking()
                      .Include(r => r.Items)
                      .ThenInclude(r => r.Inventory)
                      .Where(q => q.IsActive == 1).ToList<Inquiry>();
@@ -232,7 +354,7 @@ namespace SaadiaInventorySystem.Service
             {
                 _logger.LogDebug("Fetching Inquiry");
 
-                var inquiry = db.Inquirys
+                var inquiry = db.Inquirys.AsNoTracking()
                      .Include(r => r.Items)
                     .ThenInclude(r => r.Inventory)
                      .ToList<Inquiry>();

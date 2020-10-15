@@ -21,6 +21,10 @@
     <Compile Remove="Migrations\20200923173933_Inquiry.Designer.cs" />
     <Compile Remove="Migrations\20200923174616_Inquiry.cs" />
     <Compile Remove="Migrations\20200923174616_Inquiry.Designer.cs" />
+    <Compile Remove="Migrations\20201015083508_InquiryItemAndInventory.cs" />
+    <Compile Remove="Migrations\20201015083508_InquiryItemAndInventory.Designer.cs" />
+    <Compile Remove="Migrations\20201015085839_InquiryItemAndInventory.cs" />
+    <Compile Remove="Migrations\20201015085839_InquiryItemAndInventory.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -3,6 +3,10 @@ namespace SaadiaInventorySystem.Client.Model
 {
     public class InquiryItem : BaseViewModel
     {
+        public InquiryItem()
+        {
+            Inventory = new Inventory();
+        }
         private int _inquiryId;
         private int _inventoryId;
         private double _offeredPrice;

@@ -39,6 +39,17 @@ namespace SaadiaInventorySystem.Data
                 .WithOne(q => q.Inquiry)
                 .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<InquiryItem>()
+                .HasKey(pk => pk.Id);
+            modelBuilder.Entity<InquiryItem>()
+                .HasOne<Inquiry>(i => i.Inquiry)
+                .WithMany(i => i.Items)
+                .HasForeignKey(fk => fk.InquiryId);
+            modelBuilder.Entity<InquiryItem>()
+                .HasOne<Inventory>(i => i.Inventory)
+                .WithMany()
+                .HasForeignKey(fk => fk.InventoryId);
+                
+            modelBuilder.Entity<InquiryItem>()
                 .HasKey(a => new { a.InquiryId, a.InventoryId });
             
                 

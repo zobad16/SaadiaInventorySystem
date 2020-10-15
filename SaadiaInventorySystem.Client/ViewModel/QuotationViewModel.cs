@@ -38,7 +38,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             EditImportPartOpenCommand = new RelayCommand(i => OpenImportEditWindow(), (i )=> SelectedImportOrderItem != null);
             CancelCommand = new RelayCommand<IClosable>(i => Cancel(i), i => true);
             SaveCommand = new RelayCommand<IClosable>(i => Save(i), i => true);
-            SaveImportCommand = new RelayCommand<IClosable>(i => SaveImport(i), i => BulkQuotations.Count<=1);
+            SaveImportCommand = new RelayCommand<IClosable>(i => SaveImport(i), i => true);
             BulkSaveCommand = new RelayCommand<IClosable>(i => BulkSave(i), i => true);
             ActivateCommand = new RelayCommand(i => ActivateAsync(), (a) => SelectedQuotation != null);
             DisableCommand = new RelayCommand(i => DisableAsync(), (a) => SelectedQuotation != null);

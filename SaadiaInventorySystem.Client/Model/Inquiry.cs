@@ -13,6 +13,25 @@ namespace SaadiaInventorySystem.Client.Model
             IsActive = 1;
             VatPercent = 8;
         }
+        public Inquiry(Inquiry i)
+        {
+            Id =i.Id;
+            Ms = i.Ms;
+            InquiryNumber = i.InquiryNumber;
+            Attn = i.Attn;
+            IsActive = 1;
+            DateCreated = i.DateCreated;
+            Message = i.Message;
+            Note = i.Note;
+            NetTotal = i.NetTotal;
+            DateIssued = i.DateIssued;
+            DateEdited = i.DateEdited;
+            Items = i.Items;
+            Discount = i.Discount;
+            Vat = i.Vat;
+            VatPercent = i.VatPercent;
+            Total = i.Total;
+        }
         private int _id;
         private string _ms;
         private string _attn;

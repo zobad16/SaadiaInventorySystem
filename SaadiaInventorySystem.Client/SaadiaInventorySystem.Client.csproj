@@ -171,6 +171,12 @@
     <Compile Include="View\InquiryAddPartsView.xaml.cs">
       <DependentUpon>InquiryAddPartsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\InquiryImportAddItemView.xaml.cs">
+      <DependentUpon>InquiryImportAddItemView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\InquiryImportDisplayView.xaml.cs">
+      <DependentUpon>InquiryImportDisplayView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\InquiryView.xaml.cs">
       <DependentUpon>InquiryView.xaml</DependentUpon>
     </Compile>
@@ -283,6 +289,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\InquiryAddPartsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InquiryImportAddItemView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InquiryImportDisplayView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -289,7 +289,7 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 _logger.LogDebug("Fetching Inventory part by ID");
-                var parts = (Inventory)dao.Inventories
+                var parts = (Inventory)dao.Inventories.AsNoTracking()
                             .Include(i => i.OldPart)
                             .Where(part => part.Id.Equals(id)).FirstOrDefault();
                 if (parts == null)
@@ -312,7 +312,7 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 _logger.LogDebug("Fetchin Inventory part by part number");
-                var parts = (Inventory)dao.Inventories
+                var parts = (Inventory)dao.Inventories.AsNoTracking()
                             .Include(i => i.OldPart)
                             .Where(part => part.PartNumber.Equals(part)).FirstOrDefault();
                 if (parts == null)
@@ -336,7 +336,7 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 _logger.LogDebug("Fetching all Inventory parts");
-                var parts = dao.Inventories.Include(inventory => inventory.OldPart).Where(i => i.IsActive == 1).ToList();
+                var parts = dao.Inventories.AsNoTracking().Include(inventory => inventory.OldPart).Where(i => i.IsActive == 1).ToList();
                 if (parts.Count < 1)
                 {
                     _logger.LogDebug("Fetch operation failed. No records found");
@@ -358,7 +358,7 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 _logger.LogDebug("Adming fetching all Inventory parts");
-                var parts = dao.Inventories.Include(inventory => inventory.OldPart).ToList();
+                var parts = dao.Inventories.AsNoTracking().Include(inventory => inventory.OldPart).ToList();
                 if (parts.Count < 1)
                 {
                     _logger.LogDebug("Fetch operation failed. No records found");

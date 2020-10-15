@@ -63,7 +63,7 @@
                   AutoGenerateColumns="False" 
                   Grid.Row="0"  IsReadOnly="True"
                   ColumnWidth="*"
-                  MinHeight="650"    
+                  Height="650"    
                   >
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID"

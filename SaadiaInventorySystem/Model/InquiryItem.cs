@@ -4,6 +4,7 @@ namespace SaadiaInventorySystem.Model
 {
     public class InquiryItem
     {
+        public int Id { get; set; }
         public int ? InquiryId { get; set; }
         public int ? InventoryId { get; set; }
         public double OfferedPrice { get; set; }

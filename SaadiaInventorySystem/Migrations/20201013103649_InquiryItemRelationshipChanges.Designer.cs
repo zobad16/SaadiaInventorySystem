@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SaadiaInventorySystem.Data;
 
 namespace SaadiaInventorySystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201013103649_InquiryItemRelationshipChanges")]
+    partial class InquiryItemRelationshipChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -136,9 +138,9 @@ namespace SaadiaInventorySystem.Migrations
                         {
                             Id = 1,
                             Attn = "",
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 55, DateTimeKind.Local).AddTicks(5664),
-                            DateIssued = new DateTime(2020, 10, 15, 12, 53, 20, 55, DateTimeKind.Local).AddTicks(5170),
-                            DateUpdated = new DateTime(2020, 10, 15, 12, 53, 20, 55, DateTimeKind.Local).AddTicks(6271),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 16, DateTimeKind.Local).AddTicks(7249),
+                            DateIssued = new DateTime(2020, 10, 13, 13, 36, 49, 16, DateTimeKind.Local).AddTicks(6724),
+                            DateUpdated = new DateTime(2020, 10, 13, 13, 36, 49, 16, DateTimeKind.Local).AddTicks(7687),
                             Discount = 0.0,
                             InquiryNumber = "REQ-01-2020",
                             IsActive = 1,
@@ -161,9 +163,6 @@ namespace SaadiaInventorySystem.Migrations
 
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
 
                     b.Property<int>("IsActive")
                         .HasColumnType("int");
@@ -190,7 +189,6 @@ namespace SaadiaInventorySystem.Migrations
                             InventoryId = 1,
                             DateAdded = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Id = 0,
                             IsActive = 1,
                             OfferedPrice = 200.0,
                             OfferedQty = 3,
@@ -202,7 +200,6 @@ namespace SaadiaInventorySystem.Migrations
                             InventoryId = 2,
                             DateAdded = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Id = 0,
                             IsActive = 1,
                             OfferedPrice = 200.0,
                             OfferedQty = 3,
@@ -228,6 +225,12 @@ namespace SaadiaInventorySystem.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<int?>("InquiryItemInquiryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("InquiryItemInventoryId")
+                        .HasColumnType("int");
+
                     b.Property<int>("IsActive")
                         .HasColumnType("int");
 
@@ -251,6 +254,8 @@ namespace SaadiaInventorySystem.Migrations
                     b.HasIndex("OldPartFK")
                         .IsUnique();
 
+                    b.HasIndex("InquiryItemInquiryId", "InquiryItemInventoryId");
+
                     b.ToTable("Inventories");
 
                     b.HasData(
@@ -258,8 +263,8 @@ namespace SaadiaInventorySystem.Migrations
                         {
                             Id = 1,
                             AvailableQty = 5,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 51, DateTimeKind.Local).AddTicks(9997),
-                            DateUpdate = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(486),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(3805),
+                            DateUpdate = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(4259),
                             Description = "OIL FILTER",
                             IsActive = 1,
                             Location = "1A1",
@@ -271,8 +276,8 @@ namespace SaadiaInventorySystem.Migrations
                         {
                             Id = 2,
                             AvailableQty = 3,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1598),
-                            DateUpdate = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1609),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5327),
+                            DateUpdate = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5340),
                             Description = "FUEL FILTER",
                             IsActive = 1,
                             Location = "1A1",
@@ -284,8 +289,8 @@ namespace SaadiaInventorySystem.Migrations
                         {
                             Id = 3,
                             AvailableQty = 2,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1626),
-                            DateUpdate = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1628),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5363),
+                            DateUpdate = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5364),
                             Description = "FUEL FILTER",
                             IsActive = 1,
                             Location = "1A1",
@@ -297,8 +302,8 @@ namespace SaadiaInventorySystem.Migrations
                         {
                             Id = 4,
                             AvailableQty = 1,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1630),
-                            DateUpdate = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1631),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5367),
+                            DateUpdate = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5368),
                             Description = "OIL FILTER",
                             IsActive = 1,
                             Location = "1A1",
@@ -310,8 +315,8 @@ namespace SaadiaInventorySystem.Migrations
                         {
                             Id = 5,
                             AvailableQty = 2,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1634),
-                            DateUpdate = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1635),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5370),
+                            DateUpdate = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5371),
                             Description = "FUEL FILTER",
                             IsActive = 1,
                             Location = "1A1",
@@ -323,8 +328,8 @@ namespace SaadiaInventorySystem.Migrations
                         {
                             Id = 6,
                             AvailableQty = 11,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1643),
-                            DateUpdate = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1644),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5381),
+                            DateUpdate = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5382),
                             Description = "OIL FILTER",
                             IsActive = 1,
                             Location = "1A1",
@@ -336,8 +341,8 @@ namespace SaadiaInventorySystem.Migrations
                         {
                             Id = 7,
                             AvailableQty = 6,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1646),
-                            DateUpdate = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1648),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5384),
+                            DateUpdate = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5385),
                             Description = "OIL FILTER",
                             IsActive = 1,
                             Location = "1A1",
@@ -349,8 +354,8 @@ namespace SaadiaInventorySystem.Migrations
                         {
                             Id = 8,
                             AvailableQty = 10,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1649),
-                            DateUpdate = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1651),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5387),
+                            DateUpdate = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5388),
                             Description = "OIL SEAL",
                             IsActive = 1,
                             Location = "1B1",
@@ -362,8 +367,8 @@ namespace SaadiaInventorySystem.Migrations
                         {
                             Id = 9,
                             AvailableQty = 4,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1652),
-                            DateUpdate = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1653),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5389),
+                            DateUpdate = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5390),
                             Description = "OIL SEAL",
                             IsActive = 1,
                             Location = "1B1",
@@ -375,8 +380,8 @@ namespace SaadiaInventorySystem.Migrations
                         {
                             Id = 10,
                             AvailableQty = 2,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1725),
-                            DateUpdate = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1726),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5393),
+                            DateUpdate = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5394),
                             Description = "OIL SEAL",
                             IsActive = 1,
                             Location = "1B1",
@@ -388,8 +393,8 @@ namespace SaadiaInventorySystem.Migrations
                         {
                             Id = 11,
                             AvailableQty = 2,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1730),
-                            DateUpdate = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(1731),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5397),
+                            DateUpdate = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(5398),
                             Description = "OIL SEAL",
                             IsActive = 1,
                             Location = "1B1",
@@ -463,8 +468,8 @@ namespace SaadiaInventorySystem.Migrations
                             Id = 1,
                             Confirmation = true,
                             CustomerId = 2,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 54, DateTimeKind.Local).AddTicks(8733),
-                            DateUpdated = new DateTime(2020, 10, 15, 12, 53, 20, 54, DateTimeKind.Local).AddTicks(9212),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 16, DateTimeKind.Local).AddTicks(821),
+                            DateUpdated = new DateTime(2020, 10, 13, 13, 36, 49, 16, DateTimeKind.Local).AddTicks(1267),
                             IsActive = 1,
                             OfferedDiscount = 0.20000000000000001,
                             OrderId = 1,
@@ -539,15 +544,15 @@ namespace SaadiaInventorySystem.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(5282),
-                            DateUpdated = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(5801),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(8829),
+                            DateUpdated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(9315),
                             IsActive = 0
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(6330),
-                            DateUpdated = new DateTime(2020, 10, 15, 12, 53, 20, 52, DateTimeKind.Local).AddTicks(6357),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(9808),
+                            DateUpdated = new DateTime(2020, 10, 13, 13, 36, 49, 13, DateTimeKind.Local).AddTicks(9837),
                             IsActive = 0
                         });
                 });
@@ -670,8 +675,8 @@ namespace SaadiaInventorySystem.Migrations
                             Id = 1,
                             Attn = "Negotiation",
                             CustomerId = 2,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 53, DateTimeKind.Local).AddTicks(8542),
-                            DateUpdated = new DateTime(2020, 10, 15, 12, 53, 20, 53, DateTimeKind.Local).AddTicks(9036),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 15, DateTimeKind.Local).AddTicks(1306),
+                            DateUpdated = new DateTime(2020, 10, 13, 13, 36, 49, 15, DateTimeKind.Local).AddTicks(1756),
                             IsActive = 1,
                             MS = "SAADIA TRADING CO.LLC",
                             Message = "Dear Sir.Thank you for your inquiry. We are pleased to quote our best prices as follows:",
@@ -774,8 +779,8 @@ Awaiting your valued order & assuring you of our best services always.",
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 49, DateTimeKind.Local).AddTicks(2319),
-                            DateUpdate = new DateTime(2020, 10, 15, 12, 53, 20, 50, DateTimeKind.Local).AddTicks(1888),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 10, DateTimeKind.Local).AddTicks(5002),
+                            DateUpdate = new DateTime(2020, 10, 13, 13, 36, 49, 11, DateTimeKind.Local).AddTicks(5761),
                             FirstName = "Zobad",
                             IsActive = 1,
                             LastName = "Mahmood",
@@ -786,8 +791,8 @@ Awaiting your valued order & assuring you of our best services always.",
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2020, 10, 15, 12, 53, 20, 50, DateTimeKind.Local).AddTicks(2507),
-                            DateUpdate = new DateTime(2020, 10, 15, 12, 53, 20, 50, DateTimeKind.Local).AddTicks(2548),
+                            DateCreated = new DateTime(2020, 10, 13, 13, 36, 49, 11, DateTimeKind.Local).AddTicks(6352),
+                            DateUpdate = new DateTime(2020, 10, 13, 13, 36, 49, 11, DateTimeKind.Local).AddTicks(6371),
                             FirstName = "Hamza",
                             IsActive = 1,
                             LastName = "Sheikh",
@@ -817,6 +822,10 @@ Awaiting your valued order & assuring you of our best services always.",
                     b.HasOne("SaadiaInventorySystem.Model.OldPart", "OldPart")
                         .WithOne()
                         .HasForeignKey("SaadiaInventorySystem.Model.Inventory", "OldPartFK");
+
+                    b.HasOne("SaadiaInventorySystem.Model.InquiryItem", null)
+                        .WithMany()
+                        .HasForeignKey("InquiryItemInquiryId", "InquiryItemInventoryId");
                 });
 
             modelBuilder.Entity("SaadiaInventorySystem.Model.Invoice", b =>
