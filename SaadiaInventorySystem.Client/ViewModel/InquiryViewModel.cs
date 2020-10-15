@@ -377,7 +377,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                     {
                         part.IsActive = 1;
                         part.Inventory.IsActive = 1;
-                        var item = PartsList.Where(i => i.PartNumber.Equals(part.Inventory.PartNumber) || i.Description.Equals(part.Inventory.Description)).FirstOrDefault();
+                        var item = PartsList.Where(i => i.PartNumber.Equals(part.Inventory.PartNumber) && i.Description.Equals(part.Inventory.Description)).FirstOrDefault();
                         if (item != null)
                         {
                             if (IsIgnoreCheck)

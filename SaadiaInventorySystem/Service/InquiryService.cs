@@ -95,10 +95,10 @@ namespace SaadiaInventorySystem.Service
                                 part.Inventory.DateUpdate = DateTime.Now;
                             }
                         }
-
+                        await db.AddAsync(item);
                     }
-                    db.Inquirys.AddRange(inquiry);
-                    db.SaveChanges();
+                    //db.Inquirys.AddRange(inquiry);
+                    int results = db.SaveChanges();
                     await transaction.CommitAsync();
                     return true;
                 }    /*foreach (var item in inquiry)
