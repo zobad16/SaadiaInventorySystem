@@ -42,7 +42,7 @@ namespace SaadiaInventorySystem
                 options =>
                 {
                     options.UseMySql(constring);
-                    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                    //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
                     options.EnableSensitiveDataLogging();
                 });
                 

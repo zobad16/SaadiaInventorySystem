@@ -369,7 +369,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                         foreach (var item in q.Items)
                         {
                             item.InquiryId = _inquiries.Id;
-                            item.Inquiry.Id = _inquiries.Id;
+                            //item.Inquiry.Id = _inquiries.Id;
                         }
                     }
                     //Check order Parts

@@ -18,6 +18,11 @@ namespace SaadiaInventorySystem.Controllers
             _logger = logger;
             _inquiryService = service;
         }
+
+        /// <summary>
+        /// GET all inquirys
+        /// </summary>
+        /// <returns>List<Inquiry></returns>
         [HttpGet("inquiry")]
         public async Task<ActionResult<List<Inquiry>>> GetAllAsync()
         {
@@ -44,6 +49,11 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest(ex);
             }
         }
+
+        /// <summary>
+        /// GET all inquirys without filter
+        /// </summary>
+        /// <returns>List<Inquiry></returns>
         [HttpGet("inquiry/admin")]
         public ActionResult<List<Inquiry>> AdminGetAll()
         {
@@ -70,7 +80,12 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest(ex);
             }
         }
-        [HttpGet]
+        /// <summary>
+        /// GET Inquiry by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Inquiry</returns>
+        [HttpGet("{id}")]
         public async Task<ActionResult<Inquiry>> GetAsync(int id)
         {
             try
@@ -98,6 +113,12 @@ namespace SaadiaInventorySystem.Controllers
             }
         }
         
+        /// <summary>
+        /// POST add a new inquiry
+        /// </summary>
+        /// <param name="inquiry"></param>
+        /// <returns>Status code 200OK on success</returns>
+        /// <returns>Status code 409 on Fail</returns>
         [HttpPost("add")]
         public async Task<IActionResult> AddInquiryAsync([FromBody] Inquiry inquiry)
         {
@@ -124,6 +145,13 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest();
             }
         }
+
+        /// <summary>
+        /// POST bulk add inquirys
+        /// </summary>
+        /// <param name="inquiry"></param>
+        /// <returns>Status code 200 on success</returns>
+        /// <returns>Status code 409 on fail</returns>
         [HttpPost("add/bulk")]
         public async Task<IActionResult> BulkAddInquiryAsync([FromBody] List<Inquiry> inquiry)
         {
@@ -151,6 +179,13 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest();
             }
         }
+
+        /// <summary>
+        /// POST Bulk updates Inquiry
+        /// </summary>
+        /// <param name="inquiry"></param>
+        /// <returns>Status code 200 on success</returns>
+        /// <returns>Status code 409 on fail</returns>
         [HttpPost("update/bulk")]
         public async Task<IActionResult> UpdateInquiryBulkAsync([FromBody] List<Inquiry> inquiry)
         {
@@ -178,6 +213,13 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest();
             }
         }
+
+        /// <summary>
+        /// POST updates inquiry
+        /// </summary>
+        /// <param name="inquiry"></param>
+        /// <returns>Status code 200 on success</returns>
+        /// <returns>Status code 409 on fail</returns>
         [HttpPost("update")]
         public async Task<IActionResult> UpdateInquiryAsync([FromBody] Inquiry inquiry)
         {
@@ -204,6 +246,13 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest();
             }
         }
+
+        /// <summary>
+        /// POST Acticates inquiry
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Status code 200 on success</returns>
+        /// <returns>Status code 409 on fail</returns>
         [HttpPost("activate")]
         public async Task<IActionResult> ActivateInquiryAsync([FromBody] int id)
         {
@@ -230,6 +279,13 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest();
             }
         }
+
+        /// <summary>
+        /// POST Deactivates Inquiry
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Status code 200 on success</returns>
+        /// <returns>Status code 409 on fail</returns>
         [HttpPost("disable")]
         public async Task<IActionResult> DeactivateInquiryAsync([FromBody] int id)
         {
@@ -256,6 +312,13 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest();
             }
         }
+
+        /// <summary>
+        /// POST Delete inquiry
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Status code 200 on success</returns>
+        /// <returns>Status code 409 on fail</returns>
         [HttpPost("delete")]
         public async Task<IActionResult> DeleteInquiryAsync([FromBody] int id)
         {
@@ -282,6 +345,13 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest();
             }
         }
+
+        /// <summary>
+        /// POST permanently deletes inquiry
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Status code 200 on success</returns>
+        /// <returns>Status code 409 on fail</returns>
         [HttpPost("delete/admin")]
         public async Task<IActionResult> AdminDeleteInquiryAsync([FromBody] int id)
         {

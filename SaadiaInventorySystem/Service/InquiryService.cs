@@ -99,40 +99,19 @@ namespace SaadiaInventorySystem.Service
                     }
                     //db.Inquirys.AddRange(inquiry);
                     int results = db.SaveChanges();
-                    await transaction.CommitAsync();
-                    return true;
-                }    /*foreach (var item in inquiry)
-                    {
-                        item.IsActive = 1;
-                        item.DateCreated = DateTime.Now;
-                        item.DateUpdated = DateTime.Now;
-                        foreach (var part in item.Items)
-                        {
-                            if (item.Id == 0)
-                            {
-                                part.Inquiry = item;
-                            }
-                            if (part.Inventory != null)
-                            {
-                                part.Inventory.DateCreated = DateTime.Now;
-                                part.Inventory.IsActive = 1;
-                            }
-                        }
-                    }
-                    await db.Inquirys.AddRangeAsync(inquiry);
-                    int results = await db.SaveChangesAsync();
-                    bool success = results > 0;
-                    if (success)
+                    if (results > 0)
                     {
                         _logger.LogDebug("Inquiry bulk insert success. Records inserted {records}", results);
+                        await transaction.CommitAsync();
+                        return true;
                     }
-                    else
-                    {
+                    else {
                         _logger.LogDebug("Inquiry bulk insert failed. No records were saved");
+                        return false;
                     }
-                    return success;
-                    */
-                }
+                    
+                }    
+            }
             catch (Exception ex)
             {
                 _logger.LogError("Inquiry Bulk Add: Error: {exception} ", ex.Message);
@@ -149,19 +128,60 @@ namespace SaadiaInventorySystem.Service
                 _logger.LogDebug("Bulk Updating inquirys");
                 using (var transaction = db.Database.BeginTransaction())
                 {
-                    foreach (var item in inquiry) {
-                        var inq = db.Inquirys
-                                    .Include(r => r.Items)
-                                    .ThenInclude(r => r.Inventory)
-                                    .Where(q => q.Id.Equals(item.Id)).FirstOrDefault();
-                        inq = item;
-                        db.SaveChanges();
-
+                    foreach (var inq in inquiry)
+                    {
+                        var _inq = db.Inquirys.AsTracking()
+                            .Where(pk => pk.Id == inq.Id)
+                            .FirstOrDefault();
+                        if (inq != null)
+                        {
+                            inq.IsActive = 1;
+                            inq.DateCreated = DateTime.Now;
+                            inq.DateUpdated = DateTime.Now;
+                            inq.DateIssued = DateTime.Now;
+                        }
+                        foreach (var item in inq.Items)
+                        {
+                            if (item != null)
+                            {
+                                item.IsActive = 1;
+                                item.DateUpdated = DateTime.Now;
+                                item.DateAdded = DateTime.Now;
+                                if (item.Inventory != null)
+                                {
+                                    item.Inventory.IsActive = 1;
+                                    item.Inventory.DateCreated = DateTime.Now;
+                                    item.Inventory.DateUpdate = DateTime.Now;
+                                }
+                            }
+                        }
+                        _inq.InquiryNumber = inq.InquiryNumber;
+                        _inq.Message = !string.IsNullOrWhiteSpace(inq.Message) ? inq.Message : "";
+                        _inq.Ms = !string.IsNullOrWhiteSpace(inq.Ms) ? inq.Ms : "";
+                        _inq.Note = !string.IsNullOrWhiteSpace(inq.Note) ? inq.Note : "";
+                        _inq.Vat = inq.Vat;
+                        _inq.VatPercent = inq.VatPercent;
+                        _inq.Items = inq.Items;
+                        db.Inquirys.Update(_inq);
                     }
+                    int results = db.SaveChanges();
+                    bool success = results > 0;
+                    if (success)
+                    {
+                        _logger.LogDebug("Inquiry Bulk Insert Success. Records updated {a}", results);
+                        await transaction.CommitAsync();
+                    }
+                    else
+                    {
+                        _logger.LogDebug("Inquiry Bulk Insert Failed. Records updated {a}", results);
+                    }
+                    return success;
 
-                    await transaction.CommitAsync();
-                    return true;
+
                 }
+
+               // db.Inquirys.UpdateRange(inquiry);
+            
                 /*
                 foreach (var item in inquiry)
                 {
@@ -210,7 +230,7 @@ namespace SaadiaInventorySystem.Service
             try
             {
                 _logger.LogDebug("Updating Quotations");
-                Inquiry inquiry = db.Inquirys
+                Inquiry inquiry = db.Inquirys.AsTracking()
                     .Include(r => r.Items)
                     .ThenInclude(r => r.Inventory)
                     .Where(q => q.Id.Equals(data.Id)).FirstOrDefault();
@@ -225,17 +245,17 @@ namespace SaadiaInventorySystem.Service
                     return false;
                 }
                 inquiry.InquiryNumber = data.InquiryNumber;
-                inquiry.Attn = data.Attn;
+                inquiry.Attn = !String.IsNullOrWhiteSpace(data.Attn) ? data.Attn: "";
                 inquiry.IsActive = data.IsActive;
                 inquiry.Items = data.Items;
-                inquiry.Message = data.Message;
-                inquiry.Ms = data.Ms;
-                inquiry.Note = data.Note;
+                inquiry.Message = !String.IsNullOrWhiteSpace(data.Message)? data.Message: "";
+                inquiry.Ms = !String.IsNullOrWhiteSpace(data.Ms)? data.Ms: "";
+                inquiry.Note = !String.IsNullOrWhiteSpace(data.Note)?data.Note:"";
                 inquiry.Discount = data.Discount;
                 inquiry.Vat = data.Vat;
                 inquiry.VatPercent = data.VatPercent;
                 data.DateUpdated = DateTime.Now;
-                
+                db.Inquirys.Update(inquiry);
                 int results = await db.SaveChangesAsync();
                 bool success = results > 0;
                 if (success)
