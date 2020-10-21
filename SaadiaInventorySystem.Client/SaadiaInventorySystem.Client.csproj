@@ -189,6 +189,15 @@
     <Compile Include="View\InvoiceAddPartsView.xaml.cs">
       <DependentUpon>InvoiceAddPartsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\InvoiceImportAddCustomerView.cs">
+      <DependentUpon>InvoiceImportAddCustomerView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\InvoiceImportAddOrderItemView.xaml.cs">
+      <DependentUpon>InvoiceImportAddOrderItemView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\InvoiceImportAddPartsView.xaml.cs">
+      <DependentUpon>InvoiceImportAddPartsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\InvoiceImportDisplayView.xaml.cs">
       <DependentUpon>InvoiceImportDisplayView.xaml</DependentUpon>
     </Compile>
@@ -313,6 +322,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\InvoiceAddPartsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InvoiceImportAddCustomerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InvoiceImportAddOrderItemView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InvoiceImportAddPartsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

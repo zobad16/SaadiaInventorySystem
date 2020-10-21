@@ -1,6 +1,4 @@
-﻿using SaadiaInventorySystem.Client.Util;
-using SaadiaInventorySystem.Client.ViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,13 +15,12 @@ using System.Windows.Shapes;
 namespace SaadiaInventorySystem.Client.View
 {
     /// <summary>
-    /// Interaction logic for InvoiceImportDisplayView.xaml
+    /// Interaction logic for InvoiceImportAddCustomer.xaml
     /// </summary>
-    public partial class InvoiceImportDisplayView : Window, IClosable
+    public partial class InvoiceImportAddCustomerView : Window
     {
-        public InvoiceImportDisplayView(InvoiceViewModel vm )
+        public InvoiceImportAddCustomerView()
         {
-            DataContext = vm;
             InitializeComponent();
         }
     }

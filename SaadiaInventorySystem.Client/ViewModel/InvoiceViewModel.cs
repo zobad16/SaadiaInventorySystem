@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,12 +26,15 @@ namespace SaadiaInventorySystem.Client.ViewModel
         string arabic_txt = "شركة سعدية للتجارة ذ.م.م";
         private string _name;
         private ObservableCollection<Invoice> _invoices;
+        private ObservableCollection<Invoice> _bulkInvoices;
+        private Invoice _selectedBulkInvoice;
         private ObservableCollection<Customer> _customersList;
         private Customer _selectedCustomer;
         private Invoice _selectedInvoice;
         private ObservableCollection<Inventory> _partsList;
         private Invoice _newInvoice;
         private OrderItem _selectedOrderItem;
+        private OrderItem _selectedImportOrderItem;
         private OrderItem _removeSelectedOrderItem;
         private readonly InvoiceService service;
         private double _netTotal;
@@ -40,13 +44,20 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private bool _isIgnoreCheck;
         private static bool isEdit;
         private bool isAdmin;
-
+        
         private ICommand _addWindowCommand;
         private ICommand _removePartCommand;
+        private ICommand _removePartImportCommand;
+        private ICommand _removeRecordCommand;
         private RelayCommand _activateCommand;
         private RelayCommand _disableCommand;
         private RelayCommand _deleteCommand;
         private RelayCommand _importCommand;
+        private RelayCommand _addImportPartOpenCommand;
+        private RelayCommand _editImportPartOpenCommand;
+        private RelayCommand _previousRecordCommand;
+        private RelayCommand _nextRecordCommand;
+        
         private RelayCommand _duplicateCommand;
         private RelayCommand _exportCommand;
 
@@ -58,27 +69,37 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private ICommand _editWindowCommand;
         private RelayCommand<IClosable> _cancelCommand;
         private RelayCommand<IClosable> _saveCommand;
+        private RelayCommand<IClosable> _saveImportCommand;
 
         private RelayCommand<IClosable> _selectCustomerCommand;
         private RelayCommand<IClosable> _selectPartCommand;
         private RelayCommand<IClosable> _addOrderItemCommand;
+        private RelayCommand<IClosable> _addOrderItemImportCommand;
 
 
         public string Name { get => _name; set { _name = value; RaisePropertyChanged(); } }
         public Invoice SelectedInvoice { get => _selectedInvoice; set { _selectedInvoice = value; RaisePropertyChanged(); } }
+        public Invoice SelectedBulkInvoice { get => _selectedBulkInvoice; set { _selectedBulkInvoice = value; RaisePropertyChanged(); } }
         public Invoice NewInvoice { get => _newInvoice; set { _newInvoice = value; RaisePropertyChanged(); } }
         public ObservableCollection<Invoice> Invoices { get => _invoices; set { _invoices = value; RaisePropertyChanged(); } }
+        public ObservableCollection<Invoice> BulkInvoices { get => _bulkInvoices; set { _bulkInvoices = value; RaisePropertyChanged(); } }
         public bool IsUpdateCheck { get => _isUpdateCheck; set { _isUpdateCheck = value; RaisePropertyChanged(); } }
         public bool IsIgnoreCheck { get => _isIgnoreCheck; set { _isIgnoreCheck = value; RaisePropertyChanged(); } }
         public bool IsAdmin { get => isAdmin; set { isAdmin = value; RaisePropertyChanged(); } }
 
 
         public ICommand AddWindowCommand { get => _addWindowCommand; set { _addWindowCommand = value; RaisePropertyChanged(); } }
+        public ICommand RemovePartImportCommand { get => _removePartImportCommand; set { _removePartImportCommand = value; RaisePropertyChanged(); } }
+        public ICommand RemoveRecordCommand { get => _removeRecordCommand; set { _removeRecordCommand = value; RaisePropertyChanged(); } }
         public ICommand RemovePartCommand { get => _removePartCommand; set { _removePartCommand = value; RaisePropertyChanged(); } }
         public RelayCommand ActivateCommand { get => _activateCommand; set { _activateCommand = value; RaisePropertyChanged(); } }
         public RelayCommand DisableCommand { get => _disableCommand; set { _disableCommand = value; RaisePropertyChanged(); } }
         public RelayCommand DeleteCommand { get => _deleteCommand; set { _deleteCommand = value; RaisePropertyChanged(); } }
         public RelayCommand ImportCommand { get => _importCommand; set { _importCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand AddImportPartOpenCommand { get => _addImportPartOpenCommand; set { _addImportPartOpenCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand EditImportPartOpenCommand { get => _editImportPartOpenCommand; set { _editImportPartOpenCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand NextRecordCommand { get => _nextRecordCommand; set { _nextRecordCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand PreviousRecordCommand { get => _previousRecordCommand; set { _previousRecordCommand = value; RaisePropertyChanged(); } }
         public RelayCommand DuplicateCommand { get => _duplicateCommand; set { _duplicateCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> UploadCommand { get => _uploadCommand; set { _uploadCommand = value; RaisePropertyChanged(); } }
         public RelayCommand ExportCommand { get { return _exportCommand; } set { _exportCommand = value; RaisePropertyChanged(); } }
@@ -89,14 +110,17 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         public RelayCommand<IClosable> CancelCommand { get => _cancelCommand; set { _cancelCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> SaveCommand { get => _saveCommand; set { _saveCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand<IClosable> SaveImportCommand { get => _saveImportCommand; set { _saveImportCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> SelectCustomerCommand { get => _selectCustomerCommand; set { _selectCustomerCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> SelectPartCommand { get => _selectPartCommand; set { _selectPartCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> AddOrderItemCommand { get => _addOrderItemCommand; set { _addOrderItemCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand<IClosable> AddOrderItemImportCommand { get => _addOrderItemImportCommand; set { _addOrderItemImportCommand = value; RaisePropertyChanged(); } }
 
         public ObservableCollection<Customer> CustomersList { get => _customersList; set { _customersList = value; RaisePropertyChanged(); } }
         public Customer SelectedCustomer { get => _selectedCustomer; set { _selectedCustomer = value; RaisePropertyChanged(); } }
         public ObservableCollection<Inventory> PartsList { get => _partsList; set { _partsList = value; RaisePropertyChanged(); } }
         public OrderItem SelectedOrderItem { get => _selectedOrderItem; set { _selectedOrderItem = value; RaisePropertyChanged(); } }
+        public OrderItem SelectedImportOrderItem { get => _selectedImportOrderItem; set { _selectedImportOrderItem = value; RaisePropertyChanged(); } }
         public OrderItem RemoveSelectedOrderItem { get => _removeSelectedOrderItem; set { _removeSelectedOrderItem = value; RaisePropertyChanged(); } }
         public string DuplicateState { get => _duplicateState; set { _duplicateState = value; RaisePropertyChanged(); } }
 
@@ -125,20 +149,32 @@ namespace SaadiaInventorySystem.Client.ViewModel
             Active = 0;
             AddWindowCommand = new RelayCommand(i => OpenAddWindow(), i => true);
             RemovePartCommand = new RelayCommand(i => RemovePart(), i => RemoveSelectedOrderItem != null);
+            RemovePartImportCommand = new RelayCommand(i => RemoveImportPart(), i => SelectedImportOrderItem != null);
+            RemoveRecordCommand = new RelayCommand(i => RemoveImportRecord(), i => BulkInvoices.Count >= 1);
+
             EditWindowCommand = new RelayCommand(i => OpenEditWindow(), i => SelectedInvoice != null);
             OpenAddCustomerWindowCommand = new RelayCommand(i => OpenAddCustomerWindow(), i => true);
             OpenAddPartsWindowCommand = new RelayCommand(i => OpenAddPartsWindow(), i => true);
+            EditImportPartOpenCommand = new RelayCommand(i => OpenImportEditWindow(), (i) => SelectedImportOrderItem != null);
+            AddImportPartOpenCommand = new RelayCommand(i => OpenImportAddPartsWindow(), i => true);
             CancelCommand = new RelayCommand<IClosable>(i => Cancel(i), i => true);
             SaveCommand = new RelayCommand<IClosable>(i => Save(i), i => true);
+            SaveImportCommand = new RelayCommand<IClosable>(i => SaveImport(i), i => true);
             ActivateCommand = new RelayCommand(i => ActivateAsync(), (a) => SelectedInvoice != null);
             DisableCommand = new RelayCommand(i => DisableAsync(), (a) => SelectedInvoice != null);
             DeleteCommand = new RelayCommand(i => Delete(), (a) => SelectedInvoice != null);
             ImportCommand = new RelayCommand(i => ImportInvoice(), i => true);
+            AddImportPartOpenCommand = new RelayCommand(i => OpenImportAddPartsWindow(), i => true);
+            EditImportPartOpenCommand = new RelayCommand(i => OpenImportEditWindow(), (i) => SelectedImportOrderItem != null);
+
+            NextRecordCommand = new RelayCommand(i => NextRecord());
+            PreviousRecordCommand = new RelayCommand(i => PreviousRecord());
             ExportCommand = new RelayCommand(i => ExportInvoice(), (i) => SelectedInvoice != null);
             UploadCommand = new RelayCommand<IClosable>(i => Upload(i), i => true);
             SelectCustomerCommand = new RelayCommand<IClosable>(i => SelectCustomersCommand(i), i => true);
             SelectPartCommand = new RelayCommand<IClosable>(i => SelectPartsCommand(i), i => true);
             AddOrderItemCommand = new RelayCommand<IClosable>(i => AddOrderItem(i), i => true);
+            AddOrderItemImportCommand = new RelayCommand<IClosable>(i => AddOrderItemsImport(i), i => true);
             DuplicateCommand = new RelayCommand(i => SetDuplicateSet(i), i => true);
             isEdit = false;
             isAdmin = false;
@@ -178,7 +214,58 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 i.Close();
             }
         }
+        private void AddOrderItemsImport(IClosable i)
+        {
+            //throw new NotImplementedException();
+            //Add new Order Item
+            if (!isEdit)
+            {
+                if (SelectedImportOrderItem.Inventory.PartNumber != "")
+                {
+                    SelectedImportOrderItem.Inventory.IsActive = 1;
+                    SelectedImportOrderItem.CalculateTotal();
+                    if (SelectedBulkInvoice.Order.OrderItems.Count == 0)
+                    {
+                        SelectedBulkInvoice.Order.OrderItems = new ObservableCollection<OrderItem>();
+                    }
+                    SelectedBulkInvoice.Order.OrderItems.Add(new OrderItem()
+                    {
+                        Inventory = SelectedImportOrderItem.Inventory,
+                        InventoryId = SelectedImportOrderItem.Inventory.Id,
+                        OfferedPrice = SelectedImportOrderItem.OfferedPrice,
+                        Order = SelectedImportOrderItem.Order,
+                        OrderId = SelectedImportOrderItem.OrderId,
+                        OrderQty = SelectedImportOrderItem.OrderQty,
+                        Total = SelectedImportOrderItem.Total,
+                        IsActive = 1
 
+                    });
+                    SelectedBulkInvoice.CalculateNetTotal();
+
+                    i.Close();
+
+                }
+            }
+
+            //Edit Order Item
+            else
+            {
+                if (SelectedImportOrderItem.Inventory.PartNumber != "")
+                {
+                    SelectedImportOrderItem.CalculateTotal();
+                    SelectedImportOrderItem.CalculateVAT();
+                    var part = SelectedBulkInvoice.Order.OrderItems.Where(item =>
+                        (item.Inventory.PartNumber == SelectedImportOrderItem.Inventory.PartNumber)).FirstOrDefault();
+
+                    part = SelectedImportOrderItem;
+                    SelectedBulkInvoice.CalculateNetTotal();
+                    i.Close();
+                }
+            }
+            
+
+
+        }
         private void SelectPartsCommand(IClosable i)
         {
             throw new NotImplementedException();
@@ -245,6 +332,192 @@ namespace SaadiaInventorySystem.Client.ViewModel
             await GetAll();
             await GetAll();
         }
+        private async void SaveImport(IClosable p)
+        {
+            //Data Checks
+            var list = await DuplicateChecks(BulkInvoices.ToList());
+            BulkInvoices = new ObservableCollection<Invoice>(list);
+            foreach (var invoice in BulkInvoices)
+            {
+                if (invoice.Order != null)
+                {
+                    if (invoice.Order.OrderItems != null)
+                    {
+                        foreach (var item in invoice.Order.OrderItems)
+                        {
+                            if (item.InventoryId > 0)
+                            {
+                                item.Inventory = null;
+                            }
+                            item.IsActive = 1;
+                            item.OrderId = invoice.OrderId;
+                        }
+                    }
+
+                }
+                if (invoice.Customer != null)
+                {
+                    if (invoice.Customer.Id > 0)
+                    {
+                        invoice.CustomerId = invoice.Customer.Id;
+                        invoice.Customer = null;
+                    }
+                }
+
+
+            }
+
+            if (IsIgnoreCheck)
+            {
+                BulkSave(p);
+            }
+            else if (IsUpdateCheck)
+            {
+                BulkUpdate(p);
+            }
+
+            p.Close();
+            await GetAll();
+        }
+
+        private async Task<List<Invoice>> DuplicateChecks(List<Invoice> lists)
+        {
+            var _service = new CustomerService();
+            var _partsService = new InventoryService();
+            CustomersList = new ObservableCollection<Customer>(await _service.CallGetAllService());
+            PartsList = new ObservableCollection<Inventory>(await _partsService.CallGetAllService());
+            var invoice_list = new List<Invoice>();
+            foreach (var q in lists)
+            {
+                if (q != null)
+                {
+                    var _invoice = Invoices.Where(i => (q.OrderPurchaseNumber == i.OrderPurchaseNumber)).FirstOrDefault();
+                    if (_invoice != null && IsIgnoreCheck)
+                    {
+                        continue;
+                    }
+                    else if (_invoice != null && IsUpdateCheck)
+                    {
+                        q.Id = _invoice.Id;
+                    }
+                    if (String.IsNullOrEmpty(q.Customer.FirstName) && String.IsNullOrEmpty(q.Customer.FirstName))
+                    {
+                        q.Customer.FirstName = ""; q.Customer.LastName = "";
+                    }
+
+                    Customer customer = CustomersList.Where(i => i.FirstName.Equals(q.Customer.FirstName) && i.LastName.Equals(q.Customer.LastName)).FirstOrDefault();
+
+                    if (customer != null)
+                    {
+                        //Record found
+                        //if DuplpicateState equals ignore: remove object set id
+                        if (IsIgnoreCheck)
+                        {
+                            q.CustomerId = customer.Id;
+                            q.Customer = null;
+                        }
+                        else if (IsUpdateCheck)
+                        {
+                            q.CustomerId = customer.Id;
+                            q.Customer = null;
+                        }
+                    }
+                    //Check order Parts
+                    foreach (var part in q.Order.OrderItems)
+                    {
+                        var item = PartsList.Where(i => i.PartNumber.Equals(part.Inventory.PartNumber) && i.Description.Equals(part.Inventory.Description)).FirstOrDefault();
+                        if (item != null)
+                        {
+                            if (IsIgnoreCheck)
+                            {
+                                part.InventoryId = item.Id;
+                                part.Inventory = null;
+                            }
+                            else if (IsUpdateCheck)
+                            {
+                                part.InventoryId = item.Id;
+                                part.Inventory = null;
+                            }
+                        }
+                    }
+                    invoice_list.Add(q);
+                }
+            }
+
+            return invoice_list;
+        }
+
+        private async void BulkUpdate(IClosable p)
+        {
+            var listUpdate = BulkInvoices.Where(i => i.Id > 0).ToList();
+            var listAdd = BulkInvoices.Where(i => i.Id == 0).ToList();
+            if (listUpdate.Count > 0)
+            {
+                if (await service.CallBulkUpdate(listUpdate))
+                {
+                    MessageBox.Show("Bulk Insert Success");
+                }
+            }
+            if (listAdd.Count > 0)
+            {
+                if (await service.CallBulkInsert(listAdd))
+                {
+                    MessageBox.Show("Bulk Insert Success");
+                }
+            }
+            if(! (listAdd.Count > 0) &&!(listUpdate.Count > 0))
+            {
+                MessageBox.Show("Nothing to insert.Records Already uptodate");
+            }
+
+            p.Close();
+            await GetAll();
+        }
+
+        private async void BulkSave(IClosable p)
+        {
+            var listAdd = BulkInvoices.Where(i => i.Id == 0).ToList();
+            if (listAdd.Count > 0)
+            {
+                if (await service.CallBulkInsert(listAdd))
+                {
+                    MessageBox.Show("Bulk Insert Success");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Nothing to insert.Records Already uptodate");
+            }
+
+            p.Close();
+            await GetAll();
+        }
+        private async void OpenImportAddPartsWindow()
+        {
+            var _service = new InventoryService();
+            PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            SelectedImportOrderItem = new OrderItem() { Inventory = new Inventory() };
+            var window = new InvoiceImportAddOrderItemView(this);
+            isEdit = false;
+            window.ShowDialog();
+        }
+        private async void OpenImportEditWindow()
+        {
+            var _service = new InventoryService();
+            PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            isEdit = true;
+            var window = new InvoiceImportAddOrderItemView(this);
+            window.ShowDialog();
+
+        }
+        private async void OpenAddImportCustomerWindow()
+        {
+            //load customer data
+            var _service = new CustomerService();
+            CustomersList = new ObservableCollection<Customer>(await _service.CallGetAllService());
+            var window = new QuotationAddCustomerView(this);
+            window.ShowDialog();
+        }
 
         private async void OpenAddPartsWindow()
         {
@@ -289,13 +562,80 @@ namespace SaadiaInventorySystem.Client.ViewModel
             NewInvoice.CalculateNetTotal();
 
         }
+        private void RemoveImportPart()
+        {
+            SelectedBulkInvoice.Order.OrderItems.Remove(SelectedImportOrderItem);
+            SelectedBulkInvoice.CalculateNetTotal();
+
+        }
+        private void RemoveImportRecord()
+        {
+            if (BulkInvoices.Count > 1)
+            {
+                BulkInvoices.Remove(SelectedBulkInvoice);
+                NextRecord();
+            }
+            else if (BulkInvoices.Count == 1)
+            {
+                BulkInvoices.Remove(SelectedBulkInvoice);
+                SelectedBulkInvoice = new Invoice();
+            }
+
+        }
+
         private async Task Upload(IClosable i)
         {
-            /*if (IsIgnoreCheck) { await ReadInvoiceFileExcel(FilePath); }
-            else if (IsUpdateCheck) { await ReadInvoiceFileExcel(FilePath); }
-            i.Close();*/
-            //ReadIvoiceExcelCom(FilePath);
-            await ReadInvoiceExcel(FilePath);
+            if (FilePath.IndexOf("invoice", StringComparison.OrdinalIgnoreCase) >= 0 && !string.IsNullOrWhiteSpace(FilePath))
+            {
+                /*if (IsIgnoreCheck) { await ReadInvoiceFileExcel(FilePath); }
+                else if (IsUpdateCheck) { await ReadInvoiceFileExcel(FilePath); }
+                i.Close();*/
+                //ReadIvoiceExcelCom(FilePath);
+                await ReadInvoiceExcel(FilePath);
+                var window = new InvoiceImportDisplayView(this);
+                if (BulkInvoices == null)
+                {
+                    return;
+                }
+                foreach (var quote in BulkInvoices)
+                {
+                    foreach (var part in quote.Order.OrderItems)
+                    {
+                        part.CalculateTotal();
+                        part.CalculateVAT();
+                    }
+                }
+                SelectedBulkInvoice = BulkInvoices[0];
+                i.Close();
+                window.ShowDialog();
+            }
+        }
+        private void NextRecord()
+        {
+            int length = BulkInvoices.Count;
+            try
+            {
+                int index = BulkInvoices.IndexOf(SelectedBulkInvoice);
+                SelectedBulkInvoice = BulkInvoices[index + 1];
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("No More records to display");
+            }
+        }
+        private void PreviousRecord()
+        {
+            try
+            {
+                int index = BulkInvoices.IndexOf(SelectedBulkInvoice);
+                SelectedBulkInvoice = BulkInvoices[index - 1];
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("No More records to display");
+            }
         }
         private void ExportExcel(string path)
         {
@@ -577,26 +917,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
                                     var data = result.Tables[tab];
                                     var current = data.Rows[row][col].ToString();
-                                    /* if (current.Contains("ATTN"))
-                                     {
-                                         string input = current;
-                                         string res2 = input.Split(':')[1];
-                                         string pattern = @"\bATTN:\b";
-                                         string replace = " ";
-                                         string res = Regex.Replace(input, pattern, replace, RegexOptions.IgnoreCase);
-                                         q.Attn = res2.Trim();
-
-                                     }
-                                     if (current.Contains("Dear"))
-                                         noteflag = true;
-                                     if (noteflag)
-                                     {
-                                         if (String.IsNullOrEmpty(current)) continue;
-                                         if (!current.Contains("S.No"))
-                                         {
-                                             q.Note += current;
-                                         }
-                                     }*/
+                                    
                                     if (current.Contains("S.No"))
                                     {
                                         noteflag = false;
@@ -638,81 +959,24 @@ namespace SaadiaInventorySystem.Client.ViewModel
                                         q.CalculateNetTotal();
                                         break;
                                     }
-                                    /*if (col > 0)
-                                    {
-                                        if (String.IsNullOrEmpty(current)) continue;
-                                        var prev = data.Rows[row][col - 1].ToString();
-
-                                        if (prev.Contains("REF"))
-                                        {
-                                            q.ReferenceNumber += current.Trim();
-                                        }
-                                        if (prev.Contains("M/S"))
-                                        {
-                                            q.MS = current;
-                                        }
-                                        if (prev.Contains("To"))
-                                        {
-                                            string input = current;
-                                            if (String.IsNullOrEmpty(input)) continue;
-                                            char[] delimiter = new char[] { '\t', '.', ' ' };
-                                            string[] words = input.Split(' ');
-                                            q.Customer.FirstName = $"{words[0] + words[1] }";
-                                            q.Customer.LastName = $"{words[2] }";
-                                        }
-                                        if (prev.Contains("DATE") || prev.Contains("Date"))
-                                        {
-                                            string date = current;
-                                            if (String.IsNullOrEmpty(date)) { continue; }
-                                            q.Date = current;
-                                            q.DateCreated = Convert.ToDateTime(current);
-                                        }
-                                        if (col > 1)
-                                        {
-                                            var prevM1 = data.Rows[row][col - 2].ToString();
-                                            if (prevM1.Contains("REF"))
-                                                q.ReferenceNumber += current.Trim();
-                                        }
-                                    }*
-                                }
-                            }
-                            invoice.Add(q);
-                        }
-                        /*quotes = await DuplicateChecks(quotes);
-
-                        foreach (var item in quotes)
-                        {
-                            if (item.Id > 0)
-                            {
-                                updatequotes.Add(item);
-                            }
-                            else if (item.Id == 0)
-                            {
-                                addquotes.Add(item);
-                            }
-                        }
-
-                        if (addquotes.Count > 0)
-                        {
-                            if (await service.CallBulkInsert(addquotes))
-                            {
-                                MessageBox.Show("Bulk Insert Success");
-                            }
-                        }
-                        else if (updatequotes.Count > 0)
-                        {
-                            await service.CallBulkUpdate(updatequotes);
-                            MessageBox.Show("Bulk Insert Success. Duplicates records updated");
-                        }
-                        else
-                        {
-                            MessageBox.Show("Nothing to insert.Records Already uptodate");
-                        }*/
+                                   
                                     // await GetAll();
                                     // The result of each spreadsheet is in result.Tables
                                 }
                             }
                             invoices.Add(q);
+                        }
+                        BulkInvoices = new ObservableCollection<Invoice>();
+                        foreach (var item in invoices)
+                        {
+                            if (item.Id > 0)
+                            {
+                                BulkInvoices.Add(item);
+                            }
+                            else if (item.Id == 0)
+                            {
+                                BulkInvoices.Add(item);
+                            }
                         }
                     }
                 }

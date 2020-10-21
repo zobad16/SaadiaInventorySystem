@@ -6,14 +6,14 @@
         xmlns:local="clr-namespace:SaadiaInventorySystem.Client.View"
         mc:Ignorable="d"
         Height="500" Width="900"
-        x:Name="_AddQuotationWindow"
+        x:Name="_AddInvoiceWindow"
         xmlns:z="http://schemas.microsoft.com/expression/2010/interactivity"
         ResizeMode="CanMinimize"
         >
     <z:Interaction.Triggers>
         <z:EventTrigger EventName="Closing">
             <z:InvokeCommandAction Command="{Binding CancelCloseCommand}"
-                    CommandParameter="{Binding ElementName=_AddQuotationWindow}"
+                    CommandParameter="{Binding ElementName=_AddInvoiceWindow}"
                      />
         </z:EventTrigger>
     </z:Interaction.Triggers>
@@ -49,7 +49,7 @@
                      Grid.Row="1"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewInvoice.QuotationNumber}"
+        <TextBox Text="{Binding Path=SelectedBulkInvoice.QuotationNumber}"
                      Grid.Column="2"
                      Grid.Row="1"
                      HorizontalAlignment="Stretch"
@@ -63,7 +63,7 @@
                      HorizontalAlignment="Left"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewInvoice.OrderPurchaseNumber}"
+        <TextBox Text="{Binding Path=SelectedBulkInvoice.OrderPurchaseNumber}"
                      Height="25"
                      HorizontalAlignment="Stretch"
                      Grid.Column="4"
@@ -75,7 +75,7 @@
                      Grid.Row="2"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewInvoice.Customer.FirstName}"
+        <TextBox Text="{Binding Path=SelectedBulkInvoice.Customer.FirstName}"
                      Grid.Column="2"
                      Grid.Row="2"
                      HorizontalAlignment="Stretch"
@@ -88,7 +88,7 @@
                      HorizontalAlignment="Left"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewInvoice.Customer.LastName}"
+        <TextBox Text="{Binding Path=SelectedBulkInvoice.Customer.LastName}"
                      Height="25"
                      HorizontalAlignment="Stretch"
                      Grid.Column="4"
@@ -100,7 +100,7 @@
                      Grid.Row="3"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewInvoice.Customer.CompanyName}"
+        <TextBox Text="{Binding Path=SelectedBulkInvoice.Customer.CompanyName}"
                      Grid.Column="2"
                      Grid.Row="3"
                      HorizontalAlignment="Stretch"
@@ -113,7 +113,7 @@
                      HorizontalAlignment="Left"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewInvoice.Customer.Address}"
+        <TextBox Text="{Binding Path=SelectedBulkInvoice.Customer.Address}"
                      Height="25"
                      HorizontalAlignment="Stretch"
                      Grid.Column="4"
@@ -127,7 +127,7 @@
                      HorizontalAlignment="Left"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewInvoice.Customer.Trn}"
+        <TextBox Text="{Binding Path=SelectedBulkInvoice.Customer.Trn}"
                  Height="25"
                  HorizontalAlignment="Stretch"
                  Grid.Column="2"
@@ -140,7 +140,7 @@
                      HorizontalAlignment="Left"
                      VerticalAlignment="Center"
                      Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewInvoice.Customer.PhoneNumber}" 
+        <TextBox Text="{Binding Path=SelectedBulkInvoice.Customer.PhoneNumber}" 
                 Height="25"
                 HorizontalAlignment="Stretch"
                 Grid.Column="4"
@@ -153,7 +153,7 @@
                    HorizontalAlignment="Left"
                    VerticalAlignment="Center"
                    Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewInvoice.Customer.EmailAddress}"
+        <TextBox Text="{Binding Path=SelectedBulkInvoice.Customer.EmailAddress}"
                  Height="25"
                  HorizontalAlignment="Stretch"
                  Grid.Column="2"
@@ -166,7 +166,7 @@
                    HorizontalAlignment="Left"
                    VerticalAlignment="Center"
                    Margin="10,0,0,0"/>
-        <TextBox Text="{Binding Path=NewInvoice.Customer.Postcode}"
+        <TextBox Text="{Binding Path=SelectedBulkInvoice.Customer.Postcode}"
                  Height="25"
                  HorizontalAlignment="Stretch"
                  Grid.Column="4"
@@ -206,7 +206,7 @@
                  VerticalAlignment="Top"
                  VerticalContentAlignment="Center"
                  Margin="10,0,0,0"
-                 Command="{Binding AddPartImportCommand}">
+                 Command="{Binding AddImportPartOpenCommand}">
             <TextBlock Text="Add Part" 
                        TextWrapping="Wrap"/>
         </Button>
@@ -218,7 +218,7 @@
                  VerticalAlignment="Top"
                  VerticalContentAlignment="Center"
                  Margin="10,0,0,0"
-                 Command="{Binding EditPartImportCommand}">
+                 Command="{Binding EditImportPartOpenCommand}">
             <TextBlock Text="Edit Part" 
                        TextWrapping="Wrap"/>
         </Button>
@@ -252,7 +252,7 @@
                     Grid.ColumnSpan="4"
                     Grid.RowSpan="2">
             <TextBlock Text="Order Items:" Margin="10,0"/>
-            <DataGrid ItemsSource="{Binding NewInvoice.Order.OrderItems}" SelectedItem="{Binding RemoveSelectedOrderItem}"    
+            <DataGrid ItemsSource="{Binding SelectedBulkInvoice.Order.OrderItems}" SelectedItem="{Binding SelectedImportOrderItem}"    
                   AutoGenerateColumns="False" 
                   IsReadOnly="True"
                   Margin="0,4"
@@ -287,7 +287,7 @@
         <TextBlock Text="Discount" Margin="10,0,0,0"
                  Grid.Row="8"
                  Grid.Column="1"/>
-        <TextBox Text="{Binding NewInvoice.OfferedDiscount}" 
+        <TextBox Text="{Binding SelectedBulkInvoice.OfferedDiscount}" 
                  Grid.Row="8"
                  Grid.Column="2"
                  HorizontalAlignment="Stretch"
@@ -297,7 +297,7 @@
         <TextBlock Text="Total" Margin="10,0,0,0"
                  Grid.Row="8"
                  Grid.Column="3"/>
-        <TextBox Text="{Binding NewInvoice.Order.TotalPrice}" 
+        <TextBox Text="{Binding SelectedBulkInvoice.Order.TotalPrice}" 
                  Grid.Row="8"
                  Grid.Column="4"
                  HorizontalAlignment="Stretch" 
@@ -308,7 +308,7 @@
         <TextBlock Text="VAT" Margin="10,0,0,0"
                  Grid.Row="9"
                  Grid.Column="1"/>
-        <TextBox Text="{Binding NewInvoice.VAT}" 
+        <TextBox Text="{Binding SelectedBulkInvoice.VAT}" 
                  Grid.Row="9"
                  Grid.Column="2"
                  HorizontalAlignment="Stretch"
@@ -318,7 +318,7 @@
         <TextBlock Text="Net Total" Margin="10,0,0,0"
                  Grid.Row="9"
                  Grid.Column="3"/>
-        <TextBox Text="{Binding NewInvoice.NetTotal}"
+        <TextBox Text="{Binding SelectedBulkInvoice.NetTotal}"
                  Grid.Row="9"
                  Grid.Column="4"
                  HorizontalAlignment="Stretch"
@@ -328,7 +328,7 @@
         <TextBlock Text="M/S" Margin="10,0,0,0"
                  Grid.Row="10"
                  Grid.Column="1"/>
-        <TextBox Text="{Binding NewInvoice.MS}"
+        <TextBox Text="{Binding SelectedBulkInvoice.MS}"
                  Grid.Row="10"
                  Grid.Column="2"
                  HorizontalAlignment="Stretch"
@@ -338,7 +338,7 @@
         <TextBlock Text="Attn" Margin="10,0,0,0"
                  Grid.Row="10"
                  Grid.Column="3"/>
-        <TextBox Text="{Binding NewInvoice.Attn}"
+        <TextBox Text="{Binding SelectedBulkInvoice.Attn}"
                  Grid.Row="10"
                  Grid.Column="4"
                  HorizontalAlignment="Stretch"
@@ -349,7 +349,7 @@
                  Grid.Row="11"
                  Grid.Column="1" 
                  VerticalAlignment="Stretch"  />
-        <TextBox Text="{Binding NewInvoice.Message}"
+        <TextBox Text="{Binding SelectedBulkInvoice.Message}"
                  Grid.Row="11"
                  Grid.Column="2"
                  HorizontalAlignment="Stretch"
@@ -359,7 +359,7 @@
         <TextBlock Text="Note" Margin="10,0,0,0"
                  Grid.Row="11"
                  Grid.Column="3"/>
-        <TextBox Text="{Binding NewInvoice.Note}"
+        <TextBox Text="{Binding SelectedBulkInvoice.Note}"
                  Grid.Row="11"
                  Grid.Column="4"
                  Grid.RowSpan="2"
@@ -373,8 +373,8 @@
                 Width="100"
                 Grid.Row="13"
                 Grid.Column="2"
-                Command="{Binding SaveCommand}"
-                CommandParameter="{Binding ElementName=_AddQuotationWindow}"/>
+                Command="{Binding SaveImportCommand}"
+                CommandParameter="{Binding ElementName=_AddInvoiceWindow}"/>
         <Button Content="Cancel"
                 Width="100"                 
                 Grid.Column="3"
@@ -384,7 +384,7 @@
                 VerticalAlignment="Stretch"
                 VerticalContentAlignment="Center"
                 Command="{Binding CancelCommand}"
-                CommandParameter="{Binding ElementName=_AddQuotationWindow}"/>
+                CommandParameter="{Binding ElementName=_AddInvoiceWindow}"/>
 
     </Grid>
 </Window>
