@@ -64,20 +64,8 @@
                         Height="20"
                         Margin="0,0,5,0"
                         Command="{Binding ConfirmCommand}"
-                        >
-                    <Button.Style>
-                        <Style TargetType="{x:Type Button}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsAdmin}" Value="true">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding IsAdmin}" Value="false">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
+                        />
+
             </StackPanel>
             <DataGrid ItemsSource="{Binding Invoices}" SelectedItem="{Binding SelectedInvoice}"    
                   AutoGenerateColumns="False" 
