@@ -164,5 +164,20 @@ namespace SaadiaInventorySystem.Client.Services
 
             }
         }
+        public async Task<bool> CallConfirmService(int id)
+        {
+            using (var client = GetClient())
+            {
+                HttpResponseMessage response = await client.PostAsJsonAsync("api/invoice/confirm", id);
+
+                HttpContent result = response.Content;
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else return false;
+
+            }
+        }
     }
 }

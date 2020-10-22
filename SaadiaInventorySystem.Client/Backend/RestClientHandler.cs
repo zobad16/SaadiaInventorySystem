@@ -35,7 +35,7 @@ namespace SaadiaInventorySystem.Client.Backend
             {
 
                 string message = String.Format($"Http Exception, Url:{request.RequestUri}, Http Status Code:{(int)response.StatusCode}, Reason:{response.ReasonPhrase}, Http Header:{ response.Headers.ToString()}");
-                throw new Exception(message);
+                //throw new Exception(message);
             }
 
             return response;

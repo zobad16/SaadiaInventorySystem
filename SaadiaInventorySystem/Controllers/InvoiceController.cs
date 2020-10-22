@@ -282,6 +282,32 @@ namespace SaadiaInventorySystem.Controllers
                 return BadRequest();
             }
         }
+        [HttpPost("confirm")]
+        public async Task<IActionResult> ConfirmInvoiceAsync([FromBody] int id)
+        {
+            try
+            {
+                _logger.LogDebug("Changing the invoice confirmation status to true");
+                bool success = await _invoiceService.InvoiceConfirmation(id);
+                if (success)
+                {
+                    _logger.LogDebug("Success. Invoice confirmation status to true");
+                    return Ok("Invoice confirmation status to true");
+                }
+                else
+                {
+                    _logger.LogDebug("Failed. Invoice confirmation operation failed");
+                    return Conflict("Operation Failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                //log
+                _logger.LogError("An Exception occured: {ex}", ex.Message);
+                _logger.LogError("Stack Trace: {ex}", ex.StackTrace);
+                return BadRequest();
+            }
+        }
 
     }
 }

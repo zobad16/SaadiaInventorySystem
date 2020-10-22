@@ -21,12 +21,12 @@ namespace SaadiaInventorySystem.Model
         public string Note { get; set; }
         public string Message { get; set; }
         public int IsActive { get; set; }
-
+        public bool Confirmation { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateUpdated { get; set; }
         [NotMapped]
         public double Total { get; set; }
-        public bool Confirmation { get; set; }
-        public DateTime DateCreated { get; internal set; }
-        public DateTime DateUpdated { get; internal set; }
+        
         
     }
 }

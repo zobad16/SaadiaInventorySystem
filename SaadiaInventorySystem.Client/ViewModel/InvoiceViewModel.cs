@@ -49,6 +49,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private ICommand _removePartCommand;
         private ICommand _removePartImportCommand;
         private ICommand _removeRecordCommand;
+        private RelayCommand _confirmCommand;
         private RelayCommand _activateCommand;
         private RelayCommand _disableCommand;
         private RelayCommand _deleteCommand;
@@ -92,6 +93,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public ICommand RemovePartImportCommand { get => _removePartImportCommand; set { _removePartImportCommand = value; RaisePropertyChanged(); } }
         public ICommand RemoveRecordCommand { get => _removeRecordCommand; set { _removeRecordCommand = value; RaisePropertyChanged(); } }
         public ICommand RemovePartCommand { get => _removePartCommand; set { _removePartCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand ConfirmCommand { get => _confirmCommand; set { _confirmCommand = value; RaisePropertyChanged(); } }
         public RelayCommand ActivateCommand { get => _activateCommand; set { _activateCommand = value; RaisePropertyChanged(); } }
         public RelayCommand DisableCommand { get => _disableCommand; set { _disableCommand = value; RaisePropertyChanged(); } }
         public RelayCommand DeleteCommand { get => _deleteCommand; set { _deleteCommand = value; RaisePropertyChanged(); } }
@@ -161,6 +163,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             SaveCommand = new RelayCommand<IClosable>(i => Save(i), i => true);
             SaveImportCommand = new RelayCommand<IClosable>(i => SaveImport(i), i => true);
             ActivateCommand = new RelayCommand(i => ActivateAsync(), (a) => SelectedInvoice != null);
+            ConfirmCommand = new RelayCommand(i => ConfirmInvoiceAsync(), (a) => SelectedInvoice != null);
             DisableCommand = new RelayCommand(i => DisableAsync(), (a) => SelectedInvoice != null);
             DeleteCommand = new RelayCommand(i => Delete(), (a) => SelectedInvoice != null);
             ImportCommand = new RelayCommand(i => ImportInvoice(), i => true);
@@ -446,7 +449,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
             return invoice_list;
         }
-
+        
         private async void BulkUpdate(IClosable p)
         {
             var listUpdate = BulkInvoices.Where(i => i.Id > 0).ToList();
@@ -1025,8 +1028,46 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 // Save document
                 string filename = dlg.FileName;
                 WriteFileExcel(filename);
+                WriteFilePDF(filename);
             }
         }
+        private void WriteFilePDF(string path)
+        {
+            string filename = path.Replace(".xlsx", ".pdf");
+            string newFilePath = ExceltoPdf(path, filename);
+            
+        }
+        public string ExceltoPdf(string excelLocation, string outputLocation)
+        {
+            try
+            {
+                /*
+                    string filename = txtFile.Text.Replace(".xlsx", ".pdf");
+                    const int xlQualityStandard = 0;
+                    sheet.ExportAsFixedFormat(
+                    Excel.XlFixedFormatType.xlTypePDF,
+                    filename, xlQualityStandard, true, false,
+                    Type.Missing, Type.Missing, true, Type.Missing);
+                */
+                Microsoft.Office.Interop.Excel.Application app = new Microsoft.Office.Interop.Excel.Application();
+                app.Visible = false;
+                app.DisplayAlerts = false;
+                Microsoft.Office.Interop.Excel.Workbook wkb = app.Workbooks.Open(excelLocation, ReadOnly: true);
+                wkb.ExportAsFixedFormat(Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF, outputLocation);
+
+                wkb.Close();
+                app.Quit();
+
+                return outputLocation;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+                throw ex;
+            }
+        }
+
         private void WriteFileExcel(string path)
         {
             ExcelPackage excel = new ExcelPackage();
@@ -1218,7 +1259,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Cells[$"A{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 double net = SelectedInvoice.NetTotal;
                 string nettotal = net.ToString();
-                string whole = "", decimalVal = "";
+                string whole = "0", decimalVal = "0";
                 int dp = nettotal.IndexOf(".");
                 if (dp > 0)
                 {
@@ -1384,7 +1425,19 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 await GetAll();
             }
         }
-
+        private async void ConfirmInvoiceAsync()
+        {
+            if (await service.CallConfirmService(SelectedInvoice.Id))
+            {
+                MessageBox.Show("Invoice Confirmed");
+                await GetAll();
+            }
+            else
+            {
+                MessageBox.Show("Invoice Confirmation failed");
+                await GetAll();
+            }
+        }
         private async void DisableAsync()
         {
             if (await service.CallDeleteService(SelectedInvoice.Id))

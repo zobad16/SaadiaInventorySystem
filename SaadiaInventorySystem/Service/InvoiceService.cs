@@ -57,6 +57,78 @@ namespace SaadiaInventorySystem.Service
                 return false;
             }
         }
+        public async Task<bool> InvoiceConfirmation(int id)
+        {
+            var inquiry = dao.Invoices.Include(r => r.Order)
+                    .ThenInclude(r => r.OrderItems)
+                    .ThenInclude(r => r.Inventory)
+                    .Where(i => i.Id == id)
+                .FirstOrDefault();
+            foreach (var item in inquiry.Order.OrderItems)
+            {
+                if (item.OrderQty > item.Inventory.AvailableQty)
+                {
+                    return false;
+                }
+                    
+            }
+            bool result = await DeductInventory(inquiry.Order.OrderItems);
+            if (result)
+            {
+                inquiry.Confirmation = true;
+                bool success = await dao.SaveChangesAsync() > 0;
+                if (success)
+                {
+                    _logger.LogDebug("Invoice confirm operation success.");
+                    return true;
+                }
+                else
+                {
+                    _logger.LogDebug("Invoice confirm operation failed");
+                    return false;
+                }
+            }
+            else 
+            {
+                _logger.LogDebug("An Error occured. Invoice failed to deduct inventory stocks");
+                return false;
+            }
+        }
+        private async Task<bool>DeductInventory(List<OrderItem> _orderItems)
+        {
+            var inventoryList = dao.Inventories.ToList();
+            using (var transaction = dao.Database.BeginTransaction())
+            {
+                int result = 0;
+                try
+                {
+                    foreach (var item in _orderItems)
+                    {
+                        var part = inventoryList.Where(pk => pk.Id == item.InventoryId).FirstOrDefault();
+                        if (part != null)
+                        {
+                            part.AvailableQty -= item.OrderQty;
+                            result += await dao.SaveChangesAsync();
+                        }
+                    }
+                    await transaction.CommitAsync();
+                    _logger.LogDebug("Successfully updated inventory stocks");
+                    return true;
+
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("An error occured while updating the inventory quantity");
+                    await transaction.RollbackAsync();
+                    _logger.LogError("An Exception occured: {ex}", ex.Message);
+                    _logger.LogError("Stack Trace: {ex}", ex.StackTrace);
+                    return false;
+                }
+
+                
+            }
+                return false;
+        }
         public async Task<bool> BulkAddAsync(List<Invoice> data)
         {
             try

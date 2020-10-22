@@ -29,6 +29,7 @@ namespace SaadiaInventorySystem.Client.Model
         private string message;
         private DateTime dateCreated;
         private string date;
+        private bool confirmation;
 
         public int Id { get => id; set { id = value; RaisePropertyChanged(); } }
         public int QuotationId { get => quotationId; set { quotationId = value; RaisePropertyChanged(); } }
@@ -45,6 +46,7 @@ namespace SaadiaInventorySystem.Client.Model
         public string Note { get => note; set { note = value; RaisePropertyChanged(); } }
         public string Message { get => message; set { message = value; RaisePropertyChanged(); } }
         public int IsActive { get => isActive; set { isActive = value; RaisePropertyChanged(); } }
+        public bool Confirmation { get => confirmation; set { confirmation = value; RaisePropertyChanged(); } }
 
         public double NetTotal
         {
