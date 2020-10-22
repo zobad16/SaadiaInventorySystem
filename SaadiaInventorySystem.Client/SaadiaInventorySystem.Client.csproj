@@ -189,6 +189,9 @@
     <Compile Include="View\InvoiceAddPartsView.xaml.cs">
       <DependentUpon>InvoiceAddPartsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\InvoiceAddQuotationView.xaml.cs">
+      <DependentUpon>InvoiceAddQuotationView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\InvoiceImportAddCustomerView.cs">
       <DependentUpon>InvoiceImportAddCustomerView.xaml</DependentUpon>
     </Compile>
@@ -322,6 +325,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\InvoiceAddPartsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InvoiceAddQuotationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -242,12 +242,15 @@ namespace SaadiaInventorySystem.Service
         {
             try
             {
+                int save = 0;
                 _logger.LogDebug("Updating Invoice");
                 Invoice invoice = (Invoice)dao.Invoices
                     .Include(r => r.Order)
                     .ThenInclude(r => r.OrderItems)
                     .ThenInclude(r => r.Inventory)
-                    .Where(q => q.Id.Equals(data.Id)).FirstOrDefault();
+                    .Include(r=> r.Customer)
+                    .Where(q => q.Id.Equals(data.Id)).Single();
+
                 if (invoice == null)
                 {
                     _logger.LogDebug("Update operation failed. Invoice not found");
@@ -255,21 +258,54 @@ namespace SaadiaInventorySystem.Service
                 }
 
                 _logger.LogDebug("Invoice found");
-                
                 invoice.DateUpdated = DateTime.Now;
-                invoice.OrderId = data.OrderId;
+
+                if (invoice.Order.OrderItems.Any())
+                {
+                    dao.RemoveRange(invoice.Order.OrderItems);
+                    await dao.SaveChangesAsync();
+                }
+                foreach (var item in data.Order.OrderItems)
+                {
+                    invoice.Order.OrderItems.Add(new OrderItem()
+                    {
+                        InventoryId = item.Inventory.Id,
+                        OfferedPrice = item.OfferedPrice,
+                        OrderId = data.OrderId,
+                        OrderQty = item.OrderQty,
+
+                    });
+                }
+                save+= await dao.SaveChangesAsync();
+                
+                invoice.CustomerId = data.Customer.Id;
+                invoice.Customer.Id = data.Customer.Id;
+                invoice.Customer.Address = data.Customer.Address;
+                invoice.Customer.IsActive = 1;
+                invoice.Customer.EmailAddress = data.Customer.EmailAddress;
+                invoice.Customer.CompanyName = data.Customer.CompanyName;
+                invoice.Customer.DateCreated = data.Customer.DateCreated;
+                invoice.Customer.DateUpdated = DateTime.Now;
+                invoice.Customer.FirstName = data.Customer.FirstName;
+                invoice.Customer.LastName = data.Customer.LastName;
+                invoice.Customer.PhoneNumber = data.Customer.PhoneNumber;
+                invoice.Customer.Postcode = data.Customer.Postcode;
+                invoice.Customer.Trn = data.Customer.Trn;
+                
+                
+                //dao.Customers.Update(invoice.Customer);
+                save+= await dao.SaveChangesAsync();
                 invoice.OrderPurchaseNumber = data.OrderPurchaseNumber;
                 invoice.QuotationId = data.QuotationId;
-                invoice.Order.OrderItems = data.Order.OrderItems;
-                invoice.CustomerId = data.CustomerId;
-                invoice.Customer = data.Customer;
                 invoice.OfferedDiscount = data.OfferedDiscount;
                 invoice.VAT = data.VAT;
                 invoice.IsActive = data.IsActive;
                 invoice.Message = data.Message;
                 invoice.MS = data.MS;
                 invoice.Note = data.Note;
-                bool success = await dao.SaveChangesAsync() > 0;
+                
+                save+= await dao.SaveChangesAsync();
+                bool success = save > 0;
                 if (success)
                 {
                     _logger.LogDebug("Update operation success.");

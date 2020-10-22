@@ -28,9 +28,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private ObservableCollection<Invoice> _invoices;
         private ObservableCollection<Invoice> _bulkInvoices;
         private Invoice _selectedBulkInvoice;
+        private ObservableCollection<Quotation> _quotationList;
         private ObservableCollection<Customer> _customersList;
         private Customer _selectedCustomer;
         private Invoice _selectedInvoice;
+        private Quotation _selectedQuotation;
         private ObservableCollection<Inventory> _partsList;
         private Invoice _newInvoice;
         private OrderItem _selectedOrderItem;
@@ -65,6 +67,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         private RelayCommand<IClosable> _uploadCommand;
 
+        private ICommand _openAddExistingQuotationWindowCommand;
         private ICommand _openAddCustomerWindowCommand;
         private ICommand _openAddPartsWindowCommand;
         private ICommand _editWindowCommand;
@@ -74,6 +77,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         private RelayCommand<IClosable> _selectCustomerCommand;
         private RelayCommand<IClosable> _selectPartCommand;
+        private RelayCommand<IClosable> _selectQuotationCommand;
         private RelayCommand<IClosable> _addOrderItemCommand;
         private RelayCommand<IClosable> _addOrderItemImportCommand;
 
@@ -81,6 +85,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public string Name { get => _name; set { _name = value; RaisePropertyChanged(); } }
         public Invoice SelectedInvoice { get => _selectedInvoice; set { _selectedInvoice = value; RaisePropertyChanged(); } }
         public Invoice SelectedBulkInvoice { get => _selectedBulkInvoice; set { _selectedBulkInvoice = value; RaisePropertyChanged(); } }
+        public Quotation SelectedQuotation { get => _selectedQuotation; set { _selectedQuotation = value; RaisePropertyChanged(); } }
         public Invoice NewInvoice { get => _newInvoice; set { _newInvoice = value; RaisePropertyChanged(); } }
         public ObservableCollection<Invoice> Invoices { get => _invoices; set { _invoices = value; RaisePropertyChanged(); } }
         public ObservableCollection<Invoice> BulkInvoices { get => _bulkInvoices; set { _bulkInvoices = value; RaisePropertyChanged(); } }
@@ -106,6 +111,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public RelayCommand<IClosable> UploadCommand { get => _uploadCommand; set { _uploadCommand = value; RaisePropertyChanged(); } }
         public RelayCommand ExportCommand { get { return _exportCommand; } set { _exportCommand = value; RaisePropertyChanged(); } }
 
+        public ICommand OpenAddExistingQuotationWindowCommand { get => _openAddExistingQuotationWindowCommand; set { _openAddExistingQuotationWindowCommand = value; RaisePropertyChanged(); } }
         public ICommand OpenAddCustomerWindowCommand { get => _openAddCustomerWindowCommand; set { _openAddCustomerWindowCommand = value; RaisePropertyChanged(); } }
         public ICommand OpenAddPartsWindowCommand { get => _openAddPartsWindowCommand; set { _openAddPartsWindowCommand = value; RaisePropertyChanged(); } }
         public ICommand EditWindowCommand { get => _editWindowCommand; set { _editWindowCommand = value; RaisePropertyChanged(); } }
@@ -115,9 +121,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public RelayCommand<IClosable> SaveImportCommand { get => _saveImportCommand; set { _saveImportCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> SelectCustomerCommand { get => _selectCustomerCommand; set { _selectCustomerCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> SelectPartCommand { get => _selectPartCommand; set { _selectPartCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand<IClosable> SelectQuotationCommand { get => _selectQuotationCommand; set { _selectQuotationCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> AddOrderItemCommand { get => _addOrderItemCommand; set { _addOrderItemCommand = value; RaisePropertyChanged(); } }
         public RelayCommand<IClosable> AddOrderItemImportCommand { get => _addOrderItemImportCommand; set { _addOrderItemImportCommand = value; RaisePropertyChanged(); } }
 
+        public ObservableCollection<Quotation> QuotationList { get => _quotationList; set { _quotationList = value; RaisePropertyChanged(); } }
         public ObservableCollection<Customer> CustomersList { get => _customersList; set { _customersList = value; RaisePropertyChanged(); } }
         public Customer SelectedCustomer { get => _selectedCustomer; set { _selectedCustomer = value; RaisePropertyChanged(); } }
         public ObservableCollection<Inventory> PartsList { get => _partsList; set { _partsList = value; RaisePropertyChanged(); } }
@@ -155,6 +163,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             RemoveRecordCommand = new RelayCommand(i => RemoveImportRecord(), i => BulkInvoices.Count >= 1);
 
             EditWindowCommand = new RelayCommand(i => OpenEditWindow(), i => SelectedInvoice != null);
+            OpenAddExistingQuotationWindowCommand = new RelayCommand(i => OpenAddQuotaionWindow(), i => true);
             OpenAddCustomerWindowCommand = new RelayCommand(i => OpenAddCustomerWindow(), i => true);
             OpenAddPartsWindowCommand = new RelayCommand(i => OpenAddPartsWindow(), i => true);
             EditImportPartOpenCommand = new RelayCommand(i => OpenImportEditWindow(), (i) => SelectedImportOrderItem != null);
@@ -176,6 +185,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             UploadCommand = new RelayCommand<IClosable>(i => Upload(i), i => true);
             SelectCustomerCommand = new RelayCommand<IClosable>(i => SelectCustomersCommand(i), i => true);
             SelectPartCommand = new RelayCommand<IClosable>(i => SelectPartsCommand(i), i => true);
+            SelectQuotationCommand = new RelayCommand<IClosable>(i => SelectedQuotationCommand(i), i => true);
             AddOrderItemCommand = new RelayCommand<IClosable>(i => AddOrderItem(i), i => true);
             AddOrderItemImportCommand = new RelayCommand<IClosable>(i => AddOrderItemsImport(i), i => true);
             DuplicateCommand = new RelayCommand(i => SetDuplicateSet(i), i => true);
@@ -273,6 +283,27 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             throw new NotImplementedException();
         }
+        private void SelectedQuotationCommand(IClosable i)
+        {
+            NewInvoice.QuotationId = SelectedQuotation.Id;
+            NewInvoice.IsActive = 1;
+            NewInvoice.Message = SelectedQuotation.Message;
+            NewInvoice.MS = SelectedQuotation.MS;
+            NewInvoice.Note = SelectedQuotation.Note;
+            NewInvoice.OfferedDiscount = SelectedQuotation.OfferedDiscount;
+            NewInvoice.Order = SelectedQuotation.Order;
+            //NewInvoice.OrderId = SelectedQuotation.OrderId;
+            NewInvoice.QuotationNumber = SelectedQuotation.QuotationNumber;
+            NewInvoice.VAT = SelectedQuotation.VAT;
+            NewInvoice.Attn = SelectedQuotation.Attn;
+            NewInvoice.Confirmation = false;
+            NewInvoice.Customer = SelectedQuotation.Customer;
+            //NewInvoice.CustomerId = SelectedQuotation.CustomerId;
+            NewInvoice.Date = DateTime.Now.ToString();
+            NewInvoice.DateCreated = DateTime.Now;
+            
+            i.Close();
+        }
 
         private void SelectCustomersCommand(IClosable i)
         {
@@ -314,14 +345,16 @@ namespace SaadiaInventorySystem.Client.ViewModel
             {
                 if (item.InventoryId > 0)
                 {
-                    item.Inventory = null;
+                    //item.Inventory = null;
+                    item.InventoryId = 0;
                 }
                 item.IsActive = 1;
                 item.OrderId = NewInvoice.OrderId;
             }
             NewInvoice.CustomerId = NewInvoice.Customer.Id;
-            NewInvoice.Customer = null;
-
+           // NewInvoice.Customer = null;
+            //if (NewInvoice.OrderId > 0)
+            //    NewInvoice.Order = null;
             if (!isEdit)
             {
                 await AddAsync();
@@ -532,6 +565,13 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         }
 
+        private async void OpenAddQuotaionWindow()
+        {
+            var _service = new QuotationService();
+            QuotationList = new ObservableCollection<Quotation>(await _service.CallGetAllService());
+            var window = new InvoiceAddQuotationView(this);
+            window.ShowDialog();
+        }
         private async void OpenAddCustomerWindow()
         {
             var _service = new CustomerService();

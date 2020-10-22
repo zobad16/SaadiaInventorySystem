@@ -182,7 +182,7 @@
                  VerticalAlignment="Center"
                  VerticalContentAlignment="Center"
                  Margin="10,0,0,0"
-                 Command="{Binding OpenAddCustomerWindowCommand}">
+                 Command="{Binding OpenAddExistingQuotationWindowCommand}">
             <TextBlock Text="Add from Existing Quotation" 
                        TextWrapping="Wrap"/>
         </Button>
