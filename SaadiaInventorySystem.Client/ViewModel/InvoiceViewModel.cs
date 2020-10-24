@@ -747,11 +747,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
             int PixelTop = 0;
             int PixelLeft = 50 * 3;
             //Title logo
-            Image logo = Image.FromFile(@"C:\Users\zobad\Desktop\Hamza\ExcelTest\logo.jpg");
-            ExcelPicture pic = workSheet.Drawings.AddPicture("Logo", logo);
-            pic.SetSize(4);
-            pic.SetPosition(0, 0, 1, 110);
-            // pic.SetPosition(PixelTop, PixelLeft);
+            //Image logo = Image.FromFile(@"C:\Users\zobad\Desktop\Hamza\ExcelTest\logo.jpg");
+            //ExcelPicture pic = workSheet.Drawings.AddPicture("Logo", logo);
+            //pic.SetSize(4);
+            //pic.SetPosition(0, 0, 1, 110);
+            //// pic.SetPosition(PixelTop, PixelLeft);
 
             workSheet.Cells["A2:G2"].Value = address;
             var rich_email = emailCell.RichText.Add($"{emailAddress}, ");
@@ -1068,7 +1068,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 // Save document
                 string filename = dlg.FileName;
                 WriteFileExcel(filename);
-                WriteFilePDF(filename);
+              //  WriteFilePDF(filename);
             }
         }
         private void WriteFilePDF(string path)
@@ -1299,12 +1299,18 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Cells[$"A{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 double net = SelectedInvoice.NetTotal;
                 string nettotal = net.ToString();
-                string whole = "0", decimalVal = "0";
                 int dp = nettotal.IndexOf(".");
-                if (dp > 0)
+                string whole = "0", decimalVal = "0";
+
+                if (dp >= 1)
                 {
                     whole = nettotal.Substring(0, dp);
                     decimalVal = nettotal.Substring(dp + 1);
+                }
+                else
+                {
+                    whole = nettotal;
+                    //decimalVal = "0";
                 }
                 int _whole = Int32.Parse(whole);
                 int _fills = Int32.Parse(decimalVal);

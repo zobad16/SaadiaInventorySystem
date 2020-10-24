@@ -289,7 +289,15 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private async void OpenAddPartsWindow()
         {
             var _service = new InventoryService();
-            PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            if (CurrentUserRole(AppProperties.ROLE_ADMIN))
+            {
+                PartsList = new ObservableCollection<Inventory>(await _service.CallAdminGetAllService());
+            }
+            else
+            {
+                PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            }
+            
             SelectedOrderItem = new OrderItem() { Inventory = new Inventory()};
             var window = new QuotationAddPartsView(this);
             window.ShowDialog();
@@ -297,7 +305,14 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private async void OpenImportAddPartsWindow()
         {
             var _service = new InventoryService();
-            PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            if (CurrentUserRole(AppProperties.ROLE_ADMIN))
+            {
+                PartsList = new ObservableCollection<Inventory>(await _service.CallAdminGetAllService());
+            }
+            else
+            {
+                PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            }
             SelectedImportOrderItem = new OrderItem() { Inventory = new Inventory()};
             var window = new QuotationImportAddOrderItemView(this);
             isEdit = false;
@@ -306,7 +321,14 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private async void OpenImportEditWindow()
         {
             var _service = new InventoryService();
-            PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            if (CurrentUserRole(AppProperties.ROLE_ADMIN))
+            {
+                PartsList = new ObservableCollection<Inventory>(await _service.CallAdminGetAllService());
+            }
+            else
+            {
+                PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            }
             isEdit = true;
             var window = new QuotationImportAddOrderItemView(this);
             window.ShowDialog();
@@ -324,7 +346,14 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             //load customer data
             var _service = new CustomerService();
-            CustomersList = new ObservableCollection<Customer>(await _service.CallGetAllService());
+            if (CurrentUserRole(AppProperties.ROLE_ADMIN)) 
+            {
+                CustomersList = new ObservableCollection<Customer>(await _service.CallAdminGetAllService());
+            }
+            else 
+            {
+                CustomersList = new ObservableCollection<Customer>(await _service.CallGetAllService());
+            }
             var window = new QuotationAddCustomerView(this);
             window.ShowDialog();
         }
@@ -612,7 +641,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
                 workSheet.Cells["A5"].Value = "To: ";
                 workSheet.Cells["A5"].Style.Font.Bold = true;
-                workSheet.Cells["B5"].Value = $"MR. {SelectedQuotation.Customer.FirstName.ToUpper() } {SelectedQuotation.Customer.LastName.ToUpper()}";
+                string name = SelectedQuotation.Customer != null ? SelectedQuotation.Customer.FirstName.ToUpper()+" "+ SelectedQuotation.Customer.LastName.ToUpper() : "";
+                workSheet.Cells["B5"].Value = $"MR. {name}";
 
                 workSheet.Cells["A6"].Value = "ATTN: ";
                 workSheet.Cells["A6"].Style.Font.Bold = true;
@@ -744,12 +774,18 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Cells[$"A{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 double net = Math.Round(SelectedQuotation.NetTotal, 2);
                 string nettotal = net.ToString();
-                string whole = "", decimalVal = "";
                 int dp = nettotal.IndexOf(".");
-                if (dp > 0)
+                string whole = "0", decimalVal = "0";
+
+                if (dp >= 1)
                 {
                     whole = nettotal.Substring(0, dp);
                     decimalVal = nettotal.Substring(dp + 1);
+                }
+                else
+                {
+                    whole = nettotal;
+                    //decimalVal = "0";
                 }
                 int _whole = Int32.Parse(whole);
                 int _fills = Int32.Parse(decimalVal);
@@ -856,12 +892,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
             arabicTitle.Size = 28;
             int PixelTop = 0;
             int PixelLeft = 50 * 3;
-            //Title logo
-            Image logo = Image.FromFile(@"C:\Users\zobad\Desktop\Hamza\ExcelTest\logo.jpg");
-            ExcelPicture pic = workSheet.Drawings.AddPicture("Logo", logo);
-            pic.SetSize(4);
-            pic.SetPosition(0, 0, 1, 110);
-            // pic.SetPosition(PixelTop, PixelLeft);
+            ////Title logo
+            //Image logo = Image.FromFile(@"C:\Users\zobad\Desktop\Hamza\ExcelTest\logo.jpg");
+            //ExcelPicture pic = workSheet.Drawings.AddPicture("Logo", logo);
+            //pic.SetSize(4);
+            //pic.SetPosition(0, 0, 1, 110);
+            //// pic.SetPosition(PixelTop, PixelLeft);
 
             workSheet.Cells["A2:G2"].Value = address;
             var rich_email = emailCell.RichText.Add($"{emailAddress}, ");

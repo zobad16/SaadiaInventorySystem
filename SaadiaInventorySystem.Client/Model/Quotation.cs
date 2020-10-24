@@ -41,8 +41,8 @@ namespace SaadiaInventorySystem.Client.Model
         public int OrderId { get => orderId; set { orderId = value; RaisePropertyChanged(); } }
         public Order Order { get => order; set { order = value; RaisePropertyChanged(); } }
 
-        public double OfferedDiscount { get => offeredDiscount; set { offeredDiscount = value; RaisePropertyChanged(); } }
-        public double VAT { get => vat; set { vat = value; RaisePropertyChanged(); } }
+        public double OfferedDiscount { get => offeredDiscount; set { offeredDiscount = value; RaisePropertyChanged(); CalculateNetTotal(); } }
+        public double VAT { get => vat; set { vat = value; RaisePropertyChanged(); CalculateNetTotal(); } }
         public string MS { get => ms; set { ms = value; RaisePropertyChanged(); } }
         public string Attn { get => attn; set { attn = value; RaisePropertyChanged(); } }
         public string Note { get => note; set { note = value; RaisePropertyChanged();} }
@@ -65,7 +65,7 @@ namespace SaadiaInventorySystem.Client.Model
         public void CalculateNetTotal()
         {
             Order.CalculateTotalPrice();
-            if (VAT == 0) VAT = 5;
+            if (VAT == 0) VAT = 8;
             foreach (var part in Order.OrderItems)
                 part.CalculateVAT();
             double total_percent = offeredDiscount/ 100;

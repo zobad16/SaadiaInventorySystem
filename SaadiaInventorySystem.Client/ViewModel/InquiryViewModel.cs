@@ -1,4 +1,8 @@
 ﻿using ExcelDataReader;
+using Humanizer;
+using OfficeOpenXml;
+using OfficeOpenXml.Drawing;
+using OfficeOpenXml.Style;
 using SaadiaInventorySystem.Client.Model;
 using SaadiaInventorySystem.Client.Services;
 using SaadiaInventorySystem.Client.Util;
@@ -6,6 +10,7 @@ using SaadiaInventorySystem.Client.View;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -41,6 +46,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private RelayCommand _activateCommand;
         private RelayCommand _disableCommand;
         private RelayCommand _importCommand;
+        private RelayCommand _exportCommand;
         private RelayCommand _nextRecordCommand;
         private RelayCommand _previousRecordCommand;
         private RelayCommand _duplicateCommand;
@@ -80,6 +86,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             DisableCommand = new RelayCommand(i => DisableAsync(), (a) => SelectedInquiry != null);
             DeleteCommand = new RelayCommand(i => DeleteAsync(), (a) => SelectedInquiry != null);
             ImportCommand = new RelayCommand(i => ImportInvoice(), i => true);
+            ExportCommand = new RelayCommand(i => ExportInquiry(), (i) => SelectedInquiry != null); 
             NextRecordCommand = new RelayCommand(i => NextRecord());
             PreviousRecordCommand = new RelayCommand(i => PreviousRecord());
             SaveImportCommand = new RelayCommand<IClosable>(i => SaveImport(i), i => BulkInquiry.Count <= 1);
@@ -127,6 +134,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public RelayCommand ActivateCommand { get => _activateCommand; set { _activateCommand = value; RaisePropertyChanged(); } }
         public RelayCommand DisableCommand { get => _disableCommand; set { _disableCommand = value; RaisePropertyChanged(); } }
         public RelayCommand ImportCommand { get => _importCommand; set { _importCommand = value; RaisePropertyChanged(); } }
+        public RelayCommand ExportCommand { get => _exportCommand; set { _exportCommand = value; RaisePropertyChanged(); } }
         public RelayCommand NextRecordCommand { get => _nextRecordCommand; set { _nextRecordCommand = value; RaisePropertyChanged(); } }
         public RelayCommand PreviousRecordCommand{ get => _previousRecordCommand; set { _previousRecordCommand = value; RaisePropertyChanged(); } }
         
@@ -324,7 +332,14 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private async void OpenImportAddPartsWindow()
         {
             var _service = new InventoryService();
-            PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            if (CurrentUserRole(AppProperties.ROLE_ADMIN))
+            {
+                PartsList = new ObservableCollection<Inventory>(await _service.CallAdminGetAllService());
+            }
+            else
+            {
+                PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            }
             SelectedInquiryItem = new InquiryItem() { Inventory = new Inventory() };
             var window = new InquiryImportAddItemView(this);
             isEdit = false;
@@ -411,7 +426,14 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private async void OpenAddPartsWindow()
         {
             var _service = new InventoryService();
-            PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            if (CurrentUserRole(AppProperties.ROLE_ADMIN))
+            {
+                PartsList = new ObservableCollection<Inventory>(await _service.CallAdminGetAllService());
+            }
+            else
+            {
+                PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            }
             SelectedItem = new InquiryItem() { Inventory = new Inventory(),IsActive =1 };
             var window = new InquiryAddPartsView(this);
             window.ShowDialog();
@@ -431,7 +453,14 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private async void OpenImportEditWindow()
         {
             var _service = new InventoryService();
-            PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            if (CurrentUserRole(AppProperties.ROLE_ADMIN))
+            {
+                PartsList = new ObservableCollection<Inventory>(await _service.CallAdminGetAllService());
+            }
+            else
+            {
+                PartsList = new ObservableCollection<Inventory>(await _service.CallGetAllService());
+            }
             isEdit = true;
             var window = new InquiryImportAddItemView(this);
             window.ShowDialog();
@@ -497,6 +526,328 @@ namespace SaadiaInventorySystem.Client.ViewModel
             window.DataContext = this;
             window.ShowDialog();
 
+        }
+        private void ExportInquiry()
+        {
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.FileName = "Inquiry"; // Default file name
+            dlg.DefaultExt = ".xlsx"; // Default file extension
+            dlg.Filter = "Excel(.xlsx)|*.xlsx |Excel(.xls)|*.xls"; // Filter files by extension
+
+            // Show save file dialog box
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Process save file dialog box results
+            if (result == true)
+            {
+                // Save document
+                string filename = dlg.FileName;
+                WriteFileExcel(filename);
+            }
+
+        }
+        private void WriteFileExcel(string path)
+        {
+
+            ExcelPackage excel = new ExcelPackage();
+            try
+            {
+                // name of the sheet 
+                if (SelectedInquiry== null)
+                {
+                    MessageBox.Show("Error. Exporting file. No Inquiry was selected. Please select an inquiry and try again");
+                    return;
+                }
+                var workSheet = excel.Workbook.Worksheets.Add($"{SelectedInquiry.Id}");
+                //Header
+                ExcelHeader(workSheet);
+
+                workSheet.Cells["A4"].Value = "Inquiry Number: ";
+                workSheet.Cells["A4"].Style.Font.Bold = true;
+
+                workSheet.Cells["B4:C4"].Merge = true;
+                workSheet.Cells["B4"].Value = $"{SelectedInquiry.InquiryNumber}";
+
+                workSheet.Cells["D4"].Value = "DATE: ";
+                workSheet.Cells["D4"].Style.Font.Bold = true;
+
+                workSheet.Cells["E4"].Value = $"{SelectedInquiry.DateCreated.ToShortDateString()}";
+
+                //workSheet.Cells["A5"].Value = "To: ";
+                //workSheet.Cells["A5"].Style.Font.Bold = true;
+                //workSheet.Cells["B5"].Value = $"MR. {SelectedInquiry.Customer.FirstName.ToUpper() } {SelectedInquiry.Customer.LastName.ToUpper()}";
+                workSheet.Cells["A5"].Value = "M/S";
+                workSheet.Cells["A5"].Style.Font.Bold = true;
+                workSheet.Cells["B5"].Value = $"{SelectedInquiry.Ms}";
+
+                workSheet.Cells["A6"].Value = "ATTN: ";
+                workSheet.Cells["A6"].Style.Font.Bold = true;
+                workSheet.Cells["B6"].Value = $"{SelectedInquiry.Attn}";
+
+                workSheet.Cells["A8"].Value = "S.No";
+
+                workSheet.Cells["B8"].Value = "Part No.";
+                workSheet.Cells["C8"].Value = "Description";
+                workSheet.Cells["D8"].Value = "Qty";
+                
+                workSheet.Cells["E8"].Value = "Units";
+                workSheet.Cells["F8"].Value = "U.Price";
+                workSheet.Cells["G8"].Value = "Total Price";
+                workSheet.Cells["A8:G8"].Style.Font.Bold = true;
+
+                workSheet.Cells["A8:G8"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells["A8:G8"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells["A8:G8"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells["A8:G8"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells["A8:G8"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                workSheet.Cells["A8:G8"].Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
+                workSheet.Row(8).Style.Font.Color.SetColor(Color.White);
+
+
+                int i = 10;
+                int count = 1;
+                foreach (var items in SelectedInquiry.Items)
+                {
+                    workSheet.Cells[$"A{i}"].Value = $"{count}";
+                    workSheet.Cells[$"B{i}"].Value = $"{items.Inventory.PartNumber.ToUpper()}";
+                    workSheet.Cells[$"C{i}"].Value = $"{items.Inventory.Description.ToUpper()}";
+                    workSheet.Cells[$"D{i}"].Value = $"{items.OfferedQty}";
+                    workSheet.Cells[$"E{i}"].Value = $"Ea";
+                    if (items.OfferedPrice > 0)
+                    {
+                        workSheet.Cells[$"F{i}"].Value = $"{items.OfferedPrice}";
+                    }
+                    else
+                    {
+                        workSheet.Cells[$"F{i}"].Value = $"{items.Inventory.UnitPrice}";
+                    }
+
+                    workSheet.Cells[$"G{i}"].Value = $"{items.Total}";
+
+                    workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    i++;
+                    count++;
+                }
+                double total = SelectedInquiry.Total;
+                i++;
+                //Gross Total
+                workSheet.Cells[$"A{i}:F{i}"].Merge = true;
+                workSheet.Cells[$"A{i}:F{i}"].Value = "Gross Total";
+                workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                workSheet.Cells[$"G{i}"].Value = $"{SelectedInquiry.Total}";
+                workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"A{i}:G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+                i++;
+                //Vat
+                workSheet.Cells[$"A{i}:F{i}"].Merge = true;
+                workSheet.Cells[$"A{i}:F{i}"].Value = $"{SelectedInquiry.VatPercent}% Vat";
+                workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
+                double vatCal = (SelectedInquiry.Vat / 100 * total);
+                workSheet.Cells[$"G{i}"].Value = $"{SelectedInquiry.Vat}";
+                workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+
+                i++;
+                //Discount
+                workSheet.Cells[$"A{i}:F{i}"].Merge = true;
+                workSheet.Cells[$"A{i}:F{i}"].Value = $"{SelectedInquiry.Discount}% Discount";
+                workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                double discount = SelectedInquiry.Discount > 0 ? (SelectedInquiry.Discount/ 100 * total) : 0;
+                workSheet.Cells[$"G{i}"].Value = $"{discount}";
+                workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+
+                i++;
+                //Net Total
+                workSheet.Cells[$"A{i}"].Value = "Total".ToUpper();
+                workSheet.Cells[$"A{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"B{i}:F{i}"].Merge = true;
+                workSheet.Cells[$"A{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                double net = Math.Round(SelectedInquiry.NetTotal, 2);
+                string nettotal = net.ToString();
+                int dp = nettotal.IndexOf(".");
+                string whole = "0", decimalVal = "0";
+
+                if (dp >= 1)
+                {
+                    whole = nettotal.Substring(0, dp);
+                    decimalVal = nettotal.Substring(dp + 1);
+                }
+                else
+                {
+                    whole = nettotal;
+                    //decimalVal = "0";
+                }
+                int _whole = Int32.Parse(whole);
+                int _fills = Int32.Parse(decimalVal);
+                if (decimalVal.Length == 1)
+                    _fills = _fills * 10;
+                string netword = _whole.ToWords();
+                string fills = $"& Fils  {_fills.ToWords().ToUpper()}/100 only";
+                workSheet.Cells[$"B{i}:F{i}"].Value = $"AED. {netword.ToUpper()} {fills}";
+                workSheet.Cells[$"B{i}:F{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"G{i}"].Value = $"{net}";
+                workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
+                workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.LightGray);
+
+                i++;
+                ExcelFooter(workSheet, i);
+
+                workSheet.Column(1).Width = 7.33;
+                workSheet.Column(2).Width = 14;
+                workSheet.Column(3).Width = 41;
+                workSheet.Column(4).AutoFit();
+                workSheet.Column(5).AutoFit();
+                workSheet.Column(7).AutoFit();
+
+                
+                if (File.Exists(path))
+                    File.Delete(path);
+
+                // Create excel file on physical disk  
+                FileStream objFileStrm = File.Create(path);
+                objFileStrm.Close();
+
+                // Write content to excel file  
+                File.WriteAllBytes(path, excel.GetAsByteArray());
+                //Close Excel package 
+                excel.Dispose();
+                MessageBox.Show("Excel successfully exported");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"File export failed. An error occured while exporting the file. \nError details: {ex.Message}");
+                excel.Dispose();
+            }
+
+        }
+        private void ExcelHeader(ExcelWorksheet workSheet)
+        {
+            string arabic_txt = "شركة سعدية للتجارة ذ.م.م";
+            string address = "TEL: 03-7210885, FAX: 03-7219155, P.O.BOX: 80362. Email: saadia@eim.ae, Al-Ain-U.A.E";
+            string emailAddress = "www.saadiatrading.com";
+            string TRN = "TRN:100394617300003";
+
+            workSheet.Cells["A1:G1"].Merge = true;
+            workSheet.Cells["A2:G2"].Merge = true;
+            workSheet.Cells["A3:G3"].Merge = true;
+
+            workSheet.Row(1).Height = 31.20;
+            workSheet.Row(1).Style.Font.Size = 20;
+            workSheet.Row(1).Style.Font.Name = "Trebuchet MS";
+
+            // workSheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            workSheet.Row(1).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+            workSheet.Row(1).Style.Font.Bold = true;
+            workSheet.Row(1).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+            workSheet.Row(2).Height = 14.7;
+            workSheet.Row(2).Style.Font.Size = 9;
+            workSheet.Row(2).Style.Font.Name = "Trebuchet MS";
+            workSheet.Row(2).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            // workSheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            workSheet.Row(2).Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+            workSheet.Row(2).Style.VerticalAlignment = ExcelVerticalAlignment.Bottom;
+
+            workSheet.Row(3).Height = 14.7;
+            workSheet.Row(3).Style.Font.Size = 9;
+            workSheet.Row(3).Style.Font.Name = "Trebuchet MS";
+            workSheet.Row(3).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            // workSheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            workSheet.Row(3).Style.VerticalAlignment = ExcelVerticalAlignment.Bottom;
+
+
+            // Header of the Excel sheet 
+            var titleCell = workSheet.Cells[1, 1];
+            titleCell.IsRichText = true;
+            var emailCell = workSheet.Cells[3, 1];
+            emailCell.IsRichText = true;
+
+            var title = titleCell.RichText.Add("SAADIA TRADING CO.");
+            var subtitle = titleCell.RichText.Add("LLC\t\t");
+            title.FontName = "Trebuchet MS             ";
+            title.Size = 20;
+            subtitle.FontName = "Trebuchet MS";
+            subtitle.Size = 11;
+
+            var arabicTitle = titleCell.RichText.Add($"  \t{arabic_txt}");
+            arabicTitle.FontName = "Traditional Arabic";
+            arabicTitle.Size = 28;
+            int PixelTop = 0;
+            int PixelLeft = 50 * 3;
+            //Title logo
+            //Image logo = Image.FromFile(@"C:\Users\zobad\Desktop\Hamza\ExcelTest\logo.jpg");
+            //ExcelPicture pic = workSheet.Drawings.AddPicture("Logo", logo);
+            //pic.SetSize(4);
+            //pic.SetPosition(0, 0, 1, 110);
+            //// pic.SetPosition(PixelTop, PixelLeft);
+
+            workSheet.Cells["A2:G2"].Value = address;
+            var rich_email = emailCell.RichText.Add($"{emailAddress}, ");
+            var rich_TRN = emailCell.RichText.Add($" {TRN} ");
+            rich_email.Bold = true;
+            rich_email.Italic = true;
+            rich_email.UnderLine = true;
+
+            rich_TRN.Bold = true;
+            rich_TRN.Italic = true;
+            rich_TRN.UnderLine = true;
+            rich_TRN.Color = System.Drawing.Color.Red;
+
+            //workSheet.Cells["A3:G3"].Style.Border.Bottom.Style = ExcelBorderStyle.Thick;
+            //workSheet.Cells["A3:G3"].Style.Border.Top.Style = ExcelBorderStyle.None;
+            //workSheet.Cells["A3:G3"].Style.Border.Right.Style = ExcelBorderStyle.None;
+            //workSheet.Cells["A3:G3"].Style.Border.Left.Style = ExcelBorderStyle.None;
+
+            ExcelShape shape = workSheet.Drawings.AddShape("Line1", eShapeStyle.Line);
+            shape.SetPosition(3, 0, 0, 0);
+            shape.SetSize(440, 1);
+            shape.Border.Fill.Color = Color.Black;
+
+
+        }
+        private void ExcelFooter(ExcelWorksheet workSheet, int i)
+        {
+
+            
+            workSheet.Cells[$"A{ i}:B{i}"].Merge = true;
+            workSheet.Cells[$"A{ i}:B{i}"].Value = "Thanks & Regards,";
+            i++;
+            //Name of the user
+            i++;
+            //Company Name
+            workSheet.Cells[$"A{ i}:B{i}"].Merge = true;
+            workSheet.Cells[$"A{ i}:B{i}"].Value = "For Saadia Trading Co.";
         }
         private async Task Upload(IClosable i)
         {

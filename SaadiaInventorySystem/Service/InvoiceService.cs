@@ -22,39 +22,175 @@ namespace SaadiaInventorySystem.Service
         }
         public async Task<bool> AddAsync(Invoice data) 
         {
-            try
+            using (var transaction = dao.Database.BeginTransaction())
             {
-                _logger.LogDebug("Adding invoice");
-                bool saved = false;
-                bool isexists = dao.Invoices.Any(x => x.Id == data.Id);
-
-                if (!isexists)
+                try
                 {
-                    data.DateCreated = DateTime.Now;
-                    data.DateUpdated = DateTime.Now;
-                    await dao.Invoices.AddAsync(data);
-                    //if confirmed then deduct from inventory
-                    saved = await dao.SaveChangesAsync() > 0;
+                    _logger.LogDebug("Adding invoice");
+                    int res = 0;
+                    bool saved = false;
+                    bool isexists = dao.Invoices.AsNoTracking()
+                        .Include(c => c.Customer)
+                        .Include(o => o.Order)
+                        .ThenInclude(oi => oi.OrderItems)
+                        .Any(x => x.Id == data.Id);
 
-                    if (saved)
+                    if (!isexists)
                     {
-                        _logger.LogDebug("Insert operation successful");
+                        Invoice entity = new Invoice()
+                        {
+                            Attn = data.Attn,
+                            IsActive = 1,
+                            VAT = data.VAT,
+                            Confirmation = false,
+                            CustomerId = data.CustomerId,
+                            Customer = data.Customer,
+                            DateCreated = DateTime.Now,
+                            DateUpdated = DateTime.Now,
+                            Message = data.Message,
+                            MS = data.MS,
+                            Note = data.Note,
+                            OrderPurchaseNumber = data.OrderPurchaseNumber,
+                            OfferedDiscount = data.OfferedDiscount,
+                            QuotationId = data.QuotationId,
+                            QuotationNumber = data.QuotationNumber
+
+                        };
+
+
+                        entity.Order = new Order()
+                        {
+                            IsActive = 1,
+                            DateCreated = DateTime.Now,
+                            DateUpdated = DateTime.Now,
+                            OrderItems = new List<OrderItem>()
+                        };
+                        foreach (var item in data.Order.OrderItems)
+                        {
+                            if (item.InventoryId < 1 && item.Inventory != null)
+                            {
+                                entity.Order.OrderItems.Add(new OrderItem()
+                                {
+                                    InventoryId = item.Inventory.Id,
+                                    OfferedPrice = item.OfferedPrice,
+                                    OrderId = data.OrderId,
+                                    OrderQty = item.OrderQty,
+                                    Inventory = item.Inventory,
+
+                                });
+                                continue;
+                            }
+                            entity.Order.OrderItems.Add(new OrderItem()
+                            {
+                                InventoryId = item.Inventory.Id,
+                                OfferedPrice = item.OfferedPrice,
+                                OrderId = data.OrderId,
+                                OrderQty = item.OrderQty,
+
+                            });
+                        }
+                        if (data.CustomerId > 0) entity.Customer = null;
+                        await dao.Invoices.AddAsync(entity);
+                        //if confirmed then deduct from inventory
+                        res += await dao.SaveChangesAsync();
+
+                        //Existing Customer Update
+                        if (data.CustomerId > 0 && data.Customer != null)
+                        {
+                            var _customer = dao.Customers.Where(i => i.Id == data.Customer.Id).FirstOrDefault();
+                            if (_customer != null)
+                            {
+                                _customer.Id = data.Customer.Id;
+                                _customer.FirstName = data.Customer.FirstName;
+                                _customer.LastName = data.Customer.LastName;
+                                _customer.CompanyName = data.Customer.CompanyName;
+                                _customer.PhoneNumber = data.Customer.PhoneNumber;
+                                _customer.EmailAddress = data.Customer.EmailAddress;
+                                _customer.Postcode = data.Customer.Postcode;
+                                _customer.Trn = data.Customer.Trn;
+                                _customer.Address = data.Customer.Address;
+                                _customer.DateCreated = data.Customer.DateCreated;
+                                _customer.DateUpdated = DateTime.Now;
+                                _customer.IsActive = 1;
+
+                                res += await dao.SaveChangesAsync();
+                            }
+                        }
+
+
+                        //var customer = new Customer();
+                        //if (data.Customer != null)
+                        //{
+
+                        //    customer.Id = data.Customer.Id;
+                        //    customer.Address = data.Customer.Address;
+                        //    customer.EmailAddress = data.Customer.EmailAddress;
+                        //    customer.IsActive = 1;
+                        //    customer.CompanyName = data.Customer.CompanyName;
+                        //    customer.FirstName = data.Customer.FirstName;
+                        //    customer.LastName = data.Customer.LastName;
+                        //    customer.PhoneNumber = data.Customer.PhoneNumber;
+                        //    customer.Postcode = data.Customer.Postcode;
+                        //    customer.Trn = data.Customer.Trn;
+                        //    customer.DateCreated = data.DateCreated;
+                        //    customer.DateUpdated = DateTime.Now;
+
+                        //}
+                        //else {
+                        //    customer = null;
+                        //}
+                        //var invoice = new Invoice()
+                        //{
+                        //    Attn = data.Attn,
+                        //    IsActive = 1,
+                        //    VAT = data.VAT,
+                        //    Confirmation = false,
+                        //    CustomerId = data.CustomerId,
+                        //    Customer = customer,
+                        //    DateCreated = DateTime.Now,
+                        //    DateUpdated = DateTime.Now,
+                        //    Message = data.Message,
+                        //    MS = data.MS,
+                        //    Note = data.Note,
+                        //    OrderPurchaseNumber = data.OrderPurchaseNumber,
+                        //    OfferedDiscount = data.OfferedDiscount,
+                        //    QuotationId = data.QuotationId,
+                        //    QuotationNumber = data.QuotationNumber
+                        //};
+                        //invoice.Order = new Order()
+                        //{
+                        //    IsActive = 1,
+                        //    DateCreated= DateTime.Now,
+                        //    DateUpdated = DateTime.Now,
+                        //    OrderItems = data.Order.OrderItems
+                        //};
+                        //await dao.Invoices.AddAsync(invoice);
+                        ////if confirmed then deduct from inventory
+                        //res+= await dao.SaveChangesAsync() ;
+                        saved = res > 0;
+                        if (saved)
+                        {
+                            _logger.LogDebug("Insert operation successful");
+                            await transaction.CommitAsync();
+                        }
+                        else
+                        {
+                            _logger.LogDebug("Insert operation failed");
+                            await transaction.RollbackAsync();
+                        }
+                        return saved;
                     }
-                    else
-                    {
-                        _logger.LogDebug("Insert operation failed");
-                    }
-                    return saved;
+                    _logger.LogDebug("Insert operation failed. Record already exists");
+                    return false;
+
                 }
-                _logger.LogDebug("Insert operation failed. Record already exists");
-                return false;
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("An Exception occured: {ex}", ex.Message);
-                _logger.LogError("Stack Trace: {ex}", ex.StackTrace);
-                return false;
+                catch (Exception ex)
+                {
+                    _logger.LogError("An Exception occured: {ex}", ex.Message);
+                    _logger.LogError("Stack Trace: {ex}", ex.StackTrace);
+                    await transaction.RollbackAsync();
+                    return false;
+                }
             }
         }
         public async Task<bool> InvoiceConfirmation(int id)
@@ -240,89 +376,111 @@ namespace SaadiaInventorySystem.Service
         }
         public async Task<bool> UpdateAsync(Invoice data) 
         {
-            try
+            using (var transaction = dao.Database.BeginTransaction())
             {
-                int save = 0;
-                _logger.LogDebug("Updating Invoice");
-                Invoice invoice = (Invoice)dao.Invoices
-                    .Include(r => r.Order)
-                    .ThenInclude(r => r.OrderItems)
-                    .ThenInclude(r => r.Inventory)
-                    .Include(r=> r.Customer)
-                    .Where(q => q.Id.Equals(data.Id)).Single();
-
-                if (invoice == null)
+                try
                 {
-                    _logger.LogDebug("Update operation failed. Invoice not found");
-                    return false;
-                }
+                    int save = 0;
+                    _logger.LogDebug("Updating Invoice");
+                    Invoice invoice = (Invoice)dao.Invoices
+                        .Include(r => r.Order)
+                        .ThenInclude(r => r.OrderItems)
+                        .ThenInclude(r => r.Inventory)
+                        .Include(r => r.Customer)
+                        .Where(q => q.Id.Equals(data.Id)).Single();
 
-                _logger.LogDebug("Invoice found");
-                invoice.DateUpdated = DateTime.Now;
-
-                if (invoice.Order.OrderItems.Any())
-                {
-                    dao.RemoveRange(invoice.Order.OrderItems);
-                    await dao.SaveChangesAsync();
-                }
-                foreach (var item in data.Order.OrderItems)
-                {
-                    invoice.Order.OrderItems.Add(new OrderItem()
+                    if (invoice == null)
                     {
-                        InventoryId = item.Inventory.Id,
-                        OfferedPrice = item.OfferedPrice,
-                        OrderId = data.OrderId,
-                        OrderQty = item.OrderQty,
+                        _logger.LogDebug("Update operation failed. Invoice not found");
+                        return false;
+                    }
 
-                    });
+                    _logger.LogDebug("Invoice found");
+                    invoice.DateUpdated = DateTime.Now;
+                    
+                    invoice.CustomerId = data.Customer.Id;
+                    invoice.Customer.Id = data.Customer.Id;
+                    invoice.Customer.Address = data.Customer.Address;
+                    invoice.Customer.IsActive = 1;
+                    invoice.Customer.EmailAddress = data.Customer.EmailAddress;
+                    invoice.Customer.CompanyName = data.Customer.CompanyName;
+                    invoice.Customer.DateCreated = data.Customer.DateCreated;
+                    invoice.Customer.DateUpdated = DateTime.Now;
+                    invoice.Customer.FirstName = data.Customer.FirstName;
+                    invoice.Customer.LastName = data.Customer.LastName;
+                    invoice.Customer.PhoneNumber = data.Customer.PhoneNumber;
+                    invoice.Customer.Postcode = data.Customer.Postcode;
+                    invoice.Customer.Trn = data.Customer.Trn;
+
+
+                    //dao.Customers.Update(invoice.Customer);
+                    save += await dao.SaveChangesAsync();
+                    invoice.OrderPurchaseNumber = data.OrderPurchaseNumber;
+                    invoice.QuotationId = data.QuotationId;
+                    invoice.OfferedDiscount = data.OfferedDiscount;
+                    invoice.VAT = data.VAT;
+                    invoice.IsActive = data.IsActive;
+                    invoice.Message = data.Message;
+                    invoice.MS = data.MS;
+                    invoice.Note = data.Note;
+
+                    save += await dao.SaveChangesAsync();
+                    if (invoice.Order.OrderItems.Any())
+                    {
+                        dao.RemoveRange(invoice.Order.OrderItems);
+                        await dao.SaveChangesAsync();
+                    }
+                    foreach (var item in data.Order.OrderItems)
+                    {
+                        if (item.InventoryId < 1 && item.Inventory == null) continue;
+                        if (item.Inventory.Id > 0)
+                        {
+                            invoice.Order.OrderItems.Add(new OrderItem()
+                            {
+                                InventoryId = item.Inventory.Id,
+                                OfferedPrice = item.OfferedPrice,
+                                OrderId = data.OrderId,
+                                OrderQty = item.OrderQty,
+
+                            });
+                        }
+                        else 
+                        {
+                            invoice.Order.OrderItems.Add(new OrderItem()
+                            {
+                                InventoryId = item.Inventory.Id,
+                                OfferedPrice = item.OfferedPrice,
+                                OrderId = data.OrderId,
+                                OrderQty = item.OrderQty,
+                                Inventory = item.Inventory
+                            });
+                        }
+                        
+                    }
+                    save += await dao.SaveChangesAsync();
+
+                    bool success = save > 0;
+                    if (success)
+                    {
+                        _logger.LogDebug("Update operation success.");
+                        await transaction.CommitAsync();
+                        return true;
+                    }
+                    else
+                    {
+                        _logger.LogDebug("Update operation failed");
+                        await transaction.RollbackAsync();
+                        return false;
+                    }
+
                 }
-                save+= await dao.SaveChangesAsync();
-                
-                invoice.CustomerId = data.Customer.Id;
-                invoice.Customer.Id = data.Customer.Id;
-                invoice.Customer.Address = data.Customer.Address;
-                invoice.Customer.IsActive = 1;
-                invoice.Customer.EmailAddress = data.Customer.EmailAddress;
-                invoice.Customer.CompanyName = data.Customer.CompanyName;
-                invoice.Customer.DateCreated = data.Customer.DateCreated;
-                invoice.Customer.DateUpdated = DateTime.Now;
-                invoice.Customer.FirstName = data.Customer.FirstName;
-                invoice.Customer.LastName = data.Customer.LastName;
-                invoice.Customer.PhoneNumber = data.Customer.PhoneNumber;
-                invoice.Customer.Postcode = data.Customer.Postcode;
-                invoice.Customer.Trn = data.Customer.Trn;
-                
-                
-                //dao.Customers.Update(invoice.Customer);
-                save+= await dao.SaveChangesAsync();
-                invoice.OrderPurchaseNumber = data.OrderPurchaseNumber;
-                invoice.QuotationId = data.QuotationId;
-                invoice.OfferedDiscount = data.OfferedDiscount;
-                invoice.VAT = data.VAT;
-                invoice.IsActive = data.IsActive;
-                invoice.Message = data.Message;
-                invoice.MS = data.MS;
-                invoice.Note = data.Note;
-                
-                save+= await dao.SaveChangesAsync();
-                bool success = save > 0;
-                if (success)
+                catch (Exception ex)
                 {
-                    _logger.LogDebug("Update operation success.");
-                    return true;
-                }
-                else 
-                {
-                    _logger.LogDebug("Update operation failed");
+                    _logger.LogError("An Exception occured: {ex}", ex.Message);
+                    _logger.LogError("Stack Trace: {ex}", ex.StackTrace);
+                    await transaction.RollbackAsync();
                     return false;
                 }
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("An Exception occured: {ex}", ex.Message);
-                _logger.LogError("Stack Trace: {ex}", ex.StackTrace);
-                return false;
             }
         }
         public async Task<bool> DeleteAsync(int id)
