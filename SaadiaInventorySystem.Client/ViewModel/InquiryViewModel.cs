@@ -85,7 +85,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             ActivateCommand = new RelayCommand(i => ActivateAsync(), (a) => SelectedInquiry != null);
             DisableCommand = new RelayCommand(i => DisableAsync(), (a) => SelectedInquiry != null);
             DeleteCommand = new RelayCommand(i => DeleteAsync(), (a) => SelectedInquiry != null);
-            ImportCommand = new RelayCommand(i => ImportInvoice(), i => true);
+            ImportCommand = new RelayCommand(i => ImportInquiry(), i => true);
             ExportCommand = new RelayCommand(i => ExportInquiry(), (i) => SelectedInquiry != null); 
             NextRecordCommand = new RelayCommand(i => NextRecord());
             PreviousRecordCommand = new RelayCommand(i => PreviousRecord());
@@ -367,7 +367,14 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private async Task<List<Inquiry>> DuplicateChecks(List<Inquiry> inquiry)
         {
             var _partsService = new InventoryService();
-            PartsList = new ObservableCollection<Inventory>(await _partsService.CallGetAllService());
+            if (CurrentUserRole(AppProperties.ROLE_ADMIN))
+            {
+                PartsList = new ObservableCollection<Inventory>(await _partsService.CallGetAllService());
+            }
+            else
+            {
+                PartsList = new ObservableCollection<Inventory>(await _partsService.CallGetAllService());
+            }
             var inquiry_list = new List<Inquiry>();
             foreach (var q in inquiry)
             {
@@ -518,7 +525,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             DuplicateState = (string)param;
         }
-        private void ImportInvoice()
+        private void ImportInquiry()
         {
             FilePath = "";
             DuplicateState = "";
@@ -635,7 +642,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 i++;
                 //Gross Total
                 workSheet.Cells[$"A{i}:F{i}"].Merge = true;
-                workSheet.Cells[$"A{i}:F{i}"].Value = "Gross Total";
+                workSheet.Cells[$"A{i}:F{i}"].Value = "Sub-Total";
                 workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
                 workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 workSheet.Cells[$"G{i}"].Value = $"{SelectedInquiry.Total}";
@@ -929,10 +936,10 @@ namespace SaadiaInventorySystem.Client.ViewModel
                             int rows = result.Tables[tab].Rows.Count;
                             int columns = result.Tables[tab].Columns.Count;
 
-                            for (int row = 7; row < rows; row++)
+                            for (int row = 6; row < rows; row++)
                             {
                                 InquiryItem _item = new InquiryItem();
-                                for (int col = 0; col < columns; col++)
+                                for (int col = 0; col < columns-1; col++)
                                 {
                                     var data = result.Tables[tab];
                                     var current = data.Rows[row][col].ToString();
@@ -953,7 +960,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                                         break;
                                         //q.NetTotal = float.Parse(next);
                                     }
-                                    else if (current.ToLower().Contains("sub-total"))
+                                    else if (current.ToLower().Contains("sub-total") || current.ToLower().Contains("Gross Total"))
                                     {
                                         itemflag = false;
                                         break;

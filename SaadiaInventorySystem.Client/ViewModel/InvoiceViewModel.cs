@@ -341,6 +341,9 @@ namespace SaadiaInventorySystem.Client.ViewModel
             //Check if it is create or update mode
             //if create mode
             //Check if inventory id > 0 then set inventory to null
+            var _service = new CustomerService();
+            var customerList = new ObservableCollection<Customer>(await _service.CallGetAllService());
+
             foreach (var item in NewInvoice.Order.OrderItems)
             {
                 if (item.InventoryId > 0)
@@ -351,7 +354,25 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 item.IsActive = 1;
                 item.OrderId = NewInvoice.OrderId;
             }
-            NewInvoice.CustomerId = NewInvoice.Customer.Id;
+            //Check if id matches the firsname and lastname of existing customer
+            var _customer = customerList.Where(i => i.Id == NewInvoice.Customer.Id).FirstOrDefault();
+            //if matches existing record set CustomerId
+            if (_customer != null)
+            {
+                if (_customer.FirstName.Equals(NewInvoice.Customer.FirstName) &&  _customer.LastName.Equals(NewInvoice.Customer.LastName))
+                {
+                    NewInvoice.CustomerId = NewInvoice.Customer.Id;
+                }
+                //If dont match set id to 0
+                else
+                {
+                    //New Record
+                    NewInvoice.CustomerId = 0;
+                    NewInvoice.Customer.Id = 0;
+                }
+            }
+            
+           
            // NewInvoice.Customer = null;
             //if (NewInvoice.OrderId > 0)
             //    NewInvoice.Order = null;
@@ -420,9 +441,15 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             var _service = new CustomerService();
             var _partsService = new InventoryService();
-            CustomersList = new ObservableCollection<Customer>(await _service.CallGetAllService());
-            PartsList = new ObservableCollection<Inventory>(await _partsService.CallGetAllService());
-            var invoice_list = new List<Invoice>();
+            if (CurrentUserRole(AppProperties.ROLE_ADMIN))
+            {
+                CustomersList = new ObservableCollection<Customer>(await _service.CallGetAllService());
+                PartsList = new ObservableCollection<Inventory>(await _partsService.CallGetAllService());
+            }
+            else {
+                CustomersList = new ObservableCollection<Customer>(await _service.CallGetAllService());
+                PartsList = new ObservableCollection<Inventory>(await _partsService.CallGetAllService());
+            }var invoice_list = new List<Invoice>();
             foreach (var q in lists)
             {
                 if (q != null)

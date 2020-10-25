@@ -90,10 +90,18 @@ namespace SaadiaInventorySystem.Service
                         {
                             if (part.Inventory != null)
                             {
-                                part.Inventory.IsActive = 1;
-                                part.Inventory.DateCreated = DateTime.Now;
-                                part.Inventory.DateUpdate = DateTime.Now;
+                                if (part.Inventory.Id >= 1)
+                                {
+                                    part.InventoryId = part.Inventory.Id;
+                                }
+                                else {
+                                    part.Inventory.IsActive = 1;
+                                    part.Inventory.DateCreated = DateTime.Now;
+                                    part.Inventory.DateUpdate = DateTime.Now;
+                                }
+                                
                             }
+                            
                         }
                         await db.AddAsync(item);
                     }
@@ -133,6 +141,11 @@ namespace SaadiaInventorySystem.Service
                         var _inq = db.Inquirys.AsTracking()
                             .Where(pk => pk.Id == inq.Id)
                             .FirstOrDefault();
+                        if (_inq == null)
+                        {
+                            await transaction.CommitAsync();
+                            return await BulkAddAsync(inquiry);
+                        }
                         if (inq != null)
                         {
                             inq.IsActive = 1;
@@ -140,6 +153,7 @@ namespace SaadiaInventorySystem.Service
                             inq.DateUpdated = DateTime.Now;
                             inq.DateIssued = DateTime.Now;
                         }
+                        
                         foreach (var item in inq.Items)
                         {
                             if (item != null)
@@ -149,13 +163,23 @@ namespace SaadiaInventorySystem.Service
                                 item.DateAdded = DateTime.Now;
                                 if (item.Inventory != null)
                                 {
-                                    item.Inventory.IsActive = 1;
-                                    item.Inventory.DateCreated = DateTime.Now;
-                                    item.Inventory.DateUpdate = DateTime.Now;
+                                    if (item.Inventory.Id >= 1)
+                                    {
+                                        item.InventoryId = item.Inventory.Id;
+                                    }
+                                    else
+                                    {
+                                        item.Inventory.IsActive = 1;
+                                        item.Inventory.DateCreated = DateTime.Now;
+                                        item.Inventory.DateUpdate = DateTime.Now;
+                                    }
+                                    //item.Inventory.IsActive = 1;
+                                    //item.Inventory.DateCreated = DateTime.Now;
+                                    //item.Inventory.DateUpdate = DateTime.Now;
                                 }
                             }
                         }
-                        _inq.InquiryNumber = inq.InquiryNumber;
+                        _inq.InquiryNumber = !string.IsNullOrWhiteSpace(inq.InquiryNumber) ? inq.InquiryNumber:"";
                         _inq.Message = !string.IsNullOrWhiteSpace(inq.Message) ? inq.Message : "";
                         _inq.Ms = !string.IsNullOrWhiteSpace(inq.Ms) ? inq.Ms : "";
                         _inq.Note = !string.IsNullOrWhiteSpace(inq.Note) ? inq.Note : "";
@@ -178,43 +202,7 @@ namespace SaadiaInventorySystem.Service
                     return success;
 
 
-                }
-
-               // db.Inquirys.UpdateRange(inquiry);
-            
-                /*
-                foreach (var item in inquiry)
-                {
-                    item.IsActive = 1;
-                    item.DateUpdated = DateTime.Now;
-                    
-
-                    foreach (var part in item.Items)
-                    {
-                        if(item.Id == 0 )
-                        {
-                            part.Inquiry = item;
-                        }
-                        if (part.Inventory != null)
-                        {
-                            part.Inventory.IsActive = 1;
-                            part.Inventory.DateUpdate = DateTime.Now;
-                        }
-                    }
-                }
-                db.Inquirys.UpdateRange(inquiry);
-                int results = await db.SaveChangesAsync();
-                bool success = results > 0;
-                if (success)
-                {
-                    _logger.LogDebug("Inquiry Bulk Insert Success. Records updated {a}", results);
-                }
-                else
-                {
-                    _logger.LogDebug("Inquiry Bulk Insert Failed. Records updated {a}", results);
-                }
-                return success;*/
-
+                }                               
             }
             catch (Exception ex)
             {

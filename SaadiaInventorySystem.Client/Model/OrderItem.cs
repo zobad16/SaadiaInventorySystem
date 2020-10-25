@@ -44,7 +44,7 @@ namespace SaadiaInventorySystem.Client.Model
         {
             CalculateTotal();
             if (VatPercent == 0)
-                VatPercent = 5;
+                VatPercent = 8;
             if (VatPercent > 0)
             {
                 vat = total * vat_percent / 100;

@@ -1194,24 +1194,6 @@ namespace SaadiaInventorySystem.Client.ViewModel
                             }
                         }
                         
-                        //if (addquotes.Count > 0)
-                        //{
-                        //    if (await service.CallBulkInsert(addquotes))
-                        //    {
-                        //        MessageBox.Show("Bulk Insert Success");
-                        //    }
-                        //}
-                        //else if (updatequotes.Count > 0)
-                        //{
-                        //    await service.CallBulkUpdate(updatequotes);
-                        //    MessageBox.Show("Bulk Insert Success. Duplicates records updated");
-                        //}
-                        //else
-                        //{
-                        //    MessageBox.Show("Nothing to insert.Records Already uptodate");
-                        //}
-                        //await GetAll();
-                        //// The result of each spreadsheet is in result.Tables
                     }
                 }
             
@@ -1220,8 +1202,15 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             var _service = new CustomerService();
             var _partsService = new InventoryService();
-            CustomersList = new ObservableCollection<Customer>(await _service.CallGetAllService());
-            PartsList = new ObservableCollection<Inventory>(await _partsService.CallGetAllService());
+            if (CurrentUserRole(AppProperties.ROLE_ADMIN))
+            {
+                CustomersList = new ObservableCollection<Customer>(await _service.CallGetAllService());
+                PartsList = new ObservableCollection<Inventory>(await _partsService.CallGetAllService());
+            }
+            else {
+                CustomersList = new ObservableCollection<Customer>(await _service.CallGetAllService());
+                PartsList = new ObservableCollection<Inventory>(await _partsService.CallGetAllService());
+            }
             var quote_list = new List<Quotation>();
             foreach (var q in quotes)
             {

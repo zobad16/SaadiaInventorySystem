@@ -53,7 +53,9 @@ namespace SaadiaInventorySystem.Service
                             OrderPurchaseNumber = data.OrderPurchaseNumber,
                             OfferedDiscount = data.OfferedDiscount,
                             QuotationId = data.QuotationId,
-                            QuotationNumber = data.QuotationNumber
+                            QuotationNumber = data.QuotationNumber,
+                            Total = data.Total
+                            
 
                         };
 
@@ -67,7 +69,21 @@ namespace SaadiaInventorySystem.Service
                         };
                         foreach (var item in data.Order.OrderItems)
                         {
-                            if (item.InventoryId < 1 && item.Inventory != null)
+                            if (item.InventoryId < 1 && item.Inventory == null) continue;
+                            if (item.Inventory.Id >= 1)
+                            {
+                                entity.Order.OrderItems.Add(new OrderItem()
+                                {
+                                    InventoryId = item.Inventory.Id,
+                                    OfferedPrice = item.OfferedPrice,
+                                    OrderId = data.OrderId,
+                                    OrderQty = item.OrderQty,
+                                    Total = item.Total
+
+                                });
+                                continue;
+                            }
+                            else
                             {
                                 entity.Order.OrderItems.Add(new OrderItem()
                                 {
@@ -76,18 +92,9 @@ namespace SaadiaInventorySystem.Service
                                     OrderId = data.OrderId,
                                     OrderQty = item.OrderQty,
                                     Inventory = item.Inventory,
-
+                                    Total = item.Total
                                 });
-                                continue;
                             }
-                            entity.Order.OrderItems.Add(new OrderItem()
-                            {
-                                InventoryId = item.Inventory.Id,
-                                OfferedPrice = item.OfferedPrice,
-                                OrderId = data.OrderId,
-                                OrderQty = item.OrderQty,
-
-                            });
                         }
                         if (data.CustomerId > 0) entity.Customer = null;
                         await dao.Invoices.AddAsync(entity);
@@ -101,8 +108,6 @@ namespace SaadiaInventorySystem.Service
                             if (_customer != null)
                             {
                                 _customer.Id = data.Customer.Id;
-                                _customer.FirstName = data.Customer.FirstName;
-                                _customer.LastName = data.Customer.LastName;
                                 _customer.CompanyName = data.Customer.CompanyName;
                                 _customer.PhoneNumber = data.Customer.PhoneNumber;
                                 _customer.EmailAddress = data.Customer.EmailAddress;
@@ -116,57 +121,24 @@ namespace SaadiaInventorySystem.Service
                                 res += await dao.SaveChangesAsync();
                             }
                         }
+                        //New Customer
+                        else if (data.CustomerId == 0)
+                        {
+                            var _customer = new Customer();
+                             _customer.Id = data.Customer.Id;
+                            _customer.CompanyName = data.Customer.CompanyName;
+                            _customer.PhoneNumber = data.Customer.PhoneNumber;
+                            _customer.EmailAddress = data.Customer.EmailAddress;
+                            _customer.Postcode = data.Customer.Postcode;
+                            _customer.Trn = data.Customer.Trn;
+                            _customer.Address = data.Customer.Address;
+                            _customer.DateCreated = data.Customer.DateCreated;
+                            _customer.DateUpdated = DateTime.Now;
+                            _customer.IsActive = 1;
 
-
-                        //var customer = new Customer();
-                        //if (data.Customer != null)
-                        //{
-
-                        //    customer.Id = data.Customer.Id;
-                        //    customer.Address = data.Customer.Address;
-                        //    customer.EmailAddress = data.Customer.EmailAddress;
-                        //    customer.IsActive = 1;
-                        //    customer.CompanyName = data.Customer.CompanyName;
-                        //    customer.FirstName = data.Customer.FirstName;
-                        //    customer.LastName = data.Customer.LastName;
-                        //    customer.PhoneNumber = data.Customer.PhoneNumber;
-                        //    customer.Postcode = data.Customer.Postcode;
-                        //    customer.Trn = data.Customer.Trn;
-                        //    customer.DateCreated = data.DateCreated;
-                        //    customer.DateUpdated = DateTime.Now;
-
-                        //}
-                        //else {
-                        //    customer = null;
-                        //}
-                        //var invoice = new Invoice()
-                        //{
-                        //    Attn = data.Attn,
-                        //    IsActive = 1,
-                        //    VAT = data.VAT,
-                        //    Confirmation = false,
-                        //    CustomerId = data.CustomerId,
-                        //    Customer = customer,
-                        //    DateCreated = DateTime.Now,
-                        //    DateUpdated = DateTime.Now,
-                        //    Message = data.Message,
-                        //    MS = data.MS,
-                        //    Note = data.Note,
-                        //    OrderPurchaseNumber = data.OrderPurchaseNumber,
-                        //    OfferedDiscount = data.OfferedDiscount,
-                        //    QuotationId = data.QuotationId,
-                        //    QuotationNumber = data.QuotationNumber
-                        //};
-                        //invoice.Order = new Order()
-                        //{
-                        //    IsActive = 1,
-                        //    DateCreated= DateTime.Now,
-                        //    DateUpdated = DateTime.Now,
-                        //    OrderItems = data.Order.OrderItems
-                        //};
-                        //await dao.Invoices.AddAsync(invoice);
-                        ////if confirmed then deduct from inventory
-                        //res+= await dao.SaveChangesAsync() ;
+                            res += await dao.SaveChangesAsync();
+                            
+                        }
                         saved = res > 0;
                         if (saved)
                         {
@@ -200,6 +172,8 @@ namespace SaadiaInventorySystem.Service
                     .ThenInclude(r => r.Inventory)
                     .Where(i => i.Id == id)
                 .FirstOrDefault();
+            if (inquiry != null && inquiry.Confirmation == true)
+                return false;
             foreach (var item in inquiry.Order.OrderItems)
             {
                 if (item.OrderQty > item.Inventory.AvailableQty)
@@ -292,7 +266,7 @@ namespace SaadiaInventorySystem.Service
                         }
                         else 
                         {
-                            _logger.LogDebug("Updating Cusotmer");
+                            _logger.LogDebug("Updating Customer");
                             item.Customer.DateUpdated = DateTime.Now; 
                         }
                     }
@@ -397,21 +371,27 @@ namespace SaadiaInventorySystem.Service
 
                     _logger.LogDebug("Invoice found");
                     invoice.DateUpdated = DateTime.Now;
-                    
-                    invoice.CustomerId = data.Customer.Id;
-                    invoice.Customer.Id = data.Customer.Id;
-                    invoice.Customer.Address = data.Customer.Address;
-                    invoice.Customer.IsActive = 1;
-                    invoice.Customer.EmailAddress = data.Customer.EmailAddress;
-                    invoice.Customer.CompanyName = data.Customer.CompanyName;
-                    invoice.Customer.DateCreated = data.Customer.DateCreated;
-                    invoice.Customer.DateUpdated = DateTime.Now;
-                    invoice.Customer.FirstName = data.Customer.FirstName;
-                    invoice.Customer.LastName = data.Customer.LastName;
-                    invoice.Customer.PhoneNumber = data.Customer.PhoneNumber;
-                    invoice.Customer.Postcode = data.Customer.Postcode;
-                    invoice.Customer.Trn = data.Customer.Trn;
 
+                    if (data.Customer.Id > 0)
+                    {
+                        invoice.CustomerId = data.Customer.Id;
+                        invoice.Customer.Address = data.Customer.Address;
+                        invoice.Customer.IsActive = 1;
+                        invoice.Customer.EmailAddress = data.Customer.EmailAddress;
+                        invoice.Customer.CompanyName = data.Customer.CompanyName;
+                        invoice.Customer.DateCreated = data.Customer.DateCreated;
+                        invoice.Customer.DateUpdated = DateTime.Now;
+                        //invoice.Customer.FirstName = data.Customer.FirstName;
+                        //invoice.Customer.LastName = data.Customer.LastName;
+                        invoice.Customer.PhoneNumber = data.Customer.PhoneNumber;
+                        invoice.Customer.Postcode = data.Customer.Postcode;
+                        invoice.Customer.Trn = data.Customer.Trn;
+                    }
+                    else
+                    {
+                        invoice.Customer = new Customer();
+                        invoice.Customer = data.Customer;
+                    }
 
                     //dao.Customers.Update(invoice.Customer);
                     save += await dao.SaveChangesAsync();
@@ -423,7 +403,7 @@ namespace SaadiaInventorySystem.Service
                     invoice.Message = data.Message;
                     invoice.MS = data.MS;
                     invoice.Note = data.Note;
-
+                    invoice.Total = data.Total;
                     save += await dao.SaveChangesAsync();
                     if (invoice.Order.OrderItems.Any())
                     {
@@ -441,6 +421,7 @@ namespace SaadiaInventorySystem.Service
                                 OfferedPrice = item.OfferedPrice,
                                 OrderId = data.OrderId,
                                 OrderQty = item.OrderQty,
+                                Total = item.Total
 
                             });
                         }
@@ -452,7 +433,8 @@ namespace SaadiaInventorySystem.Service
                                 OfferedPrice = item.OfferedPrice,
                                 OrderId = data.OrderId,
                                 OrderQty = item.OrderQty,
-                                Inventory = item.Inventory
+                                Inventory = item.Inventory,
+                                Total = item.Total
                             });
                         }
                         
