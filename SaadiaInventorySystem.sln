@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaadiaInventorySystem", "Sa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaadiaInventorySystem.Client", "SaadiaInventorySystem.Client\SaadiaInventorySystem.Client.csproj", "{924EF1F6-3695-4F99-8D67-28C3A9BF72A6}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SaadiaTrading.Client", "SaadiaTrading.Client\SaadiaTrading.Client.vdproj", "{58464559-3B55-406B-B45B-CCB6956517AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{924EF1F6-3695-4F99-8D67-28C3A9BF72A6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{924EF1F6-3695-4F99-8D67-28C3A9BF72A6}.Release|x64.ActiveCfg = Release|Any CPU
 		{924EF1F6-3695-4F99-8D67-28C3A9BF72A6}.Release|x64.Build.0 = Release|Any CPU
+		{58464559-3B55-406B-B45B-CCB6956517AB}.Debug|Any CPU.ActiveCfg = Debug
+		{58464559-3B55-406B-B45B-CCB6956517AB}.Debug|x64.ActiveCfg = Debug
+		{58464559-3B55-406B-B45B-CCB6956517AB}.Release|Any CPU.ActiveCfg = Release
+		{58464559-3B55-406B-B45B-CCB6956517AB}.Release|x64.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

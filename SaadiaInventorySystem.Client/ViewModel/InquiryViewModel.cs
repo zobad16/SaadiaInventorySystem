@@ -263,11 +263,25 @@ namespace SaadiaInventorySystem.Client.ViewModel
             
             if (!isEdit)
             {
-                await AddAsync();
+                if (await AddAsync())
+                {
+                    MessageBox.Show("Inquiry Added Sucessfully");
+                }
+                else 
+                {
+                    MessageBox.Show("Inquiry Add Failed");
+                }
             }
             else if (isEdit)
             {
-                await UpdateAsync();
+                if(await UpdateAsync())
+                {
+                    MessageBox.Show("Inquiry updated Sucessfully");
+                }
+                else
+                {
+                    MessageBox.Show("Inquiry update Failed");
+                }
             }
 
             p.Close();
@@ -485,6 +499,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 MessageBox.Show("Inquiry Activated");
                 await GetAll();
             }
+            else
+            {
+                MessageBox.Show("Inquiry Activate failed");
+                await GetAll();
+            }
         }
         public async Task<bool> DisableAsync()
         {
@@ -495,7 +514,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 return true;
             }
             else
+            {
+                MessageBox.Show("Inquiry Disable failed");
+                await GetAll();
                 return false;
+            }
         }
         public async Task<bool> DeleteAsync()
         {
@@ -504,6 +527,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 if(await service.CallAdminDeleteService(SelectedInquiry.Id))
                 {
                     MessageBox.Show("Inquiry Deleted");
+                    await GetAll();
                     return true;
                 }
                 MessageBox.Show("Inquiry Delete failed");
@@ -514,6 +538,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 if (await service.CallDeleteService(SelectedInquiry.Id))
                 {
                     MessageBox.Show("Inquiry Deleted");
+                    await GetAll();
                     return true;
                 }
                 MessageBox.Show("Inquiry Delete failed");

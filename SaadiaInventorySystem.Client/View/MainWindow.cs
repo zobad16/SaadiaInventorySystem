@@ -1,4 +1,5 @@
 ﻿using SaadiaInventorySystem.Client.Util;
+using System;
 using System.Windows;
 
 namespace SaadiaInventorySystem.Client.View
@@ -11,6 +12,12 @@ namespace SaadiaInventorySystem.Client.View
         public MainWindow()
         {
             InitializeComponent();
+        }
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+
+            Application.Current.Shutdown();
         }
     }
 }

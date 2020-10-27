@@ -12,7 +12,8 @@
         MinWidth="1080"
         ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen"
         Visibility="{Binding Active, Mode=TwoWay}"
-        x:Name="_MainWindow">
+        x:Name="_MainWindow"
+        >
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:HomeViewModel}">
             <view:HomeView />

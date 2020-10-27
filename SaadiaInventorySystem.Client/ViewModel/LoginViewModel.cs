@@ -24,8 +24,6 @@ namespace SaadiaInventorySystem.Client.ViewModel
         public LoginViewModel(MainViewModel vm)
         {
             _mainVM = vm;
-            UserName = "zobad16";
-            Password =  "12345";
             service = new LoginService();
             userservice = new UserService();
         }
@@ -56,24 +54,35 @@ namespace SaadiaInventorySystem.Client.ViewModel
             try
             {
                 bool login = true;
-                string token = await service.CallLoginService(new Model.User() { UserName = this.UserName, Password = this.Password });
-                if (login == true)
+                if (!string.IsNullOrEmpty(UserName) && !string.IsNullOrEmpty(Password))
                 {
-                    token = JsonConvert.DeserializeObject<string>(token);
-                    //Initialize Client
-                    User user = await userservice.CallGetServiceByUserName(this.UserName);
-                    if(user!= null)
+                    string token = await service.CallLoginService(new Model.User() { UserName = this.UserName, Password = this.Password });
+                    if (login == true && !string.IsNullOrEmpty(token))
                     {
-                        AppProperties.UserName = user.UserName;
-                        AppProperties.RoleName = user.Role.RoleName;
-                        AppProperties.SecutiyTokenValue = token;
+                        token = JsonConvert.DeserializeObject<string>(token);
+                        //Initialize Client
+                        User user = await userservice.CallGetServiceByUserName(this.UserName);
+                        if (user != null)
+                        {
+                            AppProperties.UserName = user.UserName;
+                            AppProperties.RoleName = user.Role.RoleName;
+                            AppProperties.SecutiyTokenValue = token;
+                        }
+                        if (window != null)
+                        {
+                            MainVM.Active = Visibility.Visible;
+                            MainVM.LoadViews();
+                            window.Close();
+                        }
                     }
-                    if (window != null)
+                    else
                     {
-                        MainVM.Active = Visibility.Visible;
-                        MainVM.LoadViews();
-                        window.Close();
+                        MessageBox.Show("Invalid username or password");
                     }
+                }
+                else
+                {
+                    MessageBox.Show("Invalid username or password");
                 }
             }
             catch (Exception ex)
