@@ -65,7 +65,7 @@ namespace SaadiaInventorySystem.Client.Model
         public void CalculateNetTotal()
         {
             Order.CalculateTotalPrice();
-            if (VAT == 0) VAT = 8;
+            if (VAT == 0) VAT = 5;
             foreach (var part in Order.OrderItems)
                 part.CalculateVAT();
             double total_percent = offeredDiscount/ 100;

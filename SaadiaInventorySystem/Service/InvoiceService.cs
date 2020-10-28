@@ -395,6 +395,7 @@ namespace SaadiaInventorySystem.Service
 
                     //dao.Customers.Update(invoice.Customer);
                     save += await dao.SaveChangesAsync();
+                    invoice.Attn = data.Attn;
                     invoice.OrderPurchaseNumber = data.OrderPurchaseNumber;
                     invoice.QuotationId = data.QuotationId;
                     invoice.OfferedDiscount = data.OfferedDiscount;

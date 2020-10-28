@@ -11,7 +11,7 @@ namespace SaadiaInventorySystem.Client.Model
         {
             Items = new ObservableCollection<InquiryItem>();
             IsActive = 1;
-            VatPercent = 8;
+            VatPercent = 5;
         }
         public Inquiry(Inquiry i)
         {

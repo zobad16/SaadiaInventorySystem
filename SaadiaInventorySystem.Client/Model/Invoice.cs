@@ -10,7 +10,7 @@ namespace SaadiaInventorySystem.Client.Model
         {
             Order = new Order();
             Customer = new Customer();
-            VAT = 8;
+            VAT = 5;
         }
         private int id;
         private int quotationId;

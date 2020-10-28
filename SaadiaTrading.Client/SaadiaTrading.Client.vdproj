@@ -802,15 +802,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Saadia Inventory Management System"
-        "ProductCode" = "8:{E9BA4A49-770B-4EEB-B52A-C35C89A13B79}"
-        "PackageCode" = "8:{DB1106B2-6A17-4DCE-8D74-83E9F9B50125}"
+        "ProductCode" = "8:{EA298103-388B-4DA9-8F70-9260FFADFEBB}"
+        "PackageCode" = "8:{62DBA8D1-AA60-4FB9-9B1D-7E281F4D29C1}"
         "UpgradeCode" = "8:{364F4979-A8C1-4FB6-B2F2-DB0CF8B39EDA}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:1.0.1"
         "Manufacturer" = "8:Zobad Mahmood"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1338,7 +1338,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_50E4F9874CAD4FECA3B79471DCE3D53A"
             {
-            "SourcePath" = "8:..\\SaadiaInventorySystem.Client\\obj\\Release\\SaadiaInventorySystem.Client.exe"
+            "SourcePath" = "8:..\\SaadiaInventorySystem.Client\\obj\\Debug\\SaadiaInventorySystem.Client.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_C557DE977C794083B41CC2CD50ADC0D5"

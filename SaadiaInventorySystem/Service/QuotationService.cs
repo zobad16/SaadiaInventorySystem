@@ -216,7 +216,7 @@ namespace SaadiaInventorySystem.Service
                 quote.OfferedDiscount = data.OfferedDiscount;
                 quote.QuotationNumber = data.QuotationNumber;
                 quote.ReferenceNumber = data.ReferenceNumber;
-                quote.VAT = quote.VAT;
+                quote.VAT = data.VAT;
                 int results = await dao.SaveChangesAsync();
                 bool success = results > 0;
                 if (success)

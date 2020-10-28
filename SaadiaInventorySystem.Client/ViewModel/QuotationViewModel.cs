@@ -1369,35 +1369,50 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 {
 
                     Quotations = new ObservableCollection<Quotation>(await service.CallAdminGetAllService());
-                    foreach (var item in Quotations)
+                    if (Quotations.Count > 0)
                     {
-                        item.CalculateNetTotal();
-                        foreach (var _item in item.Order.OrderItems)
+                        foreach (var item in Quotations)
                         {
-                            _item.VatPercent = item.VAT;
-                            _item.CalculateVAT();
+                            item.CalculateNetTotal();
+                            foreach (var _item in item.Order.OrderItems)
+                            {
+                                _item.VatPercent = item.VAT;
+                                _item.CalculateVAT();
+                            }
                         }
+                        Message = Quotations[0].Message;
+                        Note = Quotations[0].Note;
+                        IsAdmin = true;
                     }
-                    Message = Quotations[0].Message;
-                    Note = Quotations[0].Note;
-                    IsAdmin = true;
+                    else 
+                    { 
+                        IsAdmin = true;
+                    }
                 }
-            else if (CurrentUserRole(AppProperties.ROLE_USER))
+                else if (CurrentUserRole(AppProperties.ROLE_USER))
                 {
 
                     Quotations = new ObservableCollection<Quotation>(await service.CallGetAllService());
-                    foreach (var item in Quotations)
+                    if (Quotations.Count > 0)
                     {
-                        item.CalculateNetTotal();
-                        foreach (var _item in item.Order.OrderItems)
+                        foreach (var item in Quotations)
                         {
-                            _item.VatPercent = item.VAT;
-                            _item.CalculateVAT();
+                            item.CalculateNetTotal();
+                            foreach (var _item in item.Order.OrderItems)
+                            {
+                                _item.VatPercent = item.VAT;
+                                _item.CalculateVAT();
+                            }
                         }
+                        Message = Quotations[0].Message;
+                        Note = Quotations[0].Note;
+                        IsAdmin = false;
                     }
-                    Message = Quotations[0].Message;
-                    Note = Quotations[0].Note;
-                    IsAdmin = false;
+                    else 
+                    {
+                        IsAdmin = false;
+                    }
+                    
                 }
             }
             catch (Exception ex)

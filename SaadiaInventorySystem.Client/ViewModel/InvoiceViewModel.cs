@@ -371,22 +371,35 @@ namespace SaadiaInventorySystem.Client.ViewModel
                     NewInvoice.Customer.Id = 0;
                 }
             }
-            
-           
-           // NewInvoice.Customer = null;
+
+
+            // NewInvoice.Customer = null;
             //if (NewInvoice.OrderId > 0)
             //    NewInvoice.Order = null;
             if (!isEdit)
             {
-                await AddAsync();
+                if (await AddAsync())
+                {
+                    MessageBox.Show("Invoice added sucessfully");
+                }
+                else
+                {
+                    MessageBox.Show("Invoice insert operation failed.");
+                }
             }
             else if (isEdit)
             {
-                await UpdateAsync();
+                if (await UpdateAsync())
+                {
+                    MessageBox.Show("Invoice updated sucessfully");
+                }
+                else
+                {
+                    MessageBox.Show("Invoice insert operation failed.");
+                }
             }
 
             p.Close();
-            await GetAll();
             await GetAll();
         }
         private async void SaveImport(IClosable p)
@@ -1480,7 +1493,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 }
                 else
                 {
-                    MessageBox.Show("Error updating Incoive");
+                    MessageBox.Show("Error updating Invoice");
                     return false;
                 }
             }
