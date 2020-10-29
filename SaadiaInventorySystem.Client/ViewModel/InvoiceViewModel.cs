@@ -1165,8 +1165,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
                 workSheet.Cells["A5"].Value = "Customer:. ";
                 workSheet.Cells["A5"].Style.Font.Bold = true;
-                workSheet.Cells["D5"].Value = "TAX INVOICE: ";
-                workSheet.Cells["D5:E5"].Merge = true;
+                //workSheet.Cells["D5"].Value = "TAX INVOICE: ";
+                //workSheet.Cells["D5:E5"].Merge = true;
 
                 if (SelectedInvoice.Customer == null)
                     SelectedInvoice.Customer = new Customer();
@@ -1182,22 +1182,25 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 string _sdate = (date != null) ? date.ToShortDateString():"";
                 string trn = (!string.IsNullOrEmpty(SelectedInvoice.Customer.Trn)) ? SelectedInvoice.Customer.Trn : "";
 
-                workSheet.Cells["A6"].Value = "TRN: ";
+                workSheet.Cells["A6"].Value = "CUSTOMER NAME: ";
                 workSheet.Cells["A6"].Style.Font.Bold = true;
-                workSheet.Cells["B6"].Value = $"{trn}";
+                workSheet.Cells["B6"].Value = $"{SelectedInvoice.Customer.FirstName} {SelectedInvoice.Customer.LastName} ";
+                workSheet.Cells["A7"].Value = "TRN: ";
+                workSheet.Cells["A7"].Style.Font.Bold = true;
+                workSheet.Cells["B7"].Value = $"{trn}";
                 workSheet.Cells["D6"].Value = "DATE: ";
                 workSheet.Cells["D6"].Style.Font.Bold = true;
                 workSheet.Cells["E6"].Value = $"{_sdate}";
-                workSheet.Cells["A7"].Value = "Company: ";
-                workSheet.Cells["A7"].Style.Font.Bold = true;
-                workSheet.Cells["B7"].Value = $"{companyName}";
+                workSheet.Cells["A8"].Value = "Company: ";
+                workSheet.Cells["A8"].Style.Font.Bold = true;
+                workSheet.Cells["B8"].Value = $"{companyName}";
                 workSheet.Cells["D7"].Value = "Invoice No: ";
                 workSheet.Cells["D7"].Style.Font.Bold = true;
                 workSheet.Cells["E7"].Value = $"{SelectedInvoice.Id}";
 
-                workSheet.Cells["A8"].Value = "Address: ";
-                workSheet.Cells["A8"].Style.Font.Bold = true;
-                workSheet.Cells["B8"].Value = $"{address}";
+                workSheet.Cells["A9"].Value = "Address: ";
+                workSheet.Cells["A9"].Style.Font.Bold = true;
+                workSheet.Cells["B9"].Value = $"{address}";
                 workSheet.Cells["D8"].Value = "Quotation No: ";
                 workSheet.Cells["D8"].Style.Font.Bold = true;
                 string qno = "-";
@@ -1205,9 +1208,9 @@ namespace SaadiaInventorySystem.Client.ViewModel
                     qno = $"{SelectedInvoice.QuotationId}";
                 workSheet.Cells["E8"].Value = $"{qno}";
 
-                workSheet.Cells["A9"].Value = "TEL: ";
-                workSheet.Cells["A8"].Style.Font.Bold = true;
-                workSheet.Cells["B9"].Value = $"{SelectedInvoice.Customer.PhoneNumber}";
+                workSheet.Cells["A10"].Value = "TEL: ";
+                workSheet.Cells["A10"].Style.Font.Bold = true;
+                workSheet.Cells["B10"].Value = $"{SelectedInvoice.Customer.PhoneNumber}";
                 workSheet.Cells["D9"].Value = "Order Purchase No: ";
                 workSheet.Cells["D9"].Style.Font.Bold = true;
                 workSheet.Cells["E9"].Value = $"{SelectedInvoice.OrderPurchaseNumber}";
@@ -1217,6 +1220,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Row(7).Style.Font.Size = 9;
                 workSheet.Row(8).Style.Font.Size = 9;
                 workSheet.Row(9).Style.Font.Size = 9;
+                workSheet.Row(10).Style.Font.Size = 9;
 
                 workSheet.Cells["A11:G11"].Merge = true;
                 workSheet.Cells["A11:G11"].Value = "INVOICE";

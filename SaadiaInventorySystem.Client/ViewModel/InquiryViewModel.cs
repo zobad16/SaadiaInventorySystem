@@ -871,7 +871,25 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private void ExcelFooter(ExcelWorksheet workSheet, int i)
         {
 
-            
+            workSheet.Cells[$"A{i}"].Value = "Message";
+            workSheet.Cells[$"A{i}"].Style.Font.Bold = true;
+            workSheet.Cells[$"A{i}"].Style.Font.Italic = true;
+            workSheet.Cells[$"A{i}"].Style.Font.UnderLine = true;
+            i++;
+            workSheet.Cells[i, 1, i + 4, 7].Merge = true;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Font.Italic = true;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            workSheet.Cells[i, 1, i + 4, 7].Style.Border.Left.Style = ExcelBorderStyle.None;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Border.Right.Style = ExcelBorderStyle.None;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Border.Top.Style = ExcelBorderStyle.None;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{ i}"].Value = SelectedInquiry.Message;
+            i++;
+            i++;
+            i++;
+            i++;
+            i++;
             workSheet.Cells[$"A{ i}:B{i}"].Merge = true;
             workSheet.Cells[$"A{ i}:B{i}"].Value = "Thanks & Regards,";
             i++;

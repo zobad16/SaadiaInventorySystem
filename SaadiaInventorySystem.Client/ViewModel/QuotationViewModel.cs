@@ -632,13 +632,14 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Cells["A4"].Style.Font.Bold = true;
 
                 workSheet.Cells["B4:C4"].Merge= true;
-                workSheet.Cells["B4"].Value = $"{SelectedQuotation.ReferenceNumber}";
+                string reff = !string.IsNullOrEmpty(SelectedQuotation.ReferenceNumber) ? SelectedQuotation.ReferenceNumber : SelectedQuotation.QuotationNumber;
+                workSheet.Cells["B4"].Value = $"{reff}";
 
                 workSheet.Cells["D4"].Value = "DATE: ";
                 workSheet.Cells["D4"].Style.Font.Bold= true;
 
                 workSheet.Cells["E4"].Value = $"{SelectedQuotation.DateCreated.ToShortDateString()}";
-
+                
                 workSheet.Cells["A5"].Value = "To: ";
                 workSheet.Cells["A5"].Style.Font.Bold = true;
                 string name = SelectedQuotation.Customer != null ? SelectedQuotation.Customer.FirstName.ToUpper()+" "+ SelectedQuotation.Customer.LastName.ToUpper() : "";
@@ -663,11 +664,15 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Row(8).Style.Font.Color.SetColor(Color.White) ;
                 workSheet.Cells["A8:G8"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                 workSheet.Cells["A8:G8"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                workSheet.Cells["A8:G8"].Style.Fill.BackgroundColor.SetColor(Color.DarkBlue); 
-            
-                workSheet.Cells["A9"].Value = "Dear Sir."; 
-                workSheet.Cells["A10"].Value = "Thank you for your inquiry."; 
-                workSheet.Cells["A11"].Value = "We are pleased to quote our best prices as follows:";
+                workSheet.Cells["A8:G8"].Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
+
+                //Message
+                workSheet.Cells["A9"].Value = SelectedQuotation.Message;
+                workSheet.Cells[9, 1, 11, 7].Merge = true;
+
+                //workSheet.Cells["A9"].Value = "Dear Sir."; 
+                //workSheet.Cells["A10"].Value = "Thank you for your inquiry."; 
+                //workSheet.Cells["A11"].Value = "We are pleased to quote our best prices as follows:";
                 workSheet.Row(9).Style.Font.Size = 9;
                 workSheet.Row(10).Style.Font.Size = 9;
                 workSheet.Row(11).Style.Font.Size = 9;
@@ -925,65 +930,84 @@ namespace SaadiaInventorySystem.Client.ViewModel
         }
         private void ExcelFooter(ExcelWorksheet workSheet, int i)
         {
-
             //Note
             workSheet.Cells[$"A{i}"].Value = "Note";
             workSheet.Cells[$"A{i}"].Style.Font.Bold = true;
             workSheet.Cells[$"A{i}"].Style.Font.Italic = true;
             workSheet.Cells[$"A{i}"].Style.Font.UnderLine = true;
             i++;
-            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            workSheet.Cells[$"A{ i}:G{i}"].Value = "Delivery: 5 days on order confirmation., ";
-            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+            workSheet.Cells[i, 1, i + 4, 7].Merge = true;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Font.Italic = true;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            workSheet.Cells[i, 1, i + 4, 7].Style.Border.Left.Style = ExcelBorderStyle.None;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Border.Right.Style = ExcelBorderStyle.None;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Border.Top.Style = ExcelBorderStyle.None;
+            workSheet.Cells[i, 1, i + 4, 7].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+            workSheet.Cells[$"A{ i}"].Value = SelectedQuotation.Note;
+            i++;
+            i++;
+            i++;
+            i++;
+            i++;
+            ////Note
+            //workSheet.Cells[$"A{i}"].Value = "Note";
+            //workSheet.Cells[$"A{i}"].Style.Font.Bold = true;
+            //workSheet.Cells[$"A{i}"].Style.Font.Italic = true;
+            //workSheet.Cells[$"A{i}"].Style.Font.UnderLine = true;
+            //i++;
+            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            //workSheet.Cells[$"A{ i}:G{i}"].Value = "Delivery: 5 days on order confirmation., ";
+            //workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
 
-            i++;
-            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            workSheet.Cells[$"A{ i}:G{i}"].Value = "Price quoted Net in UAE Dirhams, ex-warehouse. ";
-            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+            //i++;
+            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            //workSheet.Cells[$"A{ i}:G{i}"].Value = "Price quoted Net in UAE Dirhams, ex-warehouse. ";
+            //workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
 
-            i++;
-            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            workSheet.Cells[$"A{ i}:G{i}"].Value = "Make: Genuine Part";
-            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            i++;
-            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            workSheet.Cells[$"A{ i}:G{i}"].Value = "Validity: 1 week";
-            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            i++;
-            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            workSheet.Cells[$"A{ i}:G{i}"].Value = "Payment: 100% cash on order confirmation.";
-            workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            i++;
+            //i++;
+            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            //workSheet.Cells[$"A{ i}:G{i}"].Value = "Make: Genuine Part";
+            //workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+            //i++;
+            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            //workSheet.Cells[$"A{ i}:G{i}"].Value = "Validity: 1 week";
+            //workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+            //i++;
+            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
+            //workSheet.Cells[$"A{ i}:G{i}"].Value = "Payment: 100% cash on order confirmation.";
+            //workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
+            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
+            //i++;
             workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
             workSheet.Cells[$"A{ i}:G{i}"].Value = "Awaiting your valued order & assuring you of our best services always.";
             workSheet.Row(i).Height = 27;
