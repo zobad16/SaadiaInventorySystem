@@ -495,58 +495,67 @@ namespace SaadiaInventorySystem.Client.ViewModel
         }
         private async Task Upload(IClosable i)
         {
-            if(FilePath.IndexOf("quotation", StringComparison.OrdinalIgnoreCase) >= 0 && !string.IsNullOrWhiteSpace(FilePath))
+            try
             {
-                if (IsIgnoreCheck)
+                if (!string.IsNullOrWhiteSpace(FilePath))
                 {
-                    await ReadQuotationFileExcel(FilePath);
-                    var window = new QuotationImportDisplayView(this);
+                    if (IsIgnoreCheck)
+                    {
+                        await ReadQuotationFileExcel(FilePath);
+                        var window = new QuotationImportDisplayView(this);
 
-                    //Instead of the whole of BulkQuotation use SelectedBulkQuotaion
-                    if (BulkQuotations == null)
-                    {
-                        return;
-                    }
-                    foreach (var quote in BulkQuotations)
-                    {
-                        foreach (var part in quote.Order.OrderItems)
+                        //Instead of the whole of BulkQuotation use SelectedBulkQuotaion
+                        if (BulkQuotations == null)
                         {
-                            part.CalculateTotal();
-                            part.CalculateVAT();
+                            return;
                         }
+                        foreach (var quote in BulkQuotations)
+                        {
+                            quote.Date = DateTime.Now.ToString();
+                            quote.DateCreated = DateTime.Now;
+                            foreach (var part in quote.Order.OrderItems)
+                            {
+                                part.CalculateTotal();
+                                part.CalculateVAT();
+                            }
+                        }
+                        SelectedBulkQuotation = BulkQuotations[0];
+                        i.Close();
+                        window.ShowDialog();
+
                     }
-                    SelectedBulkQuotation = BulkQuotations[0];
-                    i.Close();
-                    window.ShowDialog();
+                    else if (IsUpdateCheck)
+                    {
+                        await ReadQuotationFileExcel(FilePath);
+                        var window = new QuotationImportDisplayView(this);
+                        if (BulkQuotations == null)
+                        {
+                            return;
+                        }
+                        i.Close();
+                        foreach (var quote in BulkQuotations)
+                        {
+                            foreach (var part in quote.Order.OrderItems)
+                            {
+                                part.CalculateTotal();
+                                part.CalculateVAT();
+                            }
+                        }
+                        SelectedBulkQuotation = BulkQuotations[0];
+                        window.ShowDialog();
+
+                    }
 
                 }
-                else if (IsUpdateCheck)
+                else
                 {
-                    await ReadQuotationFileExcel(FilePath);
-                    var window = new QuotationImportDisplayView(this);
-                    if (BulkQuotations == null)
-                    {
-                        return;
-                    }
-                    i.Close();
-                    foreach (var quote in BulkQuotations)
-                    {
-                        foreach (var part in quote.Order.OrderItems)
-                        {
-                            part.CalculateTotal();
-                            part.CalculateVAT();
-                        }
-                    }
-                    SelectedBulkQuotation = BulkQuotations[0];
-                    window.ShowDialog();
-
+                    MessageBox.Show("Error: Invalid file path", "Error");
+                    return;
                 }
-
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Error: Invalid file path");
-                return;
+                MessageBox.Show($"An Error occured while importing file.\nException details: { ex.Message.ToString()}", "Exception");
             }
             
             
@@ -560,9 +569,9 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 SelectedBulkQuotation = BulkQuotations[index + 1];
                 
             }
-            catch(Exception ex) 
+            catch(Exception ) 
             {
-                MessageBox.Show("No More records to display");
+                MessageBox.Show("No More records to display","Error");
             }
         }
         private void PreviousRecord()
@@ -573,9 +582,9 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 SelectedBulkQuotation = BulkQuotations[index - 1];
 
             }
-            catch (Exception ex ) 
+            catch (Exception ) 
             {
-                MessageBox.Show("No More records to display");
+                MessageBox.Show("No More records to display","Error");
             }
         }
         private void ImportQuotation()
@@ -621,7 +630,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 // name of the sheet 
                 if (SelectedQuotation == null)
                 {
-                    MessageBox.Show("Error. Exporting file. No Quotation was selected. Please select a quotation and try again");
+                    MessageBox.Show("Error. Exporting file. No Quotation was selected. Please select a quotation and try again","Error");
                     return;
                 }
                 var workSheet = excel.Workbook.Worksheets.Add($"{SelectedQuotation.Id}");
@@ -670,9 +679,6 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Cells["A9"].Value = SelectedQuotation.Message;
                 workSheet.Cells[9, 1, 11, 7].Merge = true;
 
-                //workSheet.Cells["A9"].Value = "Dear Sir."; 
-                //workSheet.Cells["A10"].Value = "Thank you for your inquiry."; 
-                //workSheet.Cells["A11"].Value = "We are pleased to quote our best prices as follows:";
                 workSheet.Row(9).Style.Font.Size = 9;
                 workSheet.Row(10).Style.Font.Size = 9;
                 workSheet.Row(11).Style.Font.Size = 9;
@@ -819,10 +825,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Column(4).AutoFit();
                 workSheet.Column(5).AutoFit();
                 workSheet.Column(7).AutoFit();
-
-                // file name with .xlsx extension  
-                string p_strPath = "C:\\Users\\zobad\\Desktop\\Hamza\\ExcelTest\\test.xlsx";
-
+                                
                 if (File.Exists(path))
                     File.Delete(path);
 
@@ -834,11 +837,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 File.WriteAllBytes(path, excel.GetAsByteArray());
                 //Close Excel package 
                 excel.Dispose();
-                MessageBox.Show("Excel successfully exported");
+                MessageBox.Show("Excel successfully exported","Success");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"File export failed. An error occured while exporting the file. \nError details: {ex.Message}");
+                MessageBox.Show($"File export failed. An error occured while exporting the file. \nError details: {ex.Message}","Exception");
                 excel.Dispose();
             }
 
@@ -895,15 +898,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             var arabicTitle = titleCell.RichText.Add($"  \t{arabic_txt}");
             arabicTitle.FontName = "Traditional Arabic";
             arabicTitle.Size = 28;
-            int PixelTop = 0;
-            int PixelLeft = 50 * 3;
-            ////Title logo
-            //Image logo = Image.FromFile(@"C:\Users\zobad\Desktop\Hamza\ExcelTest\logo.jpg");
-            //ExcelPicture pic = workSheet.Drawings.AddPicture("Logo", logo);
-            //pic.SetSize(4);
-            //pic.SetPosition(0, 0, 1, 110);
-            //// pic.SetPosition(PixelTop, PixelLeft);
-
+            
             workSheet.Cells["A2:G2"].Value = address;
             var rich_email = emailCell.RichText.Add($"{emailAddress}, ");
             var rich_TRN = emailCell.RichText.Add($" {TRN} ");
@@ -915,11 +910,6 @@ namespace SaadiaInventorySystem.Client.ViewModel
             rich_TRN.Italic = true;
             rich_TRN.UnderLine = true;
             rich_TRN.Color = System.Drawing.Color.Red;
-
-            //workSheet.Cells["A3:G3"].Style.Border.Bottom.Style = ExcelBorderStyle.Thick;
-            //workSheet.Cells["A3:G3"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            //workSheet.Cells["A3:G3"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            //workSheet.Cells["A3:G3"].Style.Border.Left.Style = ExcelBorderStyle.None;
 
             ExcelShape shape = workSheet.Drawings.AddShape("Line1", eShapeStyle.Line);
             shape.SetPosition(3, 0, 0, 0);
@@ -950,64 +940,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             i++;
             i++;
             i++;
-            ////Note
-            //workSheet.Cells[$"A{i}"].Value = "Note";
-            //workSheet.Cells[$"A{i}"].Style.Font.Bold = true;
-            //workSheet.Cells[$"A{i}"].Style.Font.Italic = true;
-            //workSheet.Cells[$"A{i}"].Style.Font.UnderLine = true;
-            //i++;
-            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            //workSheet.Cells[$"A{ i}:G{i}"].Value = "Delivery: 5 days on order confirmation., ";
-            //workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-
-            //i++;
-            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            //workSheet.Cells[$"A{ i}:G{i}"].Value = "Price quoted Net in UAE Dirhams, ex-warehouse. ";
-            //workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-
-            //i++;
-            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            //workSheet.Cells[$"A{ i}:G{i}"].Value = "Make: Genuine Part";
-            //workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            //i++;
-            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            //workSheet.Cells[$"A{ i}:G{i}"].Value = "Validity: 1 week";
-            //workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            //i++;
-            //workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            //workSheet.Cells[$"A{ i}:G{i}"].Value = "Payment: 100% cash on order confirmation.";
-            //workSheet.Cells[$"A{ i}:G{i}"].Style.Font.Italic = true;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Fill.BackgroundColor.SetColor(Color.WhiteSmoke);
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            //workSheet.Cells[$"A{i}:G{i}"].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            //i++;
+            
             workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
             workSheet.Cells[$"A{ i}:G{i}"].Value = "Awaiting your valued order & assuring you of our best services always.";
             workSheet.Row(i).Height = 27;
@@ -1041,12 +974,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
             {
                 if (await service.CallBulkInsert(BulkQuotations.ToList()))
                 {
-                    MessageBox.Show("Bulk Insert Success");
+                    MessageBox.Show("Bulk Insert Success","Success");
                 }
             }
             else
             {
-                MessageBox.Show("Nothing to insert.Records Already uptodate");
+                MessageBox.Show("Nothing to insert.Records Already uptodate","Error");
             }
 
             p.Close();
@@ -1062,12 +995,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
             {
                 if (await service.CallBulkUpdate(BulkQuotations.ToList()))
                 {
-                    MessageBox.Show("Bulk Insert Success");
+                    MessageBox.Show("Bulk Insert Success", "Success");
                 }
             }
             else
             {
-                MessageBox.Show("Nothing to insert.Records Already uptodate");
+                MessageBox.Show("Nothing to insert.Records Already uptodate", "Error");
             }
 
             p.Close();
@@ -1317,7 +1250,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             if (await service.CallActivateService(SelectedQuotation.Id))
             {
-                MessageBox.Show("Quotation Activated");
+                MessageBox.Show("Quotation Activated", "Success");
                 await GetAll();
             }
         }
@@ -1326,7 +1259,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             if (await service.CallDeleteService(SelectedQuotation.Id))
             {
-                MessageBox.Show("Quoatation Disabled");
+                MessageBox.Show("Quoatation Disabled", "Success");
                 await GetAll();
             }
         }
@@ -1334,12 +1267,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             if (await DeleteAsync())
             {
-                MessageBox.Show("Quotation Deleted Successfully");
+                MessageBox.Show("Quotation Deleted Successfully", "Success");
                 await GetAll();
             }
             else
             {
-                MessageBox.Show("Error Deleting Quotation");
+                MessageBox.Show("Error Deleting Quotation", "Error");
                 await GetAll();
             }
         }
@@ -1349,18 +1282,18 @@ namespace SaadiaInventorySystem.Client.ViewModel
             {
                 if (await service.CallUpdateService(NewQuotation))
                 {
-                    MessageBox.Show("Quotation Updated Successfully");
+                    MessageBox.Show("Quotation Updated Successfully", "Success");
                     return true;
                 }
                 else
                 {
-                    MessageBox.Show("Error updating Quotation");
+                    MessageBox.Show("Error updating Quotation", "Error");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An unexpected error occured: {ex.Message}");
+                MessageBox.Show($"An unexpected error occured: {ex.Message}","Exception");
                 return false;
             }
         }
@@ -1380,7 +1313,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An unexpected error occured: {ex.Message}");
+                MessageBox.Show($"An unexpected error occured: {ex.Message}", "Exception");
                 return false;
             }
         }
@@ -1441,7 +1374,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error fetching Quotation: {ex.Message}");
+                MessageBox.Show($"Error fetching Quotation: {ex.Message}", "Exception");
                 
             }
         }
@@ -1460,7 +1393,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An unexpected error occured: {ex.Message}");
+                MessageBox.Show($"An unexpected error occured: {ex.Message}", "Exception");
             }
         }
 
@@ -1470,18 +1403,18 @@ namespace SaadiaInventorySystem.Client.ViewModel
             {
                 if (await service.CallAddService(NewQuotation))
                 {
-                    MessageBox.Show("New Quotation Added Successfully");
+                    MessageBox.Show("New Quotation Added Successfully", "Success");
                     return true;
                 }
                 else
                 {
-                    MessageBox.Show("Error adding new Quotation");
+                    MessageBox.Show("Error adding new Quotation", "Error");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An unexpected error occured: {ex.Message}");
+                MessageBox.Show($"An unexpected error occured: {ex.Message}", "Exception");
                 return false;
             }
         }

@@ -232,7 +232,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error inserting inquiry{ex.Message}");
+                MessageBox.Show($"Error inserting inquiry{ex.Message}", "Exception");
                 return false;
             }
         }
@@ -265,22 +265,22 @@ namespace SaadiaInventorySystem.Client.ViewModel
             {
                 if (await AddAsync())
                 {
-                    MessageBox.Show("Inquiry Added Sucessfully");
+                    MessageBox.Show("Inquiry Added Sucessfully", "Success");
                 }
                 else 
                 {
-                    MessageBox.Show("Inquiry Add Failed");
+                    MessageBox.Show("Inquiry Add Failed", "Error");
                 }
             }
             else if (isEdit)
             {
                 if(await UpdateAsync())
                 {
-                    MessageBox.Show("Inquiry updated Sucessfully");
+                    MessageBox.Show("Inquiry updated Sucessfully", "Success");
                 }
                 else
                 {
-                    MessageBox.Show("Inquiry update Failed");
+                    MessageBox.Show("Inquiry update Failed", "Error");
                 }
             }
 
@@ -332,12 +332,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
             {
                 if (await service.CallBulkInsert(BulkInquiry.ToList()))
                 {
-                    MessageBox.Show("Bulk Insert Success");
+                    MessageBox.Show("Bulk Insert Success", "Success");
                 }
             }
             else
             {
-                MessageBox.Show("Nothing to insert.Records Already uptodate");
+                MessageBox.Show("Nothing to insert.Records Already uptodate", "Error");
             }
 
             p.Close();
@@ -368,12 +368,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
             {
                 if (await service.CallBulkUpdate(BulkInquiry.ToList()))
                 {
-                    MessageBox.Show("Bulk Insert Success");
+                    MessageBox.Show("Bulk Insert Success", "Success");
                 }
             }
             else
             {
-                MessageBox.Show("Nothing to insert.Records Already uptodate");
+                MessageBox.Show("Nothing to insert.Records Already uptodate", "Error");
             }
             p.Close();
             await GetAll();
@@ -496,12 +496,12 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             if (await service.CallActivateService(SelectedInquiry.Id))
             {
-                MessageBox.Show("Inquiry Activated");
+                MessageBox.Show("Inquiry Activated", "Success");
                 await GetAll();
             }
             else
             {
-                MessageBox.Show("Inquiry Activate failed");
+                MessageBox.Show("Inquiry Activate failed", "Error");
                 await GetAll();
             }
         }
@@ -509,13 +509,13 @@ namespace SaadiaInventorySystem.Client.ViewModel
         {
             if (await service.CallDisableInquiryService(SelectedInquiry.Id))
             {
-                MessageBox.Show("Inquiry Disabled");
+                MessageBox.Show("Inquiry Disabled", "Success");
                 await GetAll();
                 return true;
             }
             else
             {
-                MessageBox.Show("Inquiry Disable failed");
+                MessageBox.Show("Inquiry Disable failed", "Error");
                 await GetAll();
                 return false;
             }
@@ -526,22 +526,22 @@ namespace SaadiaInventorySystem.Client.ViewModel
             {
                 if(await service.CallAdminDeleteService(SelectedInquiry.Id))
                 {
-                    MessageBox.Show("Inquiry Deleted");
+                    MessageBox.Show("Inquiry Deleted", "Success");
                     await GetAll();
                     return true;
                 }
-                MessageBox.Show("Inquiry Delete failed");
+                MessageBox.Show("Inquiry Delete failed", "Error");
                 return false;
             }
             else
             {
                 if (await service.CallDeleteService(SelectedInquiry.Id))
                 {
-                    MessageBox.Show("Inquiry Deleted");
+                    MessageBox.Show("Inquiry Deleted", "Success");
                     await GetAll();
                     return true;
                 }
-                MessageBox.Show("Inquiry Delete failed");
+                MessageBox.Show("Inquiry Delete failed", "Error");
                 return false;
             }
             
@@ -587,7 +587,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 // name of the sheet 
                 if (SelectedInquiry== null)
                 {
-                    MessageBox.Show("Error. Exporting file. No Inquiry was selected. Please select an inquiry and try again");
+                    MessageBox.Show("Error. Exporting file. No Inquiry was selected. Please select an inquiry and try again", "Error");
                     return;
                 }
                 var workSheet = excel.Workbook.Worksheets.Add($"{SelectedInquiry.Id}");
@@ -615,28 +615,35 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Cells["A6"].Value = "ATTN: ";
                 workSheet.Cells["A6"].Style.Font.Bold = true;
                 workSheet.Cells["B6"].Value = $"{SelectedInquiry.Attn}";
+                //Message
+                workSheet.Cells["A7"].Value = SelectedInquiry.Message;
+                workSheet.Cells[7, 1, 9, 7].Merge = true;
 
-                workSheet.Cells["A8"].Value = "S.No";
-
-                workSheet.Cells["B8"].Value = "Part No.";
-                workSheet.Cells["C8"].Value = "Description";
-                workSheet.Cells["D8"].Value = "Qty";
+                workSheet.Row(7).Style.Font.Size = 9;
+                workSheet.Row(8).Style.Font.Size = 9;
+                workSheet.Row(9).Style.Font.Size = 9;
                 
-                workSheet.Cells["E8"].Value = "Units";
-                workSheet.Cells["F8"].Value = "U.Price";
-                workSheet.Cells["G8"].Value = "Total Price";
-                workSheet.Cells["A8:G8"].Style.Font.Bold = true;
+                workSheet.Cells["A10"].Value = "S.No";
 
-                workSheet.Cells["A8:G8"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                workSheet.Cells["A8:G8"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                workSheet.Cells["A8:G8"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                workSheet.Cells["A8:G8"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                workSheet.Cells["A8:G8"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                workSheet.Cells["A8:G8"].Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
-                workSheet.Row(8).Style.Font.Color.SetColor(Color.White);
+                workSheet.Cells["B10"].Value = "Part No.";
+                workSheet.Cells["C10"].Value = "Description";
+                workSheet.Cells["D10"].Value = "Qty";
+                
+                workSheet.Cells["E10"].Value = "Units";
+                workSheet.Cells["F10"].Value = "U.Price";
+                workSheet.Cells["G10"].Value = "Total Price";
+                workSheet.Cells["A10:G10"].Style.Font.Bold = true;
+
+                workSheet.Cells["A10:G10"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells["A10:G10"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells["A10:G10"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells["A10:G10"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                workSheet.Cells["A10:G10"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                workSheet.Cells["A10:G10"].Style.Fill.BackgroundColor.SetColor(Color.DarkBlue);
+                workSheet.Row(10).Style.Font.Color.SetColor(Color.White);
 
 
-                int i = 10;
+                int i = 12;
                 int count = 1;
                 foreach (var items in SelectedInquiry.Items)
                 {
@@ -774,11 +781,11 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 File.WriteAllBytes(path, excel.GetAsByteArray());
                 //Close Excel package 
                 excel.Dispose();
-                MessageBox.Show("Excel successfully exported");
+                MessageBox.Show("Excel successfully exported", "Success");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"File export failed. An error occured while exporting the file. \nError details: {ex.Message}");
+                MessageBox.Show($"File export failed. An error occured while exporting the file. \nError details: {ex.Message}", "Exception");
                 excel.Dispose();
             }
 
@@ -835,15 +842,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             var arabicTitle = titleCell.RichText.Add($"  \t{arabic_txt}");
             arabicTitle.FontName = "Traditional Arabic";
             arabicTitle.Size = 28;
-            int PixelTop = 0;
-            int PixelLeft = 50 * 3;
-            //Title logo
-            //Image logo = Image.FromFile(@"C:\Users\zobad\Desktop\Hamza\ExcelTest\logo.jpg");
-            //ExcelPicture pic = workSheet.Drawings.AddPicture("Logo", logo);
-            //pic.SetSize(4);
-            //pic.SetPosition(0, 0, 1, 110);
-            //// pic.SetPosition(PixelTop, PixelLeft);
-
+            
             workSheet.Cells["A2:G2"].Value = address;
             var rich_email = emailCell.RichText.Add($"{emailAddress}, ");
             var rich_TRN = emailCell.RichText.Add($" {TRN} ");
@@ -856,11 +855,6 @@ namespace SaadiaInventorySystem.Client.ViewModel
             rich_TRN.UnderLine = true;
             rich_TRN.Color = System.Drawing.Color.Red;
 
-            //workSheet.Cells["A3:G3"].Style.Border.Bottom.Style = ExcelBorderStyle.Thick;
-            //workSheet.Cells["A3:G3"].Style.Border.Top.Style = ExcelBorderStyle.None;
-            //workSheet.Cells["A3:G3"].Style.Border.Right.Style = ExcelBorderStyle.None;
-            //workSheet.Cells["A3:G3"].Style.Border.Left.Style = ExcelBorderStyle.None;
-
             ExcelShape shape = workSheet.Drawings.AddShape("Line1", eShapeStyle.Line);
             shape.SetPosition(3, 0, 0, 0);
             shape.SetSize(440, 1);
@@ -871,7 +865,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         private void ExcelFooter(ExcelWorksheet workSheet, int i)
         {
 
-            workSheet.Cells[$"A{i}"].Value = "Message";
+            workSheet.Cells[$"A{i}"].Value = "Note";
             workSheet.Cells[$"A{i}"].Style.Font.Bold = true;
             workSheet.Cells[$"A{i}"].Style.Font.Italic = true;
             workSheet.Cells[$"A{i}"].Style.Font.UnderLine = true;
@@ -884,7 +878,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             workSheet.Cells[i, 1, i + 4, 7].Style.Border.Right.Style = ExcelBorderStyle.None;
             workSheet.Cells[i, 1, i + 4, 7].Style.Border.Top.Style = ExcelBorderStyle.None;
             workSheet.Cells[i, 1, i + 4, 7].Style.Border.Bottom.Style = ExcelBorderStyle.None;
-            workSheet.Cells[$"A{ i}"].Value = SelectedInquiry.Message;
+            workSheet.Cells[$"A{ i}"].Value = SelectedInquiry.Note;
             i++;
             i++;
             i++;
@@ -901,7 +895,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
         }
         private async Task Upload(IClosable i)
         {
-            if (FilePath.IndexOf("inquiry", StringComparison.OrdinalIgnoreCase) >= 0 && !string.IsNullOrWhiteSpace(FilePath))
+            if (!string.IsNullOrWhiteSpace(FilePath))
             {
                 BulkInquiry = new ObservableCollection<Inquiry>();
                 if (IsIgnoreCheck)
@@ -917,6 +911,8 @@ namespace SaadiaInventorySystem.Client.ViewModel
                     }
                     foreach (var inquiry in BulkInquiry)
                     {
+                        inquiry.DateCreated = DateTime.Now;
+                        inquiry.DateIssued = DateTime.Now;
                         foreach (var part in inquiry.Items)
                         {
                             part.CalculateTotal();
@@ -953,7 +949,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
             else
             {
-                MessageBox.Show("Error: Invalid file path");
+                MessageBox.Show("Error: Invalid file path", "Error");
                 return;
             }
 
@@ -979,7 +975,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                             int rows = result.Tables[tab].Rows.Count;
                             int columns = result.Tables[tab].Columns.Count;
 
-                            for (int row = 6; row < rows; row++)
+                            for (int row = 1; row < rows; row++)
                             {
                                 InquiryItem _item = new InquiryItem();
                                 for (int col = 0; col < columns-1; col++)
@@ -991,12 +987,30 @@ namespace SaadiaInventorySystem.Client.ViewModel
                                     if (string.IsNullOrEmpty(current))
                                         break;
 
-                                    if (current.Contains("S.No"))
+                                    if (current.ToLower().Contains("inquiry number") || current.ToLower().Contains("number"))
+                                    {
+                                        q.InquiryNumber = next;
+                                        itemflag = false;
+                                        break;
+                                    }
+                                    if (current.ToLower().Contains("m/s"))
+                                    {
+                                        q.Ms = next;
+                                        itemflag = false;
+                                        break;
+                                    }
+                                    if (current.ToLower().Contains("attn"))
+                                    {
+                                        q.Attn = next;
+                                        itemflag = false;
+                                        break;
+                                    }
+                                    if (current.ToLower().Contains("s.no"))
                                     {
                                         itemflag = true;
                                         break;
                                     }
-                                    if (current.ToLower().Equals("total"))
+                                    if (current.ToLower().Contains("total"))
                                     {
                                         string total = next;
                                         itemflag = false;
@@ -1059,7 +1073,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to import file. An error occured. Error details: {ex.Message}");
+                MessageBox.Show($"Failed to import file. An error occured. Error details: {ex.Message}", "Exception");
             }
         }
         private void NextRecord()
@@ -1071,9 +1085,9 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 SelectedBulkInquiry = BulkInquiry[index + 1];
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show("No More records to display");
+                MessageBox.Show("No More records to display", "Error");
             }
         }
         private void PreviousRecord()
@@ -1084,9 +1098,9 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 SelectedBulkInquiry = BulkInquiry[index - 1];
 
             }
-            catch (Exception ex)
+            catch (Exception )
             {
-                MessageBox.Show("No More records to display");
+                MessageBox.Show("No More records to display", "Error");
             }
         }
         public async Task Get()
@@ -1099,7 +1113,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An unexpected error occured: {ex.Message}");
+                MessageBox.Show($"An unexpected error occured: {ex.Message}", "Exception");
             }
         }
 
@@ -1130,7 +1144,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error fetching Inquiry: {ex.Message}");
+                MessageBox.Show($"Error fetching Inquiry: {ex.Message}", "Exception");
 
             }
         }
@@ -1143,7 +1157,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error updating inquiry{ex.Message}");
+                MessageBox.Show($"Error updating inquiry{ex.Message}", "Exception");
                 return false;
             }
         }

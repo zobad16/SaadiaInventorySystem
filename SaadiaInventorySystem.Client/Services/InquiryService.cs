@@ -120,7 +120,7 @@ namespace SaadiaInventorySystem.Client.Services
                 }
 
             }
-            catch (AggregateException ex)
+            catch (AggregateException )
             {
 
                 return data;

@@ -398,6 +398,7 @@ namespace SaadiaInventorySystem.Service
                     invoice.Attn = data.Attn;
                     invoice.OrderPurchaseNumber = data.OrderPurchaseNumber;
                     invoice.QuotationId = data.QuotationId;
+                    invoice.QuotationNumber = data.QuotationNumber;
                     invoice.OfferedDiscount = data.OfferedDiscount;
                     invoice.VAT = data.VAT;
                     invoice.IsActive = data.IsActive;

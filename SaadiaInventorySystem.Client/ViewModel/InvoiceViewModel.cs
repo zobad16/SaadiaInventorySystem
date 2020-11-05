@@ -13,11 +13,9 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Excel = Microsoft.Office.Interop.Excel;
 
 namespace SaadiaInventorySystem.Client.ViewModel
 {
@@ -668,21 +666,19 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
         private async Task Upload(IClosable i)
         {
-            if (FilePath.IndexOf("invoice", StringComparison.OrdinalIgnoreCase) >= 0 && !string.IsNullOrWhiteSpace(FilePath))
+            if (!string.IsNullOrWhiteSpace(FilePath))
             {
-                /*if (IsIgnoreCheck) { await ReadInvoiceFileExcel(FilePath); }
-                else if (IsUpdateCheck) { await ReadInvoiceFileExcel(FilePath); }
-                i.Close();*/
-                //ReadIvoiceExcelCom(FilePath);
                 await ReadInvoiceExcel(FilePath);
                 var window = new InvoiceImportDisplayView(this);
                 if (BulkInvoices == null)
                 {
                     return;
                 }
-                foreach (var quote in BulkInvoices)
+                foreach (var invoice in BulkInvoices)
                 {
-                    foreach (var part in quote.Order.OrderItems)
+                    invoice.DateCreated = DateTime.Now;
+                    invoice.DateCreated = DateTime.Now;
+                    foreach (var part in invoice.Order.OrderItems)
                     {
                         part.CalculateTotal();
                         part.CalculateVAT();
@@ -702,7 +698,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 SelectedBulkInvoice = BulkInvoices[index + 1];
 
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 MessageBox.Show("No More records to display");
             }
@@ -715,7 +711,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 SelectedBulkInvoice = BulkInvoices[index - 1];
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 MessageBox.Show("No More records to display");
             }
@@ -784,15 +780,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
             var arabicTitle = titleCell.RichText.Add($"  \t{arabic_txt}");
             arabicTitle.FontName = "Traditional Arabic";
             arabicTitle.Size = 28;
-            int PixelTop = 0;
-            int PixelLeft = 50 * 3;
-            //Title logo
-            //Image logo = Image.FromFile(@"C:\Users\zobad\Desktop\Hamza\ExcelTest\logo.jpg");
-            //ExcelPicture pic = workSheet.Drawings.AddPicture("Logo", logo);
-            //pic.SetSize(4);
-            //pic.SetPosition(0, 0, 1, 110);
-            //// pic.SetPosition(PixelTop, PixelLeft);
-
+            
             workSheet.Cells["A2:G2"].Value = address;
             var rich_email = emailCell.RichText.Add($"{emailAddress}, ");
             var rich_TRN = emailCell.RichText.Add($" {TRN} ");
@@ -893,82 +881,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
 
         }
-        private void ReadIvoiceExcelCom(string path)
-        {
-
-            Excel.Application xlApp = new Excel.Application();
-            Excel.Workbook xlWorkbook = xlApp.Workbooks.Open(path);
-            int sheets = xlWorkbook.Sheets.Count;
-            Excel._Worksheet xlWorksheet = xlWorkbook.Sheets[1];
-            Excel.Range xlRange = xlWorksheet.UsedRange;
-            for (int sheet = 1; sheet <= sheets; sheet++)
-            {
-                xlWorksheet = xlWorkbook.Sheets[sheet];
-
-                xlRange = xlWorksheet.UsedRange;
-                int rowCount = xlRange.Rows.Count;
-                int colCount = xlRange.Columns.Count;
-
-                for (int row = 1; row <= rowCount; row++)
-                {
-                    for (int col = 1; col <= colCount; col++)
-                    {
-                        //new line
-                        if (col == 1)
-                            Console.Write("\r\n");
-                        var xlobj = xlRange.Cells[row, col];
-                        var data = Convert.ToString(xlobj.Value2);
-                        //write the value to the console
-                        if (xlobj != null && data != null)
-                            Console.Write(data + "\t");
-
-                        //add useful things here!   
-                    }
-                }
-                Excel.Shapes shapes = xlWorksheet.Shapes;
-                for (int i = 1; i <= shapes.Count; i++)
-                {
-                    Excel.Shape shape = shapes.Item(i);
-
-                    var type = shape.Type;
-                    var title = shape.Title;
-                    var tb1 = shape.TextFrame;
-                    var tb2 = shape.TextFrame2;
-                    var tb3 = shape.AlternativeText;
-                    if (shape.Type == Microsoft.Office.Core.MsoShapeType.msoTextBox)
-                    {
-                        string shapeTxt = Convert.ToString(shape.TextFrame.Characters(Type.Missing, Type.Missing).Text);
-                        Console.Write(shapeTxt + "\t");
-                    }
-                    if (shape.Type == Microsoft.Office.Core.MsoShapeType.msoAutoShape)
-                    {
-                        //var grpEnumerator = shape.GroupItems.;
-                        //List<string> grpItemList = grpEnumerator.ToList<string>();
-                        //Console.Write(shapeTxt + "\t");
-                    }
-                }
-
-
-
-            }
-
-            //cleanup
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            // release com objects to fully kill excel process from running in the background
-            Marshal.ReleaseComObject(xlRange);
-            Marshal.ReleaseComObject(xlWorksheet);
-
-            //close and release
-            xlWorkbook.Close();
-            Marshal.ReleaseComObject(xlWorkbook);
-
-            //quit and release
-            xlApp.Quit();
-            Marshal.ReleaseComObject(xlApp);
-
-
-        }
+        
         private async Task ReadInvoiceExcel(string path)
         {
             try
@@ -1165,9 +1078,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
                 workSheet.Cells["A5"].Value = "Customer:. ";
                 workSheet.Cells["A5"].Style.Font.Bold = true;
-                //workSheet.Cells["D5"].Value = "TAX INVOICE: ";
-                //workSheet.Cells["D5:E5"].Merge = true;
-
+                
                 if (SelectedInvoice.Customer == null)
                     SelectedInvoice.Customer = new Customer();
                 if (SelectedInvoice.Order == null)
@@ -1387,8 +1298,6 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Column(7).AutoFit();
 
                 // file name with .xlsx extension  
-                string p_strPath = "C:\\Users\\zobad\\Desktop\\Hamza\\ExcelTest\\test.xlsx";
-
                 if (File.Exists(path))
                     File.Delete(path);
 
@@ -1492,12 +1401,10 @@ namespace SaadiaInventorySystem.Client.ViewModel
             {
                 if (await service.CallUpdateService(SelectedInvoice))
                 {
-                    MessageBox.Show("Invoice Updated Successfully");
                     return true;
                 }
                 else
                 {
-                    MessageBox.Show("Error updating Invoice");
                     return false;
                 }
             }
