@@ -652,7 +652,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Cells["A5"].Value = "To: ";
                 workSheet.Cells["A5"].Style.Font.Bold = true;
                 string name = SelectedQuotation.Customer != null ? SelectedQuotation.Customer.FirstName.ToUpper()+" "+ SelectedQuotation.Customer.LastName.ToUpper() : "";
-                workSheet.Cells["B5"].Value = $"MR. {name}";
+                workSheet.Cells["B5"].Value = $"{name}";
 
                 workSheet.Cells["A6"].Value = "ATTN: ";
                 workSheet.Cells["A6"].Style.Font.Bold = true;
