@@ -817,23 +817,15 @@ namespace SaadiaInventorySystem.Client.ViewModel
             workSheet.Cells[i, 1, i + 4, 7].Style.Border.Top.Style = ExcelBorderStyle.None;
             workSheet.Cells[i, 1, i + 4, 7].Style.Border.Bottom.Style = ExcelBorderStyle.None;
             workSheet.Cells[$"A{ i}"].Value = SelectedInvoice.Note;
-            i++;
-            i++;
-            i++;
-            i++;
-            i++;
-            workSheet.Cells[$"A{ i}:G{i}"].Merge = true;
-            workSheet.Cells[$"A{ i}:G{i}"].Value = "Awaiting your valued order & assuring you of our best services always.";
-            workSheet.Row(i).Height = 27;
-            i++; i++;
+            i++; i++;i++;i++;i++;
+            
+            i++;i++;i++;i++;i++;
+            workSheet.Cells[i, 1, i, 2].Style.Border.Top.Style = ExcelBorderStyle.Dotted;
+            workSheet.Cells[i, 4, i, 7].Style.Border.Top.Style = ExcelBorderStyle.Dotted;
             workSheet.Cells[$"A{ i}:B{i}"].Merge = true;
-            workSheet.Cells[$"A{ i}:B{i}"].Value = "Thanks & Regards,";
-            i++;
-            //Name of the user
-            i++;
-            //Company Name
-            workSheet.Cells[$"A{ i}:B{i}"].Merge = true;
-            workSheet.Cells[$"A{ i}:B{i}"].Value = "For Saadia Trading Co.";
+            workSheet.Cells[$"A{ i}:B{i}"].Value = "Receiver's Signature";
+            workSheet.Cells[$"F{ i}"].Value = "Sales Signature";
+            
         }
 
         private void ReadIvoiceExcelEpp(string path)
@@ -1187,7 +1179,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                         workSheet.Cells[$"F{i}"].Value = $"{items.Inventory.UnitPrice}";
                     }
 
-                    workSheet.Cells[$"G{i}"].Value = $"{items.Total}";
+                    workSheet.Cells[$"G{i}"].Value = $"cc items.Total)}";
 
                     workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                     workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
@@ -1203,7 +1195,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Cells[$"A{i}:F{i}"].Value = "Gross Total";
                 workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
                 workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-                workSheet.Cells[$"G{i}"].Value = $"{SelectedInvoice.Order.TotalPrice}";
+                workSheet.Cells[$"G{i}"].Value = $"{String.Format("{0:0.00}", SelectedInvoice.Order.TotalPrice)}";
                 workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
                 workSheet.Cells[$"A{i}:G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
@@ -1219,7 +1211,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
                 double vatCal = (SelectedInvoice.VAT / 100 * total);
-                workSheet.Cells[$"G{i}"].Value = $"{vatCal}";
+                workSheet.Cells[$"G{i}"].Value = $"{String.Format("{0:0.00}", vatCal)}";
                 workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
                 workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
@@ -1236,7 +1228,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                 workSheet.Cells[$"A{i}:F{i}"].Style.Font.Bold = true;
                 workSheet.Cells[$"A{i}:F{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 double discount = SelectedInvoice.OfferedDiscount > 0 ? (SelectedInvoice.OfferedDiscount / 100 * total) : 0;
-                workSheet.Cells[$"G{i}"].Value = $"{discount}";
+                workSheet.Cells[$"G{i}"].Value = $"{String.Format("{0:0.00}", discount)}";
                 workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
                 workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
@@ -1276,7 +1268,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
 
                 workSheet.Cells[$"B{i}:F{i}"].Value = $"AED. {netword.ToUpper()} {fills}";
                 workSheet.Cells[$"B{i}:F{i}"].Style.Font.Bold = true;
-                workSheet.Cells[$"G{i}"].Value = $"{net}";
+                workSheet.Cells[$"G{i}"].Value = $"{String.Format("{0:0.00}", net)}";
                 workSheet.Cells[$"G{i}"].Style.Font.Bold = true;
                 workSheet.Cells[$"G{i}"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
                 workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
