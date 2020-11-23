@@ -1179,7 +1179,7 @@ namespace SaadiaInventorySystem.Client.ViewModel
                         workSheet.Cells[$"F{i}"].Value = $"{items.Inventory.UnitPrice}";
                     }
 
-                    workSheet.Cells[$"G{i}"].Value = $"cc items.Total)}";
+                    workSheet.Cells[$"G{i}"].Value = $"{String.Format("{0:0.00}", items.Total)}";
 
                     workSheet.Cells[$"A{i}:G{i}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                     workSheet.Cells[$"A{i}:G{i}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;

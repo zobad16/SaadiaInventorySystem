@@ -14,6 +14,7 @@ namespace SaadiaInventorySystem.Client.Model
         }
         private int id;
         private int quotationId;
+        private string invoiceNumber;
         private string quotationNumber;
         private string _orderPurchaseNumber;
         private int ? customerId;
@@ -34,6 +35,7 @@ namespace SaadiaInventorySystem.Client.Model
 
         public int Id { get => id; set { id = value; RaisePropertyChanged(); } }
         public int QuotationId { get => quotationId; set { quotationId = value; RaisePropertyChanged(); } }
+        public string InvoiceNumber { get => invoiceNumber; set { invoiceNumber = value; RaisePropertyChanged(); } }
         public string QuotationNumber { get => quotationNumber; set { quotationNumber = value; RaisePropertyChanged(); } }
         public string OrderPurchaseNumber { get => _orderPurchaseNumber; set { _orderPurchaseNumber = value; RaisePropertyChanged(); } }
         public int ? CustomerId { get => customerId; set { customerId = value; RaisePropertyChanged(); } }

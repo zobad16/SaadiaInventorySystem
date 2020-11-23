@@ -74,8 +74,8 @@
                   Height="300"    
                   >
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID"
-                                    Binding="{Binding Id}" />
+                    <DataGridTextColumn Header="Invoice Number"
+                                    Binding="{Binding InvoiceNumber}" />
                     <DataGridTextColumn Header="Quotation #"
                                     Binding="{Binding QuotationNumber}" />
 

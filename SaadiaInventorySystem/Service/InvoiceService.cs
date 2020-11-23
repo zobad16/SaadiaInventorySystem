@@ -39,6 +39,7 @@ namespace SaadiaInventorySystem.Service
                     {
                         Invoice entity = new Invoice()
                         {
+                            InvoiceNumber = data.InvoiceNumber,
                             Attn = data.Attn,
                             IsActive = 1,
                             VAT = data.VAT,
@@ -398,6 +399,7 @@ namespace SaadiaInventorySystem.Service
                     invoice.Attn = data.Attn;
                     invoice.OrderPurchaseNumber = data.OrderPurchaseNumber;
                     invoice.QuotationId = data.QuotationId;
+                    invoice.InvoiceNumber = data.InvoiceNumber;
                     invoice.QuotationNumber = data.QuotationNumber;
                     invoice.OfferedDiscount = data.OfferedDiscount;
                     invoice.VAT = data.VAT;
